@@ -10,4 +10,5 @@ ENV HOST 0.0.0.0
 CMD [ "npm", "run", "start" ]
 
 FROM base AS dev
-CMD [ "npm", "run", "dev" ]
+ENV HOST 0.0.0.0
+CMD /bin/bash -c 'npm install; npm run dev'
