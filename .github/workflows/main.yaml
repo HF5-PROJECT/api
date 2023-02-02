@@ -3,5 +3,34 @@ name: overnites
 on: [pull_request, push]
 
 jobs:
-  semantic-pull-request:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@v1
+    semantic-pull-request:
+        uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@v1
+    test:
+        runs-on: ubuntu-latest
+        env:
+            HOST: 127.0.0.1
+            DB_TEST_NAME: test
+            DB_TEST_PASS: root
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Setup MariaDB server
+              uses: getong/mariadb-action@v1.1
+              with:
+                  mysql database: ${{ env.DB_TEST_NAME }}
+                  mysql root password: ${{ env.DB_TEST_PASS }}
+
+            - name: Install node
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "19"
+                  cache: "npm"
+
+            - name: Install npm modules
+              run: npm install
+
+            #- name: Run prisma migrations
+            #  run: npx prisma migrate dev
+
+            - name: Run tests
+              run: npm run test
