@@ -6,9 +6,11 @@ FROM base AS prod
 COPY package.json /usr/src/app/
 RUN npm install
 COPY . /usr/src/app
+RUN npx prisma generate
+RUN npx prisma migrate deploy
 ENV HOST 0.0.0.0
 CMD [ "npm", "run", "start" ]
 
 FROM base AS dev
 ENV HOST 0.0.0.0
-CMD /bin/bash -c 'npm install; npm run dev'
+CMD /bin/bash -c 'npm install; npx prisma generate; npm run dev'
