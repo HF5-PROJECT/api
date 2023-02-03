@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         env:
             HOST: 127.0.0.1
-            DATABASE_URL: "mysql://user:password@localhost:3306/overnites"
+            DATABASE_URL: "mysql://root:password@localhost:3306/overnites"
         steps:
             - uses: actions/checkout@v2
 
@@ -17,8 +17,7 @@ jobs:
               uses: getong/mariadb-action@v1.1
               with:
                   mysql database: "overnites"
-                  mysql user: "user"
-                  mysql password: "password"
+                  mysql root password: "password"
 
             - name: Install node
               uses: actions/setup-node@v2
