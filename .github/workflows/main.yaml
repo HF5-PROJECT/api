@@ -9,16 +9,16 @@ jobs:
         runs-on: ubuntu-latest
         env:
             HOST: 127.0.0.1
-            DB_TEST_NAME: test
-            DB_TEST_PASS: root
+            DATABASE_URL: "mysql://user:password@localhost:3306/overnites"
         steps:
             - uses: actions/checkout@v2
 
             - name: Setup MariaDB server
               uses: getong/mariadb-action@v1.1
               with:
-                  mysql database: ${{ env.DB_TEST_NAME }}
-                  mysql root password: ${{ env.DB_TEST_PASS }}
+                  mysql database: "overnites"
+                  mysql user: "user"
+                  mysql password: "password"
 
             - name: Install node
               uses: actions/setup-node@v2
@@ -29,8 +29,8 @@ jobs:
             - name: Install npm modules
               run: npm install
 
-            #- name: Run prisma migrations
-            #  run: npx prisma migrate dev
+            - name: Run prisma migrations & generate prisma client
+              run: npx prisma migrate dev
 
             - name: Run tests
               run: npm run test

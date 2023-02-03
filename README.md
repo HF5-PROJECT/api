@@ -15,6 +15,22 @@ For production mode
 
 Run the test cases.
 
+### `npx prisma generate`
+
+Generate/regenerate the prisma client. This should be done after changing the prisma schema.
+
+### `npx prisma migrate dev`
+
+Migrate the prisma schema to the database. This should only be run in the dev environment.
+
+### `npx prisma migrate reset`
+
+Clears the database and applies migrations. This should only be run in the dev environment.
+
+### `npx prisma migrate deploy`
+
+Deploys the pending migrations to the databases.
+
 ## Learn More
 
 To learn Fastify, check out the [Fastify documentation](https://www.fastify.io/docs/latest/).
