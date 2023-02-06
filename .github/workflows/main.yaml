@@ -10,6 +10,7 @@ jobs:
         env:
             HOST: 127.0.0.1
             DATABASE_URL: "mysql://root:password@localhost:3306/overnites"
+            DATABASE_URL_TEST: "mysql://root:password@localhost:3306/overnites"
         steps:
             - uses: actions/checkout@v2
 

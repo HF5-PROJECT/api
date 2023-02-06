@@ -7,9 +7,10 @@
     "test": "test"
   },
   "scripts": {
-    "test": "jest --testMatch '**/?(*.)+(spec|test).ts?(x)' --runInBand",
+    "test": "jest --runInBand",
     "start": "ts-node server.ts",
-    "dev": "tsnd --respawn --transpile-only --exit-child server.ts"
+    "dev": "tsnd --respawn --transpile-only --exit-child server.ts",
+    "migrate:dev": "export $(grep -v '^#' .env | xargs) && DATABASE_URL=\"$DATABASE_URL\" prisma migrate dev && DATABASE_URL=\"$DATABASE_URL_TEST\" prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +18,11 @@
   "dependencies": {
     "@fastify/autoload": "^5.0.0",
     "@fastify/env": "^4.2.0",
+    "@fastify/jwt": "^6.5.0",
     "@fastify/sensible": "^5.0.0",
     "@prisma/client": "^4.9.0",
+    "@types/bcrypt": "^5.0.0",
+    "bcrypt": "^5.1.0",
     "fastify": "^4.0.0",
     "fastify-cli": "^5.7.1",
     "fastify-plugin": "^4.0.0",

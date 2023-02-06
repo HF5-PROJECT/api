@@ -10,8 +10,12 @@ async function configPlugin(
 ) {
     const schema = {
         type: "object",
-        required: [],
+        required: ["HOST", "PORT", "DATABASE_URL"],
         properties: {
+            NODE_ENV: {
+                type: "string",
+                default: "prod",
+            },
             HOST: {
                 type: "string",
                 default: "0.0.0.0",
@@ -19,6 +23,12 @@ async function configPlugin(
             PORT: {
                 type: "number",
                 default: 3000,
+            },
+            DATABASE_URL: {
+                type: "string",
+            },
+            DATABASE_URL_TEST: {
+                type: "string",
             },
         },
     };
@@ -47,8 +57,11 @@ export default fastifyPlugin(configPlugin);
 declare module "fastify" {
     interface FastifyInstance {
         config: {
+            NODE_ENV: string;
             HOST: string;
             PORT: number;
+            DATABASE_URL: string;
+            DATABASE_URL_TEST: string;
         };
     }
 }

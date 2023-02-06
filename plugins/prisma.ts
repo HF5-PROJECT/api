@@ -10,7 +10,16 @@ declare module "fastify" {
 
 export default fastifyPlugin(
     async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
-        const prisma = new PrismaClient();
+        const prisma = new PrismaClient({
+            datasources: {
+                db: {
+                    url:
+                        fastify.config.NODE_ENV === "test"
+                            ? fastify.config.DATABASE_URL_TEST
+                            : fastify.config.DATABASE_URL,
+                },
+            },
+        });
 
         await prisma.$connect();
 
