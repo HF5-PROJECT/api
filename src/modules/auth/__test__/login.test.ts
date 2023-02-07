@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { build } from "../../../app";
+import { build } from "../../../index";
 import { hashSync } from "bcrypt";
+import { prisma } from "../../../plugins/prisma";
 
 describe("POST /api/auth/login", () => {
     let fastify: FastifyInstance;
@@ -8,7 +9,7 @@ describe("POST /api/auth/login", () => {
     beforeAll(async () => {
         fastify = await build();
 
-        await fastify.prisma.user.create({
+        await prisma.user.create({
             data: {
                 name: "Joe Biden the 1st",
                 email: "joe@biden.com",
@@ -33,7 +34,7 @@ describe("POST /api/auth/login", () => {
         });
 
         expect(response.statusCode).toBe(200);
-        expect(fastify.jwt.verify(response.json().token)).toBeTruthy();
+        expect(fastify.jwt.verify(response.json().accessToken)).toBeTruthy();
     });
 
     it("should return status 401, when password is incorrect", async () => {

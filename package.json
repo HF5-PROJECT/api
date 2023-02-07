@@ -2,14 +2,14 @@
   "name": "overnites-backend",
   "version": "1.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
-  "main": "server.ts",
+  "main": "src/server.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "jest --runInBand",
-    "start": "ts-node server.ts",
-    "dev": "tsnd --respawn --transpile-only --exit-child server.ts",
+    "start": "ts-node src/server.ts",
+    "dev": "tsnd --respawn --transpile-only --exit-child src/server.ts",
     "migrate:dev": "export $(grep -v '^#' .env | xargs) && DATABASE_URL=\"$DATABASE_URL\" prisma migrate dev && DATABASE_URL=\"$DATABASE_URL_TEST\" prisma migrate dev"
   },
   "keywords": [],
@@ -26,7 +26,9 @@
     "fastify": "^4.0.0",
     "fastify-cli": "^5.7.1",
     "fastify-plugin": "^4.0.0",
-    "ts-node": "^10.9.1"
+    "fastify-zod": "^1.2.0",
+    "ts-node": "^10.9.1",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

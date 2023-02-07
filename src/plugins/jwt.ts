@@ -5,12 +5,23 @@ import {
     FastifyRequest,
 } from "fastify";
 import fastifyPlugin from "fastify-plugin";
-import fastifyJwt from "@fastify/jwt";
+import fastifyJwt, { JWT } from "@fastify/jwt";
+
+declare module "fastify" {
+    interface FastifyRequest {
+        jwt: JWT;
+    }
+}
 
 export default fastifyPlugin(
     async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         fastify.register(fastifyJwt, {
             secret: "supersecretsecret",
+        });
+
+        fastify.addHook("preHandler", (req, reply, next) => {
+            req.jwt = fastify.jwt;
+            return next();
         });
 
         fastify.decorate(

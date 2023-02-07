@@ -1,4 +1,4 @@
-import { build } from "./app";
+import { build } from "./index";
 
 const start = async () => {
     const fastify = await build();

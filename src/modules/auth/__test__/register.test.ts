@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { build } from "../../../app";
+import { build } from "../../../index";
+import { prisma } from "../../../plugins/prisma";
 
 describe("POST /api/auth/register", () => {
     let fastify: FastifyInstance;
@@ -9,7 +10,7 @@ describe("POST /api/auth/register", () => {
     });
 
     beforeEach(async () => {
-        await fastify.prisma.user.deleteMany();
+        await prisma.user.deleteMany();
     });
 
     afterAll(async () => {
@@ -29,12 +30,12 @@ describe("POST /api/auth/register", () => {
             },
         });
 
-        expect(response.statusCode).toBe(200);
-        expect(fastify.jwt.verify(response.json().token)).toBeTruthy();
+        expect(response.statusCode).toBe(201);
+        // TODO: Verify that created user is return
     });
 
     it("should return status 200, when email is already in use", async () => {
-        await fastify.prisma.user.create({
+        await prisma.user.create({
             data: {
                 name: "Joe Biden the 1st",
                 email: "joe@biden.com",
@@ -58,7 +59,7 @@ describe("POST /api/auth/register", () => {
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "email is already in use",
+            message: "Email is already in use",
             statusCode: 400,
         });
     });
@@ -72,13 +73,14 @@ describe("POST /api/auth/register", () => {
                 email: "joebiden.com",
                 address:
                     "1600 Pennsylvania Avenue NW, Washington, DC 20500, USA",
+                password: "1234",
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "email is invalid",
+            message: 'body/email must match format "email"',
             statusCode: 400,
         });
     });

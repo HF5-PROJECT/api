@@ -52,7 +52,7 @@ async function configPlugin(
     return fastifyEnv(server, configOptions, done);
 }
 
-export default fastifyPlugin(configPlugin);
+export default fastifyPlugin(configPlugin, { name: "config" });
 
 declare module "fastify" {
     interface FastifyInstance {
