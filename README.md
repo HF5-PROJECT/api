@@ -1,3 +1,6 @@
+## API documentation (Swagger)
+Open [http://localhost:3000/api/docs](http://localhost:3000/api/docs) to view it in the browser.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -19,9 +22,9 @@ Run the test cases.
 
 Generate/regenerate the prisma client. This should be done after changing the prisma schema.
 
-### `npx prisma migrate dev`
+### `npm run migrate:dev`
 
-Migrate the prisma schema to the database. This should only be run in the dev environment.
+Migrate the prisma schema to the database and test database. This should only be run in the dev environment.
 
 ### `npx prisma migrate reset`
 

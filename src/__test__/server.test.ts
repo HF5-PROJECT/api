@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { build } from "../../app";
+import { build } from "../index";
 
 describe("GET /api/health", () => {
     let fastify: FastifyInstance;
@@ -12,7 +12,7 @@ describe("GET /api/health", () => {
         await fastify.close();
     });
 
-    it("should return status OK", async () => {
+    it("should return status 200", async () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/health",
