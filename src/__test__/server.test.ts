@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../index";
 
-describe("POST /api/auth/login", () => {
+describe("GET /api/health", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -12,7 +12,7 @@ describe("POST /api/auth/login", () => {
         await fastify.close();
     });
 
-    it("should return status 200 and token", async () => {
+    it("should return status 200", async () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/health",

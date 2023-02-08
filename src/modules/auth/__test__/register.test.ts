@@ -31,15 +31,11 @@ describe("POST /api/auth/register", () => {
         });
 
         expect(response.statusCode).toBe(201);
-        expect(response.json()).toHaveProperty("id");
-        expect(response.json()).toEqual(
-            expect.objectContaining({
-                name: "Joe Biden",
-                email: "joe@biden.com",
-                address:
-                    "1600 Pennsylvania Avenue NW, Washington, DC 20500, USA",
-            })
-        );
+        expect(response.json()).toEqual({
+            name: "Joe Biden",
+            email: "joe@biden.com",
+            address: "1600 Pennsylvania Avenue NW, Washington, DC 20500, USA",
+        });
     });
 
     it("should return status 400, when email is already in use", async () => {

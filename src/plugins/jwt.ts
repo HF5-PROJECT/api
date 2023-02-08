@@ -16,7 +16,7 @@ declare module "fastify" {
 export default fastifyPlugin(
     async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         fastify.register(fastifyJwt, {
-            secret: "supersecretsecret",
+            secret: fastify.config.SECRET,
         });
 
         fastify.addHook("preHandler", (req, reply, next) => {
