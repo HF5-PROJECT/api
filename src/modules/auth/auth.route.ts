@@ -7,6 +7,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/register",
         {
             schema: {
+                tags: ["Auth"],
                 body: $ref("createUserSchema"),
                 response: {
                     201: $ref("createUserResponseSchema"),
@@ -20,6 +21,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/login",
         {
             schema: {
+                tags: ["Auth"],
                 body: $ref("loginSchema"),
                 response: {
                     200: $ref("loginResponseSchema"),

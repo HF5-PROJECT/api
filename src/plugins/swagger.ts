@@ -28,7 +28,6 @@ export default fastifyPlugin(
                 deepLinking: false,
             },
             staticCSP: true,
-            transformStaticCSP: (header) => header,
         });
     }
 );

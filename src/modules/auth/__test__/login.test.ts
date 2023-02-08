@@ -9,6 +9,7 @@ describe("POST /api/auth/login", () => {
     beforeAll(async () => {
         fastify = await build();
 
+        await prisma.user.deleteMany();
         await prisma.user.create({
             data: {
                 name: "Joe Biden the 1st",
@@ -70,6 +71,55 @@ describe("POST /api/auth/login", () => {
             error: "Unauthorized",
             message: "email and/or password incorrect",
             statusCode: 401,
+        });
+    });
+
+    it("should return status 400, when no email or password has been provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/login",
+            payload: {},
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'email'",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, when no email has been provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/login",
+            payload: {
+                password: "1234",
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'email'",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, when no password has been provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/login",
+            payload: {
+                email: "joe@biden.com",
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'password'",
+            statusCode: 400,
         });
     });
 });

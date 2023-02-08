@@ -31,10 +31,18 @@ describe("POST /api/auth/register", () => {
         });
 
         expect(response.statusCode).toBe(201);
-        // TODO: Verify that created user is return
+        expect(response.json()).toHaveProperty("id");
+        expect(response.json()).toEqual(
+            expect.objectContaining({
+                name: "Joe Biden",
+                email: "joe@biden.com",
+                address:
+                    "1600 Pennsylvania Avenue NW, Washington, DC 20500, USA",
+            })
+        );
     });
 
-    it("should return status 200, when email is already in use", async () => {
+    it("should return status 400, when email is already in use", async () => {
         await prisma.user.create({
             data: {
                 name: "Joe Biden the 1st",
@@ -81,6 +89,85 @@ describe("POST /api/auth/register", () => {
         expect(response.json()).toEqual({
             error: "Bad Request",
             message: 'body/email must match format "email"',
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, when no email has been provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/register",
+            payload: {
+                name: "Joe Biden",
+                address:
+                    "1600 Pennsylvania Avenue NW, Washington, DC 20500, USA",
+                password: "1234",
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'email'",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, when no password has been provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/register",
+            payload: {
+                name: "Joe Biden",
+                email: "joe@biden.com",
+                address:
+                    "1600 Pennsylvania Avenue NW, Washington, DC 20500, USA",
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'password'",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, when no name has been provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/register",
+            payload: {
+                email: "joe@biden.com",
+                address:
+                    "1600 Pennsylvania Avenue NW, Washington, DC 20500, USA",
+                password: "1234",
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'name'",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, when no address has been provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/register",
+            payload: {
+                name: "Joe Biden",
+                email: "joe@biden.com",
+                password: "1234",
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'address'",
             statusCode: 400,
         });
     });
