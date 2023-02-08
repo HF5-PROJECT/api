@@ -11,6 +11,7 @@ jobs:
             HOST: 127.0.0.1
             DATABASE_URL: "mysql://root:password@localhost:3306/overnites"
             DATABASE_URL_TEST: "mysql://root:password@localhost:3306/overnites"
+            SECRET: "oækejm(=U?)Suifds8j+0fa8//AS=Y)"
         steps:
             - uses: actions/checkout@v2
 
