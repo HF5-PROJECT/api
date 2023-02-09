@@ -10,7 +10,14 @@ async function configPlugin(
 ) {
     const schema = {
         type: "object",
-        required: ["HOST", "PORT", "DATABASE_URL", "SECRET"],
+        required: [
+            "HOST",
+            "PORT",
+            "DATABASE_URL",
+            "SECRET",
+            "REDIS_HOST",
+            "REDIS_PASSWORD",
+        ],
         properties: {
             NODE_ENV: {
                 type: "string",
@@ -31,6 +38,12 @@ async function configPlugin(
                 type: "string",
             },
             DATABASE_URL_TEST: {
+                type: "string",
+            },
+            REDIS_HOST: {
+                type: "string",
+            },
+            REDIS_PASSWORD: {
                 type: "string",
             },
         },
@@ -66,6 +79,8 @@ declare module "fastify" {
             PORT: number;
             DATABASE_URL: string;
             DATABASE_URL_TEST: string;
+            REDIS_HOST: string;
+            REDIS_PASSWORD: string;
         };
     }
 }
