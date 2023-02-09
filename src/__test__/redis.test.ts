@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { build } from "../../index";
+import { build } from "../index";
 
 describe("remember()", () => {
     let fastify: FastifyInstance;
