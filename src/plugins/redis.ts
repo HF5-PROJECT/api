@@ -23,13 +23,12 @@ export default fastifyPlugin(
         await fastify.register(fastifyRedis, {
             host: fastify.config.REDIS_HOST,
             password: fastify.config.REDIS_PASSWORD,
-            family: 4,
         });
 
         fastify.redis.remember = async (key, ttl, callback) => {
             let value = await fastify.redis.get(key);
 
-            if (value) {
+            if (value !== null) {
                 return value;
             }
 
