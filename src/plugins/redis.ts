@@ -8,6 +8,16 @@ declare module "fastify" {
     }
 }
 
+declare module "ioredis" {
+    interface Redis {
+        remember(
+            key: string,
+            ttl: number,
+            callback: () => string | Promise<string>
+        ): Promise<string>;
+    }
+}
+
 export default fastifyPlugin(
     async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         await fastify.register(fastifyRedis, {
@@ -15,6 +25,20 @@ export default fastifyPlugin(
             password: fastify.config.REDIS_PASSWORD,
             family: 4,
         });
+
+        fastify.redis.remember = async (key, ttl, callback) => {
+            let value = await fastify.redis.get(key);
+
+            if (value) {
+                return value;
+            }
+
+            value = await callback();
+
+            await fastify.redis.setex(key, ttl, value);
+
+            return value;
+        };
 
         fastify.addHook("preHandler", (req, reply, next) => {
             req.redis = fastify.redis;
