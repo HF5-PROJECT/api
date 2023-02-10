@@ -2,22 +2,25 @@ import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
 
 const userCore = {
-    name: z.string(),
+    name: z.string().min(1),
     email: z
         .string({
             required_error: "Email is required",
             invalid_type_error: "Email must be a string",
         })
+        .min(1)
         .email(),
-    address: z.string(),
+    address: z.string().nullable().optional(),
 };
 
 const createUserSchema = z.object({
     ...userCore,
-    password: z.string({
-        required_error: "Password is required",
-        invalid_type_error: "Password must be a string",
-    }),
+    password: z
+        .string({
+            required_error: "Password is required",
+            invalid_type_error: "Password must be a string",
+        })
+        .min(8),
 });
 
 const createUserResponseSchema = z.object({
@@ -26,10 +29,12 @@ const createUserResponseSchema = z.object({
 
 const loginSchema = z.object({
     email: userCore.email,
-    password: z.string({
-        required_error: "Password is required",
-        invalid_type_error: "Password must be a string",
-    }),
+    password: z
+        .string({
+            required_error: "Password is required",
+            invalid_type_error: "Password must be a string",
+        })
+        .min(1),
 });
 
 const loginResponseSchema = z.object({
