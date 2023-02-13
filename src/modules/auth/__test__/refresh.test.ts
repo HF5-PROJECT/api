@@ -1,0 +1,91 @@
+import { hashSync } from "bcrypt";
+import { FastifyInstance } from "fastify";
+import { build } from "../../../index";
+import { prisma } from "../../../plugins/prisma";
+
+describe("POST /api/auth/refresh", () => {
+    let fastify: FastifyInstance;
+
+    beforeAll(async () => {
+        fastify = await build();
+    });
+
+    beforeEach(async () => {
+        await prisma.user.deleteMany();
+    });
+
+    afterAll(async () => {
+        await fastify.close();
+    });
+
+    it("should return status 200, set a refreshToken and return a new accessToken", async () => {
+        const user = await prisma.user.create({
+            data: {
+                name: "Joe Biden the 1st",
+                email: "joe@biden.com",
+                address: "",
+                password: hashSync("1234", 10),
+            },
+        });
+
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/refresh",
+            cookies: {
+                refreshToken: fastify.jwt.sign(
+                    {
+                        sub: user.id,
+                        iat: Date(),
+                    },
+                    { expiresIn: "1d" }
+                ),
+            },
+        });
+
+        const refreshToken: any = response.cookies[0];
+
+        expect(response.statusCode).toBe(200);
+        expect(fastify.jwt.verify(refreshToken.value)).toBeTruthy();
+        expect(fastify.jwt.verify(response.json().accessToken)).toBeTruthy();
+    });
+
+    it("should return status 401, user does not exist", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/refresh",
+            cookies: {
+                refreshToken: fastify.jwt.sign(
+                    {
+                        sub: 123,
+                        iat: Date(),
+                    },
+                    { expiresIn: "1d" }
+                ),
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
+        });
+    });
+
+    it("should return status 401, refreshToken cookie invalid", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/auth/refresh",
+            cookies: {
+                refreshToken: "invalid refresh token!!!",
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
+        });
+    });
+});

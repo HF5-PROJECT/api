@@ -17,6 +17,10 @@ export default fastifyPlugin(
     async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         fastify.register(fastifyJwt, {
             secret: fastify.config.SECRET,
+            cookie: {
+                cookieName: "refreshToken",
+                signed: false,
+            },
         });
 
         fastify.addHook("preHandler", (req, reply, next) => {
@@ -35,5 +39,5 @@ export default fastifyPlugin(
             }
         );
     },
-    { dependencies: ["config"] }
+    { dependencies: ["config", "cookie"] }
 );
