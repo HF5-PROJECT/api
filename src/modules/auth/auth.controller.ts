@@ -36,17 +36,16 @@ export async function loginHandler(
         return reply.unauthorized("email and/or password incorrect");
     }
 
+    const payload = {
+        sub: user.id,
+        iat: Date(),
+    };
+
     reply
         .code(200)
         .setCookie(
             "refreshToken",
-            request.jwt.sign(
-                {
-                    sub: user.id,
-                    iat: Date(),
-                },
-                { expiresIn: "1d" }
-            ),
+            request.jwt.sign(payload, { expiresIn: "1d" }),
             {
                 path: "/",
                 secure: true,
@@ -55,13 +54,7 @@ export async function loginHandler(
             }
         )
         .send({
-            accessToken: request.jwt.sign(
-                {
-                    sub: user.id,
-                    iat: Date(),
-                },
-                { expiresIn: "10m" }
-            ),
+            accessToken: request.jwt.sign(payload, { expiresIn: "10m" }),
         });
 }
 
@@ -70,29 +63,28 @@ export async function refreshHandler(
     reply: FastifyReply
 ) {
     try {
-        const payload = await request.jwtVerify<{
+        const refrestTokenPayload = await request.jwtVerify<{
             sub: number;
             iat: number;
             exp: number;
         }>({ onlyCookie: true });
 
-        const user = await findUserById(payload.sub);
+        const user = await findUserById(refrestTokenPayload.sub);
 
         if (!user) {
             return reply.unauthorized();
         }
 
+        const payload = {
+            sub: user.id,
+            iat: Date(),
+        };
+
         reply
             .code(200)
             .setCookie(
                 "refreshToken",
-                request.jwt.sign(
-                    {
-                        sub: user.id,
-                        iat: Date(),
-                    },
-                    { expiresIn: "1d" }
-                ),
+                request.jwt.sign(payload, { expiresIn: "1d" }),
                 {
                     path: "/",
                     secure: true,
@@ -101,13 +93,7 @@ export async function refreshHandler(
                 }
             )
             .send({
-                accessToken: request.jwt.sign(
-                    {
-                        sub: user.id,
-                        iat: Date(),
-                    },
-                    { expiresIn: "10m" }
-                ),
+                accessToken: request.jwt.sign(payload, { expiresIn: "10m" }),
             });
     } catch (err) {
         reply.unauthorized();

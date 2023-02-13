@@ -10,5 +10,5 @@ export default fastifyPlugin(
             parseOptions: {},
         });
     },
-    { dependencies: ["config"] }
+    { name: "cookie", dependencies: ["config"] }
 );

@@ -39,5 +39,5 @@ export default fastifyPlugin(
             }
         );
     },
-    { dependencies: ["config"] }
+    { dependencies: ["config", "cookie"] }
 );
