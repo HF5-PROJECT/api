@@ -24,7 +24,7 @@ describe("POST /api/auth/login", () => {
         await fastify.close();
     });
 
-    it("should return status 200 and token", async () => {
+    it("should return status 200, set a refreshToken and return a new accessToken", async () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/auth/login",
@@ -34,7 +34,10 @@ describe("POST /api/auth/login", () => {
             },
         });
 
+        const refreshToken: any = response.cookies[0];
+
         expect(response.statusCode).toBe(200);
+        expect(fastify.jwt.verify(refreshToken.value)).toBeTruthy();
         expect(fastify.jwt.verify(response.json().accessToken)).toBeTruthy();
     });
 
