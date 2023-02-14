@@ -47,7 +47,7 @@ export async function loginHandler(
             "refreshToken",
             request.jwt.sign(payload, { expiresIn: "1d" }),
             {
-                path: "/",
+                path: "/api/auth/refresh",
                 secure: true,
                 httpOnly: true,
                 sameSite: true,
@@ -86,7 +86,7 @@ export async function refreshHandler(
                 "refreshToken",
                 request.jwt.sign(payload, { expiresIn: "1d" }),
                 {
-                    path: "/",
+                    path: "/api/auth/refresh",
                     secure: true,
                     httpOnly: true,
                     sameSite: true,
