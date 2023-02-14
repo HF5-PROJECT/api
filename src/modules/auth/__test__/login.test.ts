@@ -38,6 +38,14 @@ describe("POST /api/auth/login", () => {
 
         expect(response.statusCode).toBe(200);
         expect(fastify.jwt.verify(refreshToken.value)).toBeTruthy();
+        expect(refreshToken).toEqual({
+            httpOnly: true,
+            name: "refreshToken",
+            path: "/api/auth/refresh",
+            sameSite: "Strict",
+            secure: true,
+            value: expect.any(String),
+        });
         expect(fastify.jwt.verify(response.json().accessToken)).toBeTruthy();
     });
 
