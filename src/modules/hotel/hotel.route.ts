@@ -1,0 +1,78 @@
+import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import {
+    createHotelHandler,
+    browseHotelHandler,
+    showHotelHandler,
+    updateHotelHandler,
+    deleteHotelHandler
+} from "./hotel.controller";
+import { $ref } from "./hotel.schema";
+
+export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
+    fastify.post(
+        "/",
+        {
+            schema: {
+                tags: ["Hotel"],
+                body: $ref("createHotelSchema"),
+                response: {
+                    201: $ref("createHotelResponseSchema"),
+                },
+            },
+        },
+        createHotelHandler
+    );
+
+    fastify.get(
+        "/",
+        {
+            schema: {
+                tags: ["Hotel"],
+                response: {
+                    200: $ref("browseHotelResponseSchema"),
+                },
+            },
+        },
+        browseHotelHandler
+    );
+
+    fastify.get(
+        "/:id",
+        {
+            schema: {
+                tags: ["Hotel"],
+                response: {
+                    200: $ref("showHotelResponseSchema"),
+                },
+            },
+        },
+        showHotelHandler
+    );
+
+    fastify.put(
+        "/:id",
+        {
+            schema: {
+                tags: ["Hotel"],
+                body: $ref("updateHotelSchema"),
+                response: {
+                    200: $ref("updateHotelResponseSchema"),
+                },
+            },
+        },
+        updateHotelHandler
+    );
+
+    fastify.delete(
+        "/:id",
+        {
+            schema: {
+                tags: ["Hotel"],
+                response: {
+                    204: $ref("deleteHotelResponseSchema"),
+                },
+            },
+        },
+        deleteHotelHandler
+    );
+};
