@@ -15,6 +15,12 @@ import {
 import { error_message } from "./hotel.errors";
 import { Hotel } from "@prisma/client";
 
+// In Seconds
+const cache_ttl = 1800;
+
+const cache_key_hotels = "allHotels";
+const cache_key_hotel = "hotel";
+
 export async function createHotelHandler(
     request: FastifyRequest<{
         Body: CreateHotelInput;
@@ -22,6 +28,7 @@ export async function createHotelHandler(
     reply: FastifyReply
 ) {
     try {
+        request.redis.invalidateCaches(cache_key_hotels);
         const hotel = await createHotel(request.body);
 
         reply.code(201).send(hotel);
@@ -35,7 +42,7 @@ export async function browseHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotels = await request.redis.rememberJSON<Hotel[]>("memCachedAllHotels", 1800, async () => {
+        const hotels = await request.redis.rememberJSON<Hotel[]>(cache_key_hotels, cache_ttl, async () => {
             return await browseHotel();
         });
 
@@ -52,7 +59,7 @@ export async function showHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotel = await request.redis.rememberJSON<Hotel>("memCachedHotel"+request.params.id, 1800, async () => {
+        const hotel = await request.redis.rememberJSON<Hotel>(cache_key_hotel+request.params.id, cache_ttl, async () => {
             return await showHotel(Number(request.params.id));
         });
 
@@ -69,8 +76,7 @@ export async function updateHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        removeRedisCache(request, "memCachedHotel"+request.body.id);
-        removeRedisCache(request, "memCachedAllHotels");
+        request.redis.invalidateCaches(cache_key_hotel+request.body.id, cache_key_hotels);
         const hotel = await updateHotel(request.body);
 
         reply.code(200).send(hotel);
@@ -86,16 +92,11 @@ export async function deleteHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        removeRedisCache(request, "memCachedHotel"+request.params.id);
-        removeRedisCache(request, "memCachedAllHotels");
+        request.redis.invalidateCaches(cache_key_hotel+request.params.id, cache_key_hotels);
         const hotel = await deleteHotel(Number(request.params.id));
 
         reply.code(204).send(hotel);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }
-}
-
-export async function removeRedisCache(request: FastifyRequest, key: string) {
-    await request.redis.del(key);
 }

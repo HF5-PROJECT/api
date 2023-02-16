@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import fastifyRedis, { FastifyRedis } from "@fastify/redis";
 
@@ -20,6 +20,9 @@ declare module "ioredis" {
             ttl: number,
             callback: () => T | Promise<void | T>
         ): Promise<T>;
+        invalidateCaches(
+            ...keys: string[]
+        ): void;
     }
 }
 
@@ -49,6 +52,12 @@ export default fastifyPlugin(
                 return JSON.stringify(await callback());
             }));
         };
+
+        fastify.redis.invalidateCaches = async (...keys) => {
+            keys.forEach(async (key) => {
+                await fastify.redis.del(key);
+            });
+        }
 
         fastify.addHook("preHandler", (req, reply, next) => {
             req.redis = fastify.redis;
