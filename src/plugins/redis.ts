@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import fastifyRedis, { FastifyRedis } from "@fastify/redis";
 
@@ -54,9 +54,11 @@ export default fastifyPlugin(
         };
 
         fastify.redis.invalidateCaches = async (...keys) => {
-            keys.forEach(async (key) => {
-                await fastify.redis.del(key);
-            });
+            await Promise.all(
+                keys.map(async (key) => {
+                    await fastify.redis.del(key);
+                })
+            );
         }
 
         fastify.addHook("preHandler", (req, reply, next) => {

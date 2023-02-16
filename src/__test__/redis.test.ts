@@ -119,7 +119,7 @@ describe("remember()", () => {
             address: "Christian Ave. 108"
         }));
 
-        fastify.redis.invalidateCaches("key", "key2");
+        await fastify.redis.invalidateCaches("key", "key2");
 
         const value = await fastify.redis.remember("key", 10, () => {
             return "Newest Value";

@@ -18,8 +18,8 @@ import { Hotel } from "@prisma/client";
 // In Seconds
 const cache_ttl = 1800;
 
-const cache_key_hotels = "allHotels";
-const cache_key_hotel = "hotel";
+const CACHE_KEY_HOTELS = "allHotels";
+const CACHE_KEY_HOTEL = "hotel";
 
 export async function createHotelHandler(
     request: FastifyRequest<{
@@ -28,7 +28,7 @@ export async function createHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        request.redis.invalidateCaches(cache_key_hotels);
+        await request.redis.invalidateCaches(CACHE_KEY_HOTELS);
         const hotel = await createHotel(request.body);
 
         reply.code(201).send(hotel);
@@ -42,7 +42,7 @@ export async function browseHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotels = await request.redis.rememberJSON<Hotel[]>(cache_key_hotels, cache_ttl, async () => {
+        const hotels = await request.redis.rememberJSON<Hotel[]>(CACHE_KEY_HOTELS, cache_ttl, async () => {
             return await browseHotel();
         });
 
@@ -59,7 +59,7 @@ export async function showHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotel = await request.redis.rememberJSON<Hotel>(cache_key_hotel+request.params.id, cache_ttl, async () => {
+        const hotel = await request.redis.rememberJSON<Hotel>(CACHE_KEY_HOTEL+request.params.id, cache_ttl, async () => {
             return await showHotel(Number(request.params.id));
         });
 
@@ -76,7 +76,7 @@ export async function updateHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        request.redis.invalidateCaches(cache_key_hotel+request.body.id, cache_key_hotels);
+        await request.redis.invalidateCaches(CACHE_KEY_HOTEL+request.body.id, CACHE_KEY_HOTELS);
         const hotel = await updateHotel(request.body);
 
         reply.code(200).send(hotel);
@@ -92,7 +92,7 @@ export async function deleteHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        request.redis.invalidateCaches(cache_key_hotel+request.params.id, cache_key_hotels);
+        await request.redis.invalidateCaches(CACHE_KEY_HOTEL+request.params.id, CACHE_KEY_HOTELS);
         const hotel = await deleteHotel(Number(request.params.id));
 
         reply.code(204).send(hotel);
