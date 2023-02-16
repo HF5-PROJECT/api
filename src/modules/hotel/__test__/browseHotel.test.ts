@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-describe("GET /api/hotel/", () => {
+describe("GET /api/hotel", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -44,7 +44,7 @@ describe("GET /api/hotel/", () => {
     it("should return status 200 and get all hotels", async () => {
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/hotel/"
+            url: "/api/hotel"
         });
 
         expect(response.statusCode).toBe(200);
@@ -70,7 +70,7 @@ describe("GET /api/hotel/", () => {
         await prisma.hotel.deleteMany();
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/hotel/"
+            url: "/api/hotel"
         });
 
         expect(response.statusCode).toBe(200);

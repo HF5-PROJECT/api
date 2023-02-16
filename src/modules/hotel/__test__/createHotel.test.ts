@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-describe("POST /api/hotel/", () => {
+describe("POST /api/hotel", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -20,7 +20,7 @@ describe("POST /api/hotel/", () => {
     it("should return status 201 and create a hotel", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/",
+            url: "/api/hotel",
             payload: {
                 name: "Santa Marina Hotel",
                 description: "Santa Marina Hotel is located close to the beach",
@@ -41,7 +41,7 @@ describe("POST /api/hotel/", () => {
     it("should return status 201 and create a hotel, when no description has been provided", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/",
+            url: "/api/hotel",
             payload: {
                 name: "Santa Marina Hotel",
                 address:
@@ -61,7 +61,7 @@ describe("POST /api/hotel/", () => {
     it("should return status 400, when no address has been provided", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/",
+            url: "/api/hotel",
             payload: {
                 name: "Santa Marina Hotel"
             },
@@ -78,7 +78,7 @@ describe("POST /api/hotel/", () => {
     it("should return status 400, when address is empty", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/",
+            url: "/api/hotel",
             payload: {
                 name: "Santa Marina Hotel",
                 address: ""
@@ -96,7 +96,7 @@ describe("POST /api/hotel/", () => {
     it("should return status 400, when no name has been provided", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/",
+            url: "/api/hotel",
             payload: {
                 address:
                     "8130 Sv. Marina, Sozopol, Bulgarien",
@@ -114,7 +114,7 @@ describe("POST /api/hotel/", () => {
     it("should return status 400, when name is empty", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/",
+            url: "/api/hotel",
             payload: {
                 name: "",
                 address:

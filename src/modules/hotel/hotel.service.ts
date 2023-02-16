@@ -31,36 +31,34 @@ export async function showHotel(id: number) {
 }
 
 export async function updateHotel(input: UpdateHotelInput) {
-    const hotel = await findHotelById(input.id);
-    if (!hotel) {
+    try {
+        const new_hotel = await prisma.hotel.update({
+            where: {
+                id: input.id
+            },
+            data: {
+                name: input.name,
+                description: input.description,
+                address: input.address
+            }
+        })
+
+        return new_hotel;
+    } catch (e) {
         return id_not_found(input.id);
     }
-
-    const new_hotel = await prisma.hotel.update({
-        where: {
-            id: input.id
-        },
-        data: {
-            name: input.name,
-            description: input.description,
-            address: input.address
-        }
-    })
-
-    return new_hotel;
 }
 
 export async function deleteHotel(id: number) {
-    const hotel = await findHotelById(id);
-    if (!hotel) {
+    try {
+        return await prisma.hotel.delete({
+            where: {
+                id: id
+            }
+        });
+    } catch (e) {
         return id_not_found(id);
     }
-
-    return await prisma.hotel.delete({
-        where: {
-            id: hotel.id
-        }
-    })
 }
 
 

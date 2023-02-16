@@ -13,6 +13,7 @@ import {
     DeleteHotelParams
 } from "./hotel.schema";
 import { error_message } from "./hotel.errors";
+import { Hotel } from "@prisma/client";
 
 export async function createHotelHandler(
     request: FastifyRequest<{
@@ -34,7 +35,11 @@ export async function browseHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotels = await browseHotel();
+        const hotels = await request.redis.rememberJSON<Hotel[]>("hotels", 10, async () => {
+            return await browseHotel();
+        });
+        
+        return hotels;
 
         reply.code(200).send(hotels);
     } catch (e) {

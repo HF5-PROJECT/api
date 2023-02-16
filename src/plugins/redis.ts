@@ -15,6 +15,11 @@ declare module "ioredis" {
             ttl: number,
             callback: () => string | Promise<string>
         ): Promise<string>;
+        rememberJSON<T>(
+            key: string,
+            ttl: number,
+            callback: () => T | Promise<T>
+        ): Promise<T>;
     }
 }
 
@@ -37,6 +42,12 @@ export default fastifyPlugin(
             await fastify.redis.setex(key, ttl, value);
 
             return value;
+        };
+        
+        fastify.redis.rememberJSON = async (key, ttl, callback) => {
+            return JSON.parse(await fastify.redis.remember(key, ttl, async () => {
+                return JSON.stringify(callback());
+            }));
         };
 
         fastify.addHook("preHandler", (req, reply, next) => {
