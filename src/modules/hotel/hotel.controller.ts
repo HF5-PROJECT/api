@@ -35,11 +35,9 @@ export async function browseHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotels = await request.redis.rememberJSON<Hotel[]>("hotels", 10, async () => {
+        const hotels = await request.redis.rememberJSON<Hotel[]>("memCachedAllHotels", 1800, async () => {
             return await browseHotel();
         });
-        
-        return hotels;
 
         reply.code(200).send(hotels);
     } catch (e) {
@@ -54,7 +52,9 @@ export async function showHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotel = await showHotel(Number(request.params.id));
+        const hotel = await request.redis.rememberJSON<Hotel>("memCachedHotel"+request.params.id, 1800, async () => {
+            return await showHotel(Number(request.params.id));
+        });
 
         reply.code(200).send(hotel);
     } catch (e) {
@@ -69,6 +69,8 @@ export async function updateHotelHandler(
     reply: FastifyReply
 ) {
     try {
+        removeRedisCache(request, "memCachedHotel"+request.body.id);
+        removeRedisCache(request, "memCachedAllHotels");
         const hotel = await updateHotel(request.body);
 
         reply.code(200).send(hotel);
@@ -84,10 +86,16 @@ export async function deleteHotelHandler(
     reply: FastifyReply
 ) {
     try {
+        removeRedisCache(request, "memCachedHotel"+request.params.id);
+        removeRedisCache(request, "memCachedAllHotels");
         const hotel = await deleteHotel(Number(request.params.id));
 
         reply.code(204).send(hotel);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }
+}
+
+export async function removeRedisCache(request: FastifyRequest, key: string) {
+    await request.redis.del(key);
 }

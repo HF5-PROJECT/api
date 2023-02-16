@@ -25,14 +25,14 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
 
     fastify.get(
         "/",
-        /*{
+        {
             schema: {
                 tags: ["Hotel"],
                 response: {
                     200: $ref("browseHotelResponseSchema"),
                 },
             },
-        },*/
+        },
         browseHotelHandler
     );
 
