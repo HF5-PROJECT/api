@@ -46,6 +46,14 @@ describe("POST /api/auth/logout", () => {
         const refreshToken: any = response.cookies[0];
 
         expect(response.statusCode).toBe(200);
-        expect(refreshToken.value).toBe("");
+        expect(refreshToken).toEqual({
+            expires: new Date(0),
+            httpOnly: true,
+            name: "refreshToken",
+            path: "/api/auth/refresh",
+            sameSite: "Strict",
+            secure: true,
+            value: "",
+        });
     });
 });
