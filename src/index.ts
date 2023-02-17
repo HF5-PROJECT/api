@@ -6,7 +6,7 @@ import { authSchemas } from "./modules/auth/auth.schema";
 import { hotelSchemas } from "./modules/hotel/hotel.schema";
 
 export async function build() {
-    const fastify = Fastify({ logger: true });
+    const fastify = Fastify({ logger: { level: "fatal" } });
 
     // Register health route
     fastify.get("/api/health", async (request, response) => {

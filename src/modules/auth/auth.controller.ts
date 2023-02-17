@@ -99,3 +99,10 @@ export async function refreshHandler(
         reply.unauthorized();
     }
 }
+
+export async function logoutHandler(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    reply.code(200).clearCookie("refreshToken").send();
+}
