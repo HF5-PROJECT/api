@@ -3,6 +3,7 @@ import {
     loginHandler,
     registerUserHandler,
     refreshHandler,
+    logoutHandler,
 } from "./auth.controller";
 import { $ref } from "./auth.schema";
 
@@ -47,5 +48,18 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             },
         },
         refreshHandler
+    );
+
+    fastify.post(
+        "/logout",
+        {
+            schema: {
+                tags: ["Auth"],
+                response: {
+                    200: $ref("logoutResponseSchema"),
+                },
+            },
+        },
+        logoutHandler
     );
 };

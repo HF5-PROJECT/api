@@ -99,3 +99,18 @@ export async function refreshHandler(
         reply.unauthorized();
     }
 }
+
+export async function logoutHandler(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    reply
+        .code(200)
+        .clearCookie("refreshToken", {
+            path: "/api/auth/refresh",
+            secure: true,
+            httpOnly: true,
+            sameSite: true,
+        })
+        .send();
+}
