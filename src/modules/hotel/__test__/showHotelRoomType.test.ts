@@ -99,7 +99,7 @@ describe("GET /api/hotel/:id/room_type", () => {
         }]);
     });
 
-    it("should return status 200 and get all room types by hotel id 1000", async () => {
+    it("should return status 200 and get all room types by hotel id 1001", async () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/hotel/1001/room_types"

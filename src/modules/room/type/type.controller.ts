@@ -20,7 +20,7 @@ import { CACHE_KEY_HOTEL_ROOM_TYPES } from "../../hotel/hotel.controller";
 const CACHE_TTL = 1800;
 
 const CACHE_KEY_ROOM_TYPES = "allRoomTypes";
-const CACHE_KEY_ROOM_TYPE = "RoomType";
+const CACHE_KEY_ROOM_TYPE = "roomType";
 
 export async function createRoomTypeHandler(
     request: FastifyRequest<{
