@@ -2,8 +2,6 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../../index";
 import { prisma } from "../../../../plugins/prisma";
 
-const CACHE_KEY_ROOM_TYPES = "allRoomTypes";
-
 describe("GET /api/room/type", () => {
     let fastify: FastifyInstance;
 
@@ -12,7 +10,7 @@ describe("GET /api/room/type", () => {
     });
 
     beforeEach(async () => {
-        await fastify.redis.del(CACHE_KEY_ROOM_TYPES);
+        await fastify.redis.flushall();
         await prisma.hotel.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.hotel.create({
@@ -43,6 +41,15 @@ describe("GET /api/room/type", () => {
                 hotel_id: 1000
             },
         });
+
+        await prisma.hotel.create({
+            data: {
+                id: 1001,
+                name: "Luis de Morocco",
+                description: "El hotel en Morocco esta cerca de la playa",
+                address: "420 B., Morocco Calle",
+            },
+        });
         await prisma.roomType.create({
             data: {
                 id: 1002,
@@ -50,7 +57,7 @@ describe("GET /api/room/type", () => {
                 description: "Room for 4 clowns laying in one bed",
                 size: 'very big',
                 price: 4454.4,
-                hotel_id: 1000
+                hotel_id: 1001
             },
         });
     });
@@ -59,7 +66,7 @@ describe("GET /api/room/type", () => {
         await fastify.close();
     });
 
-    it("should return status 200 and get all hotels", async () => {
+    it("should return status 200 and get all room types", async () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/room/type"
@@ -68,19 +75,25 @@ describe("GET /api/room/type", () => {
         expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual([{
             id: 1000,
-            name: "Santa Marina Hotel",
-            description: "Santa Marina Hotel is located close to the beach",
-            address: "8130 Sv. Marina, Sozopol, Bulgarien",
+            name: "Double room",
+            description: "Room for 2 clowns laying in one bed",
+            size: 'big',
+            price: 2454.4,
+            hotel_id: 1000
         }, {
             id: 1001,
-            name: "Luis de Morocco",
-            description: "El hotel en Morocco esta cerca de la playa",
-            address: "420 B., Morocco Calle",
+            name: "Single room",
+            description: "Room for 1 clowns laying in one bed",
+            size: 'small',
+            price: 1454.4,
+            hotel_id: 1000
         }, {
             id: 1002,
-            name: "WakeUp Copenhagen",
-            description: "WakeUp Copenhagen is placed in Denmark",
-            address: "Carsten Niebuhrs Gade 11, 1577 København",
+            name: "Group room",
+            description: "Room for 4 clowns laying in one bed",
+            size: 'very big',
+            price: 4454.4,
+            hotel_id: 1001
         }]);
     });
 

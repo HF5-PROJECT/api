@@ -83,7 +83,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Hotel"],
                 response: {
-                    204: $ref("showHotelRoomTypeResponseSchema"),
+                    200: $ref("showHotelRoomTypeResponseSchema"),
                 },
             },
         },

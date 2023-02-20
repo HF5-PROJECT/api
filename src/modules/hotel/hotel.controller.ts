@@ -13,7 +13,8 @@ import {
     CreateHotelInput,
     UpdateHotelInput,
     ShowHotelParams,
-    DeleteHotelParams
+    DeleteHotelParams,
+    showHotelRoomTypeSchema,
 } from "./hotel.schema";
 import { error_message } from "./hotel.errors";
 import { Hotel, RoomType } from "@prisma/client";
@@ -23,7 +24,7 @@ const CACHE_TTL = 1800;
 
 const CACHE_KEY_HOTELS = "allHotels";
 const CACHE_KEY_HOTEL = "hotel";
-const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
+export const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
 
 export async function createHotelHandler(
     request: FastifyRequest<{
@@ -107,7 +108,7 @@ export async function deleteHotelHandler(
 
 export async function showHotelRoomTypeHandler(
     request: FastifyRequest<{
-        Params: ShowHotelParams;
+        Params: showHotelRoomTypeSchema;
     }>,
     reply: FastifyReply
 ) {

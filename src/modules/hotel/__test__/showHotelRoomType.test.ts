@@ -2,8 +2,6 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
-
 describe("GET /api/hotel/:id/room_type", () => {
     let fastify: FastifyInstance;
 
@@ -12,8 +10,9 @@ describe("GET /api/hotel/:id/room_type", () => {
     });
 
     beforeEach(async () => {
-        await fastify.redis.del(CACHE_KEY_HOTEL_ROOM_TYPES +"1000");
+        await fastify.redis.flushall();
         await prisma.hotel.deleteMany();
+        await prisma.roomType.deleteMany();
         await prisma.hotel.create({
             data: {
                 id: 1000,
@@ -42,6 +41,15 @@ describe("GET /api/hotel/:id/room_type", () => {
                 hotel_id: 1000
             },
         });
+
+        await prisma.hotel.create({
+            data: {
+                id: 1001,
+                name: "Luis de Morocco",
+                description: "El hotel en Morocco esta cerca de la playa",
+                address: "420 B., Morocco Calle",
+            },
+        });
         await prisma.roomType.create({
             data: {
                 id: 1002,
@@ -49,7 +57,16 @@ describe("GET /api/hotel/:id/room_type", () => {
                 description: "Room for 4 clowns laying in one bed",
                 size: 'very big',
                 price: 4454.4,
-                hotel_id: 1000
+                hotel_id: 1001
+            },
+        });
+
+        await prisma.hotel.create({
+            data: {
+                id: 1002,
+                name: "WakeUp Copenhagen",
+                description: "WakeUp Copenhagen is placed in Denmark",
+                address: "Carsten Niebuhrs Gade 11, 1577 København",
             },
         });
     });
@@ -58,39 +75,55 @@ describe("GET /api/hotel/:id/room_type", () => {
         await fastify.close();
     });
 
-    it("should return status 200 and get room types by hotel_id", async () => {
+    it("should return status 200 and get all room types by hotel id 1000", async () => {
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/hotel/1000",
-            payload: {
-                id: 1000
-            }
+            url: "/api/hotel/1000/room_types"
         });
 
         expect(response.statusCode).toBe(200);
-        expect(response.json()).toEqual({
+        expect(response.json()).toEqual([{
             id: 1000,
-            name: "Santa Marina Hotel",
-            description: "Santa Marina Hotel is located close to the beach",
-            address: "8130 Sv. Marina, Sozopol, Bulgarien",
-        });
+            name: "Double room",
+            description: "Room for 2 clowns laying in one bed",
+            size: 'big',
+            price: 2454.4,
+            hotel_id: 1000
+        }, {
+            id: 1001,
+            name: "Single room",
+            description: "Room for 1 clowns laying in one bed",
+            size: 'small',
+            price: 1454.4,
+            hotel_id: 1000
+        }]);
     });
 
-    it("should return status 400 and return error, if none was found by id", async () => {
+    it("should return status 200 and get all room types by hotel id 1000", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/hotel/1001/room_types"
+        });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.json()).toEqual([{
+            id: 1002,
+            name: "Group room",
+            description: "Room for 4 clowns laying in one bed",
+            size: 'very big',
+            price: 4454.4,
+            hotel_id: 1001
+        }]);
+    });
+
+    it("should return status 200 and return empty, if none were found", async () => {
         await prisma.hotel.deleteMany();
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/hotel/1001",
-            payload: {
-                id: 1001
-            }
+            url: "/api/hotel/1002/room_types"
         });
 
-        expect(response.statusCode).toBe(400);
-        expect(response.json()).toEqual({
-            error: "Bad Request",
-            message: "Could not find hotel with id: 1001",
-            statusCode: 400,
-        });
+        expect(response.statusCode).toBe(200);
+        expect(response.json()).toEqual([]);
     });
 });

@@ -14,6 +14,7 @@ import {
 } from "./type.schema";
 import { error_message } from "./type.errors";
 import { RoomType } from "@prisma/client";
+import { CACHE_KEY_HOTEL_ROOM_TYPES } from "../../hotel/hotel.controller";
 
 // In Seconds
 const CACHE_TTL = 1800;
@@ -28,7 +29,7 @@ export async function createRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPES);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
         const RoomType = await createRoomType(request.body);
 
         reply.code(201).send(RoomType);
@@ -76,7 +77,7 @@ export async function updateRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE+request.body.id, CACHE_KEY_ROOM_TYPES);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.body.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
         const RoomType = await updateRoomType(request.body);
 
         reply.code(200).send(RoomType);
@@ -92,7 +93,7 @@ export async function deleteRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE+request.params.id, CACHE_KEY_ROOM_TYPES);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.params.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
         const RoomType = await deleteRoomType(Number(request.params.id));
 
         reply.code(204).send(RoomType);

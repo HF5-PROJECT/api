@@ -63,6 +63,7 @@ export type CreateHotelInput = z.infer<typeof createHotelSchema>;
 export type UpdateHotelInput = z.infer<typeof updateHotelSchema>;
 export type ShowHotelParams = z.infer<typeof showHotelSchema>;
 export type DeleteHotelParams = z.infer<typeof deleteHotelSchema>;
+export type showHotelRoomTypeSchema = z.infer<typeof showHotelRoomTypeSchema>;
 
 export const { schemas: hotelSchemas, $ref } = buildJsonSchemas({
     createHotelSchema,
