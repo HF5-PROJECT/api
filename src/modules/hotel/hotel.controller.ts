@@ -19,10 +19,11 @@ import { error_message } from "./hotel.errors";
 import { Hotel, RoomType } from "@prisma/client";
 
 // In Seconds
-const cache_ttl = 1800;
+const CACHE_TTL = 1800;
 
 const CACHE_KEY_HOTELS = "allHotels";
 const CACHE_KEY_HOTEL = "hotel";
+const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
 
 export async function createHotelHandler(
     request: FastifyRequest<{
@@ -45,7 +46,7 @@ export async function browseHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotels = await request.redis.rememberJSON<Hotel[]>(CACHE_KEY_HOTELS, cache_ttl, async () => {
+        const hotels = await request.redis.rememberJSON<Hotel[]>(CACHE_KEY_HOTELS, CACHE_TTL, async () => {
             return await browseHotel();
         });
 
@@ -62,7 +63,7 @@ export async function showHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotel = await request.redis.rememberJSON<Hotel>(CACHE_KEY_HOTEL+request.params.id, cache_ttl, async () => {
+        const hotel = await request.redis.rememberJSON<Hotel>(CACHE_KEY_HOTEL + request.params.id, CACHE_TTL, async () => {
             return await showHotel(Number(request.params.id));
         });
 
@@ -79,7 +80,7 @@ export async function updateHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_HOTEL+request.body.id, CACHE_KEY_HOTELS);
+        await request.redis.invalidateCaches(CACHE_KEY_HOTEL + request.body.id, CACHE_KEY_HOTELS);
         const hotel = await updateHotel(request.body);
 
         reply.code(200).send(hotel);
@@ -95,7 +96,7 @@ export async function deleteHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_HOTEL+request.params.id, CACHE_KEY_HOTELS);
+        await request.redis.invalidateCaches(CACHE_KEY_HOTEL + request.params.id, CACHE_KEY_HOTELS);
         const hotel = await deleteHotel(Number(request.params.id));
 
         reply.code(204).send(hotel);
@@ -104,14 +105,14 @@ export async function deleteHotelHandler(
     }
 }
 
-export async function browseHotelRoomTypeHandler(
+export async function showHotelRoomTypeHandler(
     request: FastifyRequest<{
         Params: ShowHotelParams;
     }>,
     reply: FastifyReply
 ) {
     try {
-        const room_types = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_HOTELS, cache_ttl, async () => {
+        const room_types = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_HOTEL_ROOM_TYPES + request.params.id, CACHE_TTL, async () => {
             return await findRoomTypeByHotelId(Number(request.params.id));
         });
 

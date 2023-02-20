@@ -53,11 +53,11 @@ const deleteHotelResponseSchema = z.object({
     ...hotelCore
 });
 
-const browseHotelRoomTypeSchema = z.object({
+const showHotelRoomTypeSchema = z.object({
     id: z.string()
 });
 
-const browseHotelRoomTypeResponseSchema = z.array(RoomTypeSchema);
+const showHotelRoomTypeResponseSchema = z.array(RoomTypeSchema);
 
 export type CreateHotelInput = z.infer<typeof createHotelSchema>;
 export type UpdateHotelInput = z.infer<typeof updateHotelSchema>;
@@ -74,8 +74,8 @@ export const { schemas: hotelSchemas, $ref } = buildJsonSchemas({
     updateHotelResponseSchema,
     deleteHotelSchema,
     deleteHotelResponseSchema,
-    browseHotelRoomTypeSchema,
-    browseHotelRoomTypeResponseSchema,
+    showHotelRoomTypeSchema,
+    showHotelRoomTypeResponseSchema,
 }, {
     $id: "hotelSchema"
 });
