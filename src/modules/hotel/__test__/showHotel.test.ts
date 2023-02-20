@@ -13,6 +13,7 @@ describe("GET /api/hotel/:id", () => {
 
     beforeEach(async () => {
         await fastify.redis.del(CACHE_KEY_HOTEL+"1000");
+        await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
             data: {

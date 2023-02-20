@@ -28,4 +28,17 @@ model Hotel {
     address     String   @db.VarChar(255)
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+
+    floors Floor[]
+}
+
+model Floor {
+    id        Int      @id @default(autoincrement())
+    number    Int      @db.Int
+    hotelId   Int      @db.Int
+    hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([hotelId])
 }

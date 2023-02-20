@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-describe("POST /api/hotel", () => {
+describe("POST /api/floor", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -20,147 +20,127 @@ describe("POST /api/hotel", () => {
                 address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
+        await prisma.floor.create({
+            data: {
+                id: 1000,
+                number: 1,
+                hotelId: 1000
+            },
+        });
     });
 
     afterAll(async () => {
         await fastify.close();
     });
 
-    it("should return status 200 and update a hotel", async () => {
+    it("should return status 200 and update a floor", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/hotel/1000",
+            url: "/api/floor/1000",
             payload: {
                 id: 1000,
-                name: "Luis de Morocco",
-                description: "El hotel en Morocco esta cerca de la playa",
-                address: "420 B., Morocco Calle",
+                number: 2,
+                hotelId: 1000
             },
         });
 
         expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual({
             id: 1000,
-            name: "Luis de Morocco",
-            description: "El hotel en Morocco esta cerca de la playa",
-            address: "420 B., Morocco Calle",
+            number: 2,
+            hotelId: 1000
         });
     });
 
     it("should return status 400, if none was found by id", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/hotel/1001",
+            url: "/api/floor/1001",
             payload: {
                 id: 1001,
-                name: "Luis de Morocco",
-                description: "El hotel en Morocco esta cerca de la playa",
-                address: "420 B., Morocco Calle",
+                number: 2,
+                hotelId: 1000
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "Could not find hotel with id: 1001",
+            message: "Could not find floor with id: 1001",
             statusCode: 400,
         });
     });
 
-    it("should return status 200 and update a hotel, if no new description is sent", async () => {
+    it("should return status 400, when no number has been provided", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/hotel/1000",
+            url: "/api/floor/1000",
             payload: {
                 id: 1000,
-                name: "Luis de Morocco",
-                address: "420 B., Morocco Calle",
-            },
-        });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.json()).toEqual({
-            id: 1000,
-            name: "Luis de Morocco",
-            description: "Santa Marina Hotel is located close to the beach",
-            address: "420 B., Morocco Calle",
-        });
-    });
-
-    it("should return status 400, when no address has been provided", async () => {
-        const response = await fastify.inject({
-            method: "PUT",
-            url: "/api/hotel/1000",
-            payload: {
-                id: 1000,
-                name: "Luis de Morocco",
-                description: "El hotel en Morocco esta cerca de la playa",
+                hotelId: 1000
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "body must have required property 'address'",
+            message: "body must have required property 'number'",
             statusCode: 400,
         });
     });
 
-    it("should return status 400, when address is empty", async () => {
+    it("should return status 400, when number is empty", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/hotel/1000",
+            url: "/api/floor/1000",
             payload: {
                 id: 1000,
-                name: "Luis de Morocco",
-                description: "El hotel en Morocco esta cerca de la playa",
-                address: "",
+                number: "",
+                hotelId: 1000
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "body/address must NOT have fewer than 1 characters",
+            message: "body/number must be number",
             statusCode: 400,
         });
     });
 
-    it("should return status 400, when no name has been provided", async () => {
+    it("should return status 400, if no hotel id is sent", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/hotel/1000",
+            url: "/api/floor/1000",
             payload: {
                 id: 1000,
-                description: "El hotel en Morocco esta cerca de la playa",
-                address: "420 B., Morocco Calle",
+                number: 1
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "body must have required property 'name'",
+            message: "body must have required property 'hotelId'",
             statusCode: 400,
         });
     });
 
-    it("should return status 400, when name is empty", async () => {
+    it("should return status 400, if hotel id is empty", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/hotel/1000",
+            url: "/api/floor/1000",
             payload: {
                 id: 1000,
-                name: "",
-                description: "El hotel en Morocco esta cerca de la playa",
-                address: "420 B., Morocco Calle",
+                number: 1,
+                hotelId: ""
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "body/name must NOT have fewer than 1 characters",
+            message: "body/hotelId must be number",
             statusCode: 400,
         });
     });
