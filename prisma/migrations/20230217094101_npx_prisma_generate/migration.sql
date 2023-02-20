@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE `HotelImages` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `path` VARCHAR(255) NOT NULL,
+    `order` INTEGER UNSIGNED NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
