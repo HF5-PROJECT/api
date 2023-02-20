@@ -51,6 +51,8 @@ const deleteRoomTypeResponseSchema = z.object({
     ...roomTypeCore
 });
 
+export const RoomTypeSchema = showRoomTypeResponseSchema;
+
 export type CreateRoomTypeInput = z.infer<typeof createRoomTypeSchema>;
 export type UpdateRoomTypeInput = z.infer<typeof updateRoomTypeSchema>;
 export type ShowRoomTypeParams = z.infer<typeof showRoomTypeSchema>;

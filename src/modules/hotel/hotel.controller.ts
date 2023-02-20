@@ -7,13 +7,16 @@ import {
     deleteHotel
 } from "./hotel.service";
 import {
+    findRoomTypeByHotelId
+} from "../room/type/type.service";
+import {
     CreateHotelInput,
     UpdateHotelInput,
     ShowHotelParams,
     DeleteHotelParams
 } from "./hotel.schema";
 import { error_message } from "./hotel.errors";
-import { Hotel } from "@prisma/client";
+import { Hotel, RoomType } from "@prisma/client";
 
 // In Seconds
 const cache_ttl = 1800;
@@ -96,6 +99,23 @@ export async function deleteHotelHandler(
         const hotel = await deleteHotel(Number(request.params.id));
 
         reply.code(204).send(hotel);
+    } catch (e) {
+        return reply.badRequest(await error_message(e));
+    }
+}
+
+export async function browseHotelRoomTypeHandler(
+    request: FastifyRequest<{
+        Params: ShowHotelParams;
+    }>,
+    reply: FastifyReply
+) {
+    try {
+        const room_types = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_HOTELS, cache_ttl, async () => {
+            return await findRoomTypeByHotelId(Number(request.params.id));
+        });
+
+        reply.code(200).send(room_types);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }

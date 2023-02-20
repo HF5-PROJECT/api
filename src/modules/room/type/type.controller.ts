@@ -5,21 +5,21 @@ import {
     showRoomType,
     updateRoomType,
     deleteRoomType
-} from "./room_type.service";
+} from "./type.service";
 import {
     CreateRoomTypeInput,
     UpdateRoomTypeInput,
     ShowRoomTypeParams,
     DeleteRoomTypeParams
-} from "./room_type.schema";
-import { error_message } from "./room_type.errors";
+} from "./type.schema";
+import { error_message } from "./type.errors";
 import { RoomType } from "@prisma/client";
 
 // In Seconds
-const cache_ttl = 1800;
+const CACHE_TTL = 1800;
 
-const CACHE_KEY_RoomTypeS = "allRoomTypes";
-const CACHE_KEY_RoomType = "RoomType";
+const CACHE_KEY_ROOM_TYPES = "allRoomTypes";
+const CACHE_KEY_ROOM_TYPE = "RoomType";
 
 export async function createRoomTypeHandler(
     request: FastifyRequest<{
@@ -28,7 +28,7 @@ export async function createRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_RoomTypeS);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPES);
         const RoomType = await createRoomType(request.body);
 
         reply.code(201).send(RoomType);
@@ -42,7 +42,7 @@ export async function browseRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        const RoomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_RoomTypeS, cache_ttl, async () => {
+        const RoomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_ROOM_TYPES, CACHE_TTL, async () => {
             return await browseRoomType();
         });
 
@@ -59,7 +59,7 @@ export async function showRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        const RoomType = await request.redis.rememberJSON<RoomType>(CACHE_KEY_RoomType+request.params.id, cache_ttl, async () => {
+        const RoomType = await request.redis.rememberJSON<RoomType>(CACHE_KEY_ROOM_TYPE+request.params.id, CACHE_TTL, async () => {
             return await showRoomType(Number(request.params.id));
         });
 
@@ -76,7 +76,7 @@ export async function updateRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_RoomType+request.body.id, CACHE_KEY_RoomTypeS);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE+request.body.id, CACHE_KEY_ROOM_TYPES);
         const RoomType = await updateRoomType(request.body);
 
         reply.code(200).send(RoomType);
@@ -92,7 +92,7 @@ export async function deleteRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_RoomType+request.params.id, CACHE_KEY_RoomTypeS);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE+request.params.id, CACHE_KEY_ROOM_TYPES);
         const RoomType = await deleteRoomType(Number(request.params.id));
 
         reply.code(204).send(RoomType);

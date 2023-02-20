@@ -1,9 +1,9 @@
-import { prisma } from "../../plugins/prisma";
+import { prisma } from "../../../plugins/prisma";
 import {
     CreateRoomTypeInput,
     UpdateRoomTypeInput
-} from "./room_type.schema";
-import { id_not_found } from "./room_type.errors";
+} from "./type.schema";
+import { id_not_found } from "./type.errors";
 
 export async function createRoomType(input: CreateRoomTypeInput) {
     const RoomType = await prisma.roomType.create({
@@ -65,9 +65,14 @@ export async function deleteRoomType(id: number) {
     }
 }
 
-
 export async function findRoomTypeById(id: number) {
     return await prisma.roomType.findFirst({
         where: { id: id },
+    });
+}
+
+export async function findRoomTypeByHotelId(id: number) {
+    return await prisma.roomType.findMany({
+        where: { hotel_id: id },
     });
 }

@@ -4,7 +4,7 @@ import fastifyAutoload from "@fastify/autoload";
 import Fastify from "fastify";
 import { authSchemas } from "./modules/auth/auth.schema";
 import { hotelSchemas } from "./modules/hotel/hotel.schema";
-import { roomTypeSchemas } from "./modules/room_type/room_type.schema";
+import { roomTypeSchemas } from "./modules/room/type/type.schema";
 
 export async function build() {
     const fastify = Fastify({ logger: { level: "fatal" } });

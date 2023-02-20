@@ -5,8 +5,8 @@ import {
     showRoomTypeHandler,
     updateRoomTypeHandler,
     deleteRoomTypeHandler
-} from "./room_type.controller";
-import { $ref } from "./room_type.schema";
+} from "./type.controller";
+import { $ref } from "./type.schema";
 
 export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
     fastify.post(
