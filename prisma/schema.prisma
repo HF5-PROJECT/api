@@ -18,25 +18,39 @@ model User {
     password  String   @db.Text
     address   String?  @db.VarChar(255)
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Hotel {
+    id          Int         @id @default(autoincrement())
+    name        String      @db.VarChar(255)
+    description String?     @db.Text
+    address     String      @db.VarChar(255)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @default(now()) @updatedAt
+    floors      Floor[]
+    RoomTypes   RoomType[]
+}
+
+model RoomType {
     id          Int      @id @default(autoincrement())
     name        String   @db.VarChar(255)
     description String?  @db.Text
-    address     String   @db.VarChar(255)
+    size        String?  @db.VarChar(255)
+    price       Float    @db.Double
+    hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+    hotelId    Int
     createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    updatedAt   DateTime @default(now()) @updatedAt
 
-    floors Floor[]
+    @@index([hotelId])
 }
 
 model Floor {
     id        Int      @id @default(autoincrement())
     number    Int      @db.Int
     hotelId   Int      @db.Int
-    hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 

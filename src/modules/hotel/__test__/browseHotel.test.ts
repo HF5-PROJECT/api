@@ -2,8 +2,6 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-const CACHE_KEY_HOTELS = "allHotels";
-
 describe("GET /api/hotel", () => {
     let fastify: FastifyInstance;
 
@@ -12,8 +10,9 @@ describe("GET /api/hotel", () => {
     });
 
     beforeEach(async () => {
-        await fastify.redis.del(CACHE_KEY_HOTELS);
+        await fastify.redis.flushall();
         await prisma.floor.deleteMany();
+        await prisma.roomType.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
             data: {

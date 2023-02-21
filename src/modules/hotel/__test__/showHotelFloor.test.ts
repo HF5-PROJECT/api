@@ -2,9 +2,6 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-const CACHE_KEY_HOTELS = "allHotels";
-const CACHE_KEY_FLOORS = "allFloors";
-
 describe("GET /api/hotel/:id/floors", () => {
     let fastify: FastifyInstance;
 
@@ -15,6 +12,7 @@ describe("GET /api/hotel/:id/floors", () => {
     beforeEach(async () => {
         await fastify.redis.flushall();
         await prisma.floor.deleteMany();
+        await prisma.roomType.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
             data: {
@@ -82,5 +80,19 @@ describe("GET /api/hotel/:id/floors", () => {
 
         expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual([]);
+    });
+
+    it("should return status 400 and return error, if no hotel were found", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/hotel/1003/floors"
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "Could not find hotel with id: 1003",
+            statusCode: 400,
+        });
     });
 });

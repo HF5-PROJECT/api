@@ -22,7 +22,7 @@ declare module "ioredis" {
         ): Promise<T>;
         invalidateCaches(
             ...keys: string[]
-            ): Promise<void>;
+        ): Promise<void>;
     }
 }
 

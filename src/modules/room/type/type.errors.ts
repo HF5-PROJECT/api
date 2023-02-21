@@ -9,5 +9,5 @@ export async function errorMessage(e: unknown) {
 }
 
 export function idNotFound(id: number) {
-    return Error("Could not find hotel with id: " + id);
+    return Error("Could not find room type with id: " + id);
 }
