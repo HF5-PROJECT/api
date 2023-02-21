@@ -3,7 +3,7 @@ import {
     CreateRoomTypeInput,
     UpdateRoomTypeInput
 } from "./type.schema";
-import { id_not_found } from "./type.errors";
+import { idNotFound } from "./type.errors";
 
 export async function createRoomType(input: CreateRoomTypeInput) {
     const roomType = await prisma.roomType.create({
@@ -26,7 +26,7 @@ export async function browseRoomType() {
 export async function showRoomType(id: number) {
     const roomType = await findRoomTypeById(id);
     if (!roomType) {
-        return id_not_found(id);
+        return idNotFound(id);
     }
 
     return roomType;
@@ -49,7 +49,7 @@ export async function updateRoomType(input: UpdateRoomTypeInput) {
 
         return roomType;
     } catch (e) {
-        return id_not_found(input.id);
+        return idNotFound(input.id);
     }
 }
 
@@ -61,7 +61,7 @@ export async function deleteRoomType(id: number) {
             }
         });
     } catch (e) {
-        return id_not_found(id);
+        return idNotFound(id);
     }
 }
 

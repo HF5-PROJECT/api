@@ -16,7 +16,7 @@ import {
     DeleteHotelParams,
     ShowHotelRoomTypeSchema,
 } from "./hotel.schema";
-import { error_message } from "./hotel.errors";
+import { errorMessage } from "./hotel.errors";
 import { Hotel, RoomType } from "@prisma/client";
 
 // In Seconds
@@ -38,7 +38,7 @@ export async function createHotelHandler(
 
         reply.code(201).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -53,7 +53,7 @@ export async function browseHotelHandler(
 
         reply.code(200).send(hotels);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -70,7 +70,7 @@ export async function showHotelHandler(
 
         reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -86,7 +86,7 @@ export async function updateHotelHandler(
 
         reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -102,7 +102,7 @@ export async function deleteHotelHandler(
 
         reply.code(204).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -119,6 +119,6 @@ export async function showHotelRoomTypeHandler(
 
         reply.code(200).send(roomTypes);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }

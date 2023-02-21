@@ -12,7 +12,7 @@ import {
     ShowRoomTypeParams,
     DeleteRoomTypeParams
 } from "./type.schema";
-import { error_message } from "./type.errors";
+import { errorMessage } from "./type.errors";
 import { RoomType } from "@prisma/client";
 import { CACHE_KEY_HOTEL_ROOM_TYPES } from "../../hotel/hotel.controller";
 
@@ -34,7 +34,7 @@ export async function createRoomTypeHandler(
 
         reply.code(201).send(roomType);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -49,7 +49,7 @@ export async function browseRoomTypeHandler(
 
         reply.code(200).send(roomTypes);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -60,13 +60,13 @@ export async function showRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        const roomType = await request.redis.rememberJSON<RoomType>(CACHE_KEY_ROOM_TYPE+request.params.id, CACHE_TTL, async () => {
+        const roomType = await request.redis.rememberJSON<RoomType>(CACHE_KEY_ROOM_TYPE + request.params.id, CACHE_TTL, async () => {
             return await showRoomType(Number(request.params.id));
         });
 
         reply.code(200).send(roomType);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -82,7 +82,7 @@ export async function updateRoomTypeHandler(
 
         reply.code(200).send(roomType);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -98,6 +98,6 @@ export async function deleteRoomTypeHandler(
 
         reply.code(204).send(roomType);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
