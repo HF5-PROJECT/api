@@ -3,9 +3,13 @@ import {
     CreateRoomTypeInput,
     UpdateRoomTypeInput
 } from "./type.schema";
+import { showHotel } from "../../hotel/hotel.service";
 import { idNotFound } from "./type.errors";
 
 export async function createRoomType(input: CreateRoomTypeInput) {
+    // Only using it's thrown error.
+    await showHotel(input.hotel_id);
+
     const roomType = await prisma.roomType.create({
         data: {
             name: input.name,
@@ -33,6 +37,9 @@ export async function showRoomType(id: number) {
 }
 
 export async function updateRoomType(input: UpdateRoomTypeInput) {
+    // Only using it's thrown error.
+    await showHotel(input.hotel_id);
+
     try {
         const roomType = await prisma.roomType.update({
             where: {

@@ -3,6 +3,7 @@ import {
     CreateHotelInput,
     UpdateHotelInput
 } from "./hotel.schema";
+import { findRoomTypeByHotelId } from "../room/type/type.service";
 import { idNotFound } from "./hotel.errors";
 
 export async function createHotel(input: CreateHotelInput) {
@@ -61,6 +62,14 @@ export async function deleteHotel(id: number) {
     }
 }
 
+export async function showHotelRoomType(id: number) {
+    const hotel = await findHotelById(id);
+    if (!hotel) {
+        return idNotFound(id);
+    }
+
+    return findRoomTypeByHotelId(id);
+}
 
 export async function findHotelById(id: number) {
     return await prisma.hotel.findFirst({

@@ -117,7 +117,6 @@ describe("GET /api/hotel/:id/room_type", () => {
     });
 
     it("should return status 200 and return empty, if none were found", async () => {
-        await prisma.hotel.deleteMany();
         const response = await fastify.inject({
             method: "GET",
             url: "/api/hotel/1002/room_types"
@@ -125,5 +124,19 @@ describe("GET /api/hotel/:id/room_type", () => {
 
         expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual([]);
+    });
+
+    it("should return status 200 and return empty, if no hotel were found", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/hotel/1003/room_types"
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "Could not find hotel with id: 1003",
+            statusCode: 400,
+        });
     });
 });

@@ -149,4 +149,26 @@ describe("POST /api/room/type", () => {
             statusCode: 400,
         });
     });
+
+    it("should return status 400 when no hotel could be found", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/room/type/1000",
+            payload: {
+                id: 1000,
+                name: "Double room",
+                description: "Room for 2 clowns laying in one bed",
+                size: 'big',
+                price: 2454.4,
+                hotel_id: 1010
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "Could not find hotel with id: 1010",
+            statusCode: 400,
+        });
+    });
 });

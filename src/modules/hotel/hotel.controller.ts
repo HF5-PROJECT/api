@@ -4,11 +4,9 @@ import {
     browseHotel,
     showHotel,
     updateHotel,
-    deleteHotel
+    deleteHotel,
+    showHotelRoomType,
 } from "./hotel.service";
-import {
-    findRoomTypeByHotelId
-} from "../room/type/type.service";
 import {
     CreateHotelInput,
     UpdateHotelInput,
@@ -114,7 +112,7 @@ export async function showHotelRoomTypeHandler(
 ) {
     try {
         const roomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_HOTEL_ROOM_TYPES + request.params.id, CACHE_TTL, async () => {
-            return await findRoomTypeByHotelId(Number(request.params.id));
+            return await showHotelRoomType(Number(request.params.id));
         });
 
         reply.code(200).send(roomTypes);
