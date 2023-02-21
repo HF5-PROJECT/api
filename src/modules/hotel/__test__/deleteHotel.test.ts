@@ -44,6 +44,38 @@ describe("DELETE /api/hotel/:id", () => {
         expect(count).toBe(0);
     });
 
+    it("should return status 204 and delete a hotel", async () => {
+        await prisma.roomType.create({
+            data: {
+                id: 1000,
+                name: "Double room",
+                description: "Room for 2 clowns laying in one bed",
+                size: 'big',
+                price: 2454.4,
+                hotel_id: 1000
+            },
+        });
+
+        const response = await fastify.inject({
+            method: "DELETE",
+            url: "/api/hotel/1000"
+        });
+
+        expect(response.statusCode).toBe(204);
+        expect(response.json()).toEqual({
+            id: response.json().id,
+            name: "Santa Marina Hotel",
+            description: "Santa Marina Hotel is located close to the beach",
+            address: "8130 Sv. Marina, Sozopol, Bulgarien",
+        });
+
+        const countHotels = await prisma.hotel.count();
+        expect(countHotels).toBe(0);
+        const countRoomTypes = await prisma.roomType.count();
+        expect(countRoomTypes).toBe(0);
+    });
+
+
     it("should return status 400 and throw error, if none was found by id", async () => {
         const response = await fastify.inject({
             method: "DELETE",

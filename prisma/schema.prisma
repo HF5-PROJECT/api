@@ -37,7 +37,7 @@ model RoomType {
     description String?  @db.Text
     size        String?  @db.VarChar(255)
     price       Float    @db.Double
-    hotel       Hotel    @relation(fields: [hotel_id], references: [id])
+    hotel       Hotel    @relation(fields: [hotel_id], references: [id], onDelete: Cascade)
     hotel_id    Int
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now()) @updatedAt
