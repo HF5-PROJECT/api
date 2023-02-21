@@ -32,7 +32,7 @@ export async function showHotel(id: number) {
 
 export async function updateHotel(input: UpdateHotelInput) {
     try {
-        const new_hotel = await prisma.hotel.update({
+        const hotel = await prisma.hotel.update({
             where: {
                 id: input.id
             },
@@ -43,7 +43,7 @@ export async function updateHotel(input: UpdateHotelInput) {
             }
         })
 
-        return new_hotel;
+        return hotel;
     } catch (e) {
         return id_not_found(input.id);
     }

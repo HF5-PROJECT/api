@@ -6,7 +6,7 @@ import {
 import { id_not_found } from "./type.errors";
 
 export async function createRoomType(input: CreateRoomTypeInput) {
-    const RoomType = await prisma.roomType.create({
+    const roomType = await prisma.roomType.create({
         data: {
             name: input.name,
             description: input.description,
@@ -16,7 +16,7 @@ export async function createRoomType(input: CreateRoomTypeInput) {
         },
     });
 
-    return RoomType;
+    return roomType;
 }
 
 export async function browseRoomType() {
@@ -24,17 +24,17 @@ export async function browseRoomType() {
 }
 
 export async function showRoomType(id: number) {
-    const RoomType = await findRoomTypeById(id);
-    if (!RoomType) {
+    const roomType = await findRoomTypeById(id);
+    if (!roomType) {
         return id_not_found(id);
     }
 
-    return RoomType;
+    return roomType;
 }
 
 export async function updateRoomType(input: UpdateRoomTypeInput) {
     try {
-        const new_RoomType = await prisma.roomType.update({
+        const roomType = await prisma.roomType.update({
             where: {
                 id: input.id
             },
@@ -47,7 +47,7 @@ export async function updateRoomType(input: UpdateRoomTypeInput) {
             }
         })
 
-        return new_RoomType;
+        return roomType;
     } catch (e) {
         return id_not_found(input.id);
     }

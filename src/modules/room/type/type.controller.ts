@@ -30,9 +30,9 @@ export async function createRoomTypeHandler(
 ) {
     try {
         await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
-        const RoomType = await createRoomType(request.body);
+        const roomType = await createRoomType(request.body);
 
-        reply.code(201).send(RoomType);
+        reply.code(201).send(roomType);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }
@@ -43,11 +43,11 @@ export async function browseRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        const RoomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_ROOM_TYPES, CACHE_TTL, async () => {
+        const roomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_ROOM_TYPES, CACHE_TTL, async () => {
             return await browseRoomType();
         });
 
-        reply.code(200).send(RoomTypes);
+        reply.code(200).send(roomTypes);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }
@@ -60,11 +60,11 @@ export async function showRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        const RoomType = await request.redis.rememberJSON<RoomType>(CACHE_KEY_ROOM_TYPE+request.params.id, CACHE_TTL, async () => {
+        const roomType = await request.redis.rememberJSON<RoomType>(CACHE_KEY_ROOM_TYPE+request.params.id, CACHE_TTL, async () => {
             return await showRoomType(Number(request.params.id));
         });
 
-        reply.code(200).send(RoomType);
+        reply.code(200).send(roomType);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }
@@ -78,9 +78,9 @@ export async function updateRoomTypeHandler(
 ) {
     try {
         await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.body.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
-        const RoomType = await updateRoomType(request.body);
+        const roomType = await updateRoomType(request.body);
 
-        reply.code(200).send(RoomType);
+        reply.code(200).send(roomType);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }
@@ -94,9 +94,9 @@ export async function deleteRoomTypeHandler(
 ) {
     try {
         await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.params.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
-        const RoomType = await deleteRoomType(Number(request.params.id));
+        const roomType = await deleteRoomType(Number(request.params.id));
 
-        reply.code(204).send(RoomType);
+        reply.code(204).send(roomType);
     } catch (e) {
         return reply.badRequest(await error_message(e));
     }
