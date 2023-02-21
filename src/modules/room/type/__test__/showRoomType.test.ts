@@ -11,8 +11,8 @@ describe("GET /api/room/type/:id", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        await prisma.hotel.deleteMany();
         await prisma.roomType.deleteMany();
+        await prisma.hotel.deleteMany();
         await prisma.hotel.create({
             data: {
                 id: 1000,

@@ -10,8 +10,8 @@ describe("POST /api/hotel", () => {
     });
 
     beforeEach(async () => {
-        await prisma.hotel.deleteMany();
         await prisma.roomType.deleteMany();
+        await prisma.hotel.deleteMany();
     });
 
     afterAll(async () => {
