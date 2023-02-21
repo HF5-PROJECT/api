@@ -2,9 +2,6 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-const CACHE_KEY_HOTELS = "allHotels";
-const CACHE_KEY_FLOORS = "allFloors";
-
 describe("GET /api/floor", () => {
     let fastify: FastifyInstance;
 

@@ -38,7 +38,7 @@ model Floor {
     hotelId   Int      @db.Int
     hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    updatedAt DateTime @default(now()) @updatedAt
 
     @@index([hotelId])
 }
