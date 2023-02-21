@@ -1,4 +1,4 @@
-export async function error_message(e: unknown) {
+export async function errorMessage(e: unknown) {
     let message = String(e);
 
     if (e instanceof Error) {
@@ -8,6 +8,6 @@ export async function error_message(e: unknown) {
     return message;
 }
 
-export async function id_not_found(id: number) {
+export async function idNotFound(id: number) {
     throw Error("Could not find hotel with id: " + id);
 }
