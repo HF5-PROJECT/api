@@ -3,7 +3,8 @@ import {
     CreateHotelInput,
     UpdateHotelInput
 } from "./hotel.schema";
-import { id_not_found } from "./hotel.errors";
+import { findRoomTypeByHotelId } from "../room/type/type.service";
+import { idNotFound } from "./hotel.errors";
 
 export async function createHotel(input: CreateHotelInput) {
     const hotel = await prisma.hotel.create({
@@ -22,17 +23,12 @@ export async function browseHotel() {
 }
 
 export async function showHotel(id: number) {
-    const hotel = await findHotelById(id);
-    if (!hotel) {
-        return id_not_found(id);
-    }
-
-    return hotel;
+    return await findHotelById(id);
 }
 
 export async function updateHotel(input: UpdateHotelInput) {
     try {
-        const new_hotel = await prisma.hotel.update({
+        const hotel = await prisma.hotel.update({
             where: {
                 id: input.id
             },
@@ -43,9 +39,9 @@ export async function updateHotel(input: UpdateHotelInput) {
             }
         })
 
-        return new_hotel;
+        return hotel;
     } catch (e) {
-        return id_not_found(input.id);
+        throw idNotFound(input.id);
     }
 }
 
@@ -57,13 +53,27 @@ export async function deleteHotel(id: number) {
             }
         });
     } catch (e) {
-        return id_not_found(id);
+        throw idNotFound(id);
     }
 }
 
+export async function showHotelRoomType(id: number) {
+    const hotel = await findHotelById(id);
+    if (!hotel) {
+        throw idNotFound(id);
+    }
+
+    return findRoomTypeByHotelId(id);
+}
 
 export async function findHotelById(id: number) {
-    return await prisma.hotel.findFirst({
+    const hotel = await prisma.hotel.findFirst({
         where: { id: id },
     });
+
+    if (!hotel) {
+        throw idNotFound(id);
+    }
+
+    return hotel
 }

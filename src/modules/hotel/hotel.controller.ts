@@ -4,22 +4,25 @@ import {
     browseHotel,
     showHotel,
     updateHotel,
-    deleteHotel
+    deleteHotel,
+    showHotelRoomType,
 } from "./hotel.service";
 import {
     CreateHotelInput,
     UpdateHotelInput,
     ShowHotelParams,
-    DeleteHotelParams
+    DeleteHotelParams,
+    ShowHotelRoomTypeSchema,
 } from "./hotel.schema";
-import { error_message } from "./hotel.errors";
-import { Hotel } from "@prisma/client";
+import { errorMessage } from "./hotel.errors";
+import { Hotel, RoomType } from "@prisma/client";
 
 // In Seconds
-const cache_ttl = 1800;
+const CACHE_TTL = 1800;
 
 const CACHE_KEY_HOTELS = "allHotels";
 const CACHE_KEY_HOTEL = "hotel";
+export const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
 
 export async function createHotelHandler(
     request: FastifyRequest<{
@@ -33,7 +36,7 @@ export async function createHotelHandler(
 
         reply.code(201).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -42,13 +45,13 @@ export async function browseHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotels = await request.redis.rememberJSON<Hotel[]>(CACHE_KEY_HOTELS, cache_ttl, async () => {
+        const hotels = await request.redis.rememberJSON<Hotel[]>(CACHE_KEY_HOTELS, CACHE_TTL, async () => {
             return await browseHotel();
         });
 
         reply.code(200).send(hotels);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -59,13 +62,13 @@ export async function showHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        const hotel = await request.redis.rememberJSON<Hotel>(CACHE_KEY_HOTEL+request.params.id, cache_ttl, async () => {
+        const hotel = await request.redis.rememberJSON<Hotel>(CACHE_KEY_HOTEL + request.params.id, CACHE_TTL, async () => {
             return await showHotel(Number(request.params.id));
         });
 
         reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -76,12 +79,12 @@ export async function updateHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_HOTEL+request.body.id, CACHE_KEY_HOTELS);
+        await request.redis.invalidateCaches(CACHE_KEY_HOTEL + request.body.id, CACHE_KEY_HOTELS);
         const hotel = await updateHotel(request.body);
 
         reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -92,11 +95,28 @@ export async function deleteHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_HOTEL+request.params.id, CACHE_KEY_HOTELS);
+        await request.redis.invalidateCaches(CACHE_KEY_HOTEL + request.params.id, CACHE_KEY_HOTELS);
         const hotel = await deleteHotel(Number(request.params.id));
 
         reply.code(204).send(hotel);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
+    }
+}
+
+export async function showHotelRoomTypeHandler(
+    request: FastifyRequest<{
+        Params: ShowHotelRoomTypeSchema;
+    }>,
+    reply: FastifyReply
+) {
+    try {
+        const roomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_HOTEL_ROOM_TYPES + request.params.id, CACHE_TTL, async () => {
+            return await showHotelRoomType(Number(request.params.id));
+        });
+
+        reply.code(200).send(roomTypes);
+    } catch (e) {
+        return reply.badRequest(await errorMessage(e));
     }
 }

@@ -4,7 +4,8 @@ import {
     browseHotelHandler,
     showHotelHandler,
     updateHotelHandler,
-    deleteHotelHandler
+    deleteHotelHandler,
+    showHotelRoomTypeHandler,
 } from "./hotel.controller";
 import { $ref } from "./hotel.schema";
 
@@ -74,5 +75,18 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             },
         },
         deleteHotelHandler
+    );
+
+    fastify.get(
+        "/:id/room_types",
+        {
+            schema: {
+                tags: ["Hotel"],
+                response: {
+                    200: $ref("showHotelRoomTypeResponseSchema"),
+                },
+            },
+        },
+        showHotelRoomTypeHandler
     );
 };
