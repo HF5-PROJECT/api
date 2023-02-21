@@ -10,6 +10,7 @@ describe("POST /api/floor", () => {
     });
 
     beforeEach(async () => {
+        await fastify.redis.flushall();
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
