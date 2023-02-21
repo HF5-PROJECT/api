@@ -28,7 +28,7 @@ describe("GET /api/hotel/:id/room_type", () => {
                 description: "Room for 2 clowns laying in one bed",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
         await prisma.roomType.create({
@@ -38,7 +38,7 @@ describe("GET /api/hotel/:id/room_type", () => {
                 description: "Room for 1 clowns laying in one bed",
                 size: 'small',
                 price: 1454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
 
@@ -57,7 +57,7 @@ describe("GET /api/hotel/:id/room_type", () => {
                 description: "Room for 4 clowns laying in one bed",
                 size: 'very big',
                 price: 4454.4,
-                hotel_id: 1001
+                hotelId: 1001
             },
         });
 
@@ -88,14 +88,14 @@ describe("GET /api/hotel/:id/room_type", () => {
             description: "Room for 2 clowns laying in one bed",
             size: 'big',
             price: 2454.4,
-            hotel_id: 1000
+            hotelId: 1000
         }, {
             id: 1001,
             name: "Single room",
             description: "Room for 1 clowns laying in one bed",
             size: 'small',
             price: 1454.4,
-            hotel_id: 1000
+            hotelId: 1000
         }]);
     });
 
@@ -112,7 +112,7 @@ describe("GET /api/hotel/:id/room_type", () => {
             description: "Room for 4 clowns laying in one bed",
             size: 'very big',
             price: 4454.4,
-            hotel_id: 1001
+            hotelId: 1001
         }]);
     });
 

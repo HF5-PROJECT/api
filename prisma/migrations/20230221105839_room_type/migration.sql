@@ -5,10 +5,10 @@ CREATE TABLE `RoomType` (
     `description` TEXT NULL,
     `size` VARCHAR(255) NULL,
     `price` DOUBLE NOT NULL,
-    `hotel_id` INTEGER NOT NULL,
+    `hotelId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    INDEX `RoomType_hotel_id_idx`(`hotel_id`),
+    INDEX `RoomType_hotelId_idx`(`hotelId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

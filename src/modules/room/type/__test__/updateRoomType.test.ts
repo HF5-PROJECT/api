@@ -27,7 +27,7 @@ describe("POST /api/room/type", () => {
                 description: "Room for 2 clowns laying in one bed",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
     });
@@ -46,7 +46,7 @@ describe("POST /api/room/type", () => {
                 description: "Room for 2 clowns laying in one bed, having fun",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
 
@@ -57,7 +57,7 @@ describe("POST /api/room/type", () => {
             description: "Room for 2 clowns laying in one bed, having fun",
             size: 'big',
             price: 2454.4,
-            hotel_id: 1000
+            hotelId: 1000
         });
     });
 
@@ -71,7 +71,7 @@ describe("POST /api/room/type", () => {
                 description: "Room for 1 clowns laying in one bed",
                 size: 'small',
                 price: 1454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
 
@@ -92,7 +92,7 @@ describe("POST /api/room/type", () => {
                 name: "Double room",
                 size: 'very big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
 
@@ -103,7 +103,7 @@ describe("POST /api/room/type", () => {
             description: "Room for 2 clowns laying in one bed",
             size: 'very big',
             price: 2454.4,
-            hotel_id: 1000
+            hotelId: 1000
         });
     });
 
@@ -116,7 +116,7 @@ describe("POST /api/room/type", () => {
                 description: "Room for 2 clowns laying in one bed, having fun",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
 
@@ -138,7 +138,7 @@ describe("POST /api/room/type", () => {
                 description: "Room for 2 clowns laying in one bed, having fun",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
 
@@ -160,7 +160,7 @@ describe("POST /api/room/type", () => {
                 description: "Room for 2 clowns laying in one bed",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1010
+                hotelId: 1010
             },
         });
 

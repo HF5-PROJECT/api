@@ -27,7 +27,7 @@ describe("DELETE /api/room/type/:id", () => {
                 description: "Room for 2 clowns laying in one bed",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
     });
@@ -49,7 +49,7 @@ describe("DELETE /api/room/type/:id", () => {
             description: "Room for 2 clowns laying in one bed",
             size: 'big',
             price: 2454.4,
-            hotel_id: 1000
+            hotelId: 1000
         });
 
         const count = await prisma.roomType.count();

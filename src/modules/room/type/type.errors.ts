@@ -8,6 +8,6 @@ export async function errorMessage(e: unknown) {
     return message;
 }
 
-export async function idNotFound(id: number) {
-    throw Error("Could not find room type with id: " + id);
+export function idNotFound(id: number) {
+    return Error("Could not find room type with id: " + id);
 }

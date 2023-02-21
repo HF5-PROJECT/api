@@ -23,12 +23,7 @@ export async function browseHotel() {
 }
 
 export async function showHotel(id: number) {
-    const hotel = await findHotelById(id);
-    if (!hotel) {
-        return idNotFound(id);
-    }
-
-    return hotel;
+    return await findHotelById(id);
 }
 
 export async function updateHotel(input: UpdateHotelInput) {
@@ -46,7 +41,7 @@ export async function updateHotel(input: UpdateHotelInput) {
 
         return hotel;
     } catch (e) {
-        return idNotFound(input.id);
+        throw idNotFound(input.id);
     }
 }
 
@@ -58,21 +53,27 @@ export async function deleteHotel(id: number) {
             }
         });
     } catch (e) {
-        return idNotFound(id);
+        throw idNotFound(id);
     }
 }
 
 export async function showHotelRoomType(id: number) {
     const hotel = await findHotelById(id);
     if (!hotel) {
-        return idNotFound(id);
+        throw idNotFound(id);
     }
 
     return findRoomTypeByHotelId(id);
 }
 
 export async function findHotelById(id: number) {
-    return await prisma.hotel.findFirst({
+    const hotel = await prisma.hotel.findFirst({
         where: { id: id },
     });
+
+    if (!hotel) {
+        throw idNotFound(id);
+    }
+
+    return hotel
 }

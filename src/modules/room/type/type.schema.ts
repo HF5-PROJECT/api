@@ -9,7 +9,7 @@ const roomTypeCore = {
     description: z.string().nullable().optional(),
     size: z.string().nullable().optional(),
     price: z.number(),
-    hotel_id: z.number(),
+    hotelId: z.number(),
 };
 
 const showRoomTypeSchema = z.object({

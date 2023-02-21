@@ -3,12 +3,11 @@ import {
     CreateRoomTypeInput,
     UpdateRoomTypeInput
 } from "./type.schema";
-import { showHotel } from "../../hotel/hotel.service";
+import { findHotelById } from "../../hotel/hotel.service";
 import { idNotFound } from "./type.errors";
 
 export async function createRoomType(input: CreateRoomTypeInput) {
-    // Only using it's thrown error.
-    await showHotel(input.hotel_id);
+    const hotel = await findHotelById(input.hotelId);
 
     const roomType = await prisma.roomType.create({
         data: {
@@ -16,7 +15,7 @@ export async function createRoomType(input: CreateRoomTypeInput) {
             description: input.description,
             size: input.size,
             price: input.price,
-            hotel_id: input.hotel_id,
+            hotelId: hotel.id,
         },
     });
 
@@ -30,15 +29,14 @@ export async function browseRoomType() {
 export async function showRoomType(id: number) {
     const roomType = await findRoomTypeById(id);
     if (!roomType) {
-        return idNotFound(id);
+        throw idNotFound(id);
     }
 
     return roomType;
 }
 
 export async function updateRoomType(input: UpdateRoomTypeInput) {
-    // Only using it's thrown error.
-    await showHotel(input.hotel_id);
+    const hotel = await findHotelById(input.hotelId);
 
     try {
         const roomType = await prisma.roomType.update({
@@ -50,13 +48,13 @@ export async function updateRoomType(input: UpdateRoomTypeInput) {
                 description: input.description,
                 size: input.size,
                 price: input.price,
-                hotel_id: input.hotel_id,
+                hotelId: hotel.id,
             }
         })
 
         return roomType;
     } catch (e) {
-        return idNotFound(input.id);
+        throw idNotFound(input.id);
     }
 }
 
@@ -68,7 +66,7 @@ export async function deleteRoomType(id: number) {
             }
         });
     } catch (e) {
-        return idNotFound(id);
+        throw idNotFound(id);
     }
 }
 
@@ -80,6 +78,6 @@ export async function findRoomTypeById(id: number) {
 
 export async function findRoomTypeByHotelId(id: number) {
     return await prisma.roomType.findMany({
-        where: { hotel_id: id },
+        where: { hotelId: id },
     });
 }

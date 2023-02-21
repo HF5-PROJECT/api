@@ -39,12 +39,12 @@ describe("DELETE /api/hotel/:id", () => {
             description: "Santa Marina Hotel is located close to the beach",
             address: "8130 Sv. Marina, Sozopol, Bulgarien",
         });
-        
+
         const count = await prisma.hotel.count();
         expect(count).toBe(0);
     });
 
-    it("should return status 204 and delete a hotel", async () => {
+    it("should return status 204 and delete a hotel and its relations", async () => {
         await prisma.roomType.create({
             data: {
                 id: 1000,
@@ -52,7 +52,7 @@ describe("DELETE /api/hotel/:id", () => {
                 description: "Room for 2 clowns laying in one bed",
                 size: 'big',
                 price: 2454.4,
-                hotel_id: 1000
+                hotelId: 1000
             },
         });
 
