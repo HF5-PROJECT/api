@@ -3,7 +3,7 @@ import {
     CreateFloorInput,
     UpdateFloorInput
 } from "./floor.schema";
-import { id_not_found } from "./floor.errors";
+import { idNotFound } from "./floor.errors";
 
 export async function createFloor(input: CreateFloorInput) {
     const floor = await prisma.floor.create({
@@ -23,7 +23,7 @@ export async function browseFloor() {
 export async function showFloor(id: number) {
     const floor = await findFloorById(id);
     if (!floor) {
-        return id_not_found(id);
+        return idNotFound(id);
     }
 
     return floor;
@@ -43,7 +43,7 @@ export async function updateFloor(input: UpdateFloorInput) {
 
         return new_floor;
     } catch (e) {
-        return id_not_found(input.id);
+        return idNotFound(input.id);
     }
 }
 
@@ -55,7 +55,7 @@ export async function deleteFloor(id: number) {
             }
         });
     } catch (e) {
-        return id_not_found(id);
+        return idNotFound(id);
     }
 }
 

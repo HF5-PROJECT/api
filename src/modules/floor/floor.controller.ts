@@ -12,7 +12,7 @@ import {
     ShowFloorParams,
     DeleteFloorParams
 } from "./floor.schema";
-import { error_message } from "./floor.errors";
+import { errorMessage } from "./floor.errors";
 import { Floor } from "@prisma/client";
 
 // In Seconds
@@ -33,7 +33,7 @@ export async function createFloorHandler(
 
         reply.code(201).send(floor);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -48,7 +48,7 @@ export async function browseFloorHandler(
 
         reply.code(200).send(floors);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -65,7 +65,7 @@ export async function showFloorHandler(
 
         reply.code(200).send(floor);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -81,7 +81,7 @@ export async function updateFloorHandler(
 
         reply.code(200).send(floor);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }
 
@@ -97,6 +97,6 @@ export async function deleteFloorHandler(
 
         reply.code(204).send(floor);
     } catch (e) {
-        return reply.badRequest(await error_message(e));
+        return reply.badRequest(await errorMessage(e));
     }
 }

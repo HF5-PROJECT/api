@@ -4,7 +4,6 @@ import { prisma } from "../../../plugins/prisma";
 
 const CACHE_KEY_HOTELS = "allHotels";
 const CACHE_KEY_FLOORS = "allFloors";
-const TIME = new Date();
 
 describe("GET /api/hotel/:id/floors", () => {
     let fastify: FastifyInstance;
@@ -30,24 +29,21 @@ describe("GET /api/hotel/:id/floors", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000,
-                createdAt: TIME
+                hotelId: 1000
             },
         });
         await prisma.floor.create({
             data: {
                 id: 1001,
                 number: 2,
-                hotelId: 1000,
-                createdAt: TIME
+                hotelId: 1000
             },
         });
         await prisma.floor.create({
             data: {
                 id: 1002,
                 number: 3,
-                hotelId: 1000,
-                createdAt: TIME
+                hotelId: 1000
             },
         });
     });
@@ -66,21 +62,15 @@ describe("GET /api/hotel/:id/floors", () => {
         expect(response.json()).toEqual([{
             id: 1000,
             number: 1,
-            hotelId: 1000,
-            createdAt: "\""+TIME+"\"",
-            updatedAt: "\""+TIME+"\""
+            hotelId: 1000
         },{
             id: 1001,
             number: 2,
-            hotelId: 1000,
-            createdAt: TIME,
-            updatedAt: TIME
+            hotelId: 1000
         },{
             id: 1002,
             number: 3,
-            hotelId: 1000,
-            createdAt: String(TIME),
-            updatedAt: String(TIME)
+            hotelId: 1000
         }]);
     });
 
