@@ -11,6 +11,19 @@ declare module "fastify" {
     interface FastifyRequest {
         jwt: JWT;
     }
+    interface FastifyInstance {
+        authenticate(
+            request: FastifyRequest,
+            reply: FastifyReply
+        ): Promise<void>;
+    }
+}
+
+declare module "@fastify/jwt" {
+    interface FastifyJWT {
+        payload: { sub: number; iat: number };
+        user: { sub: number; iat: number; exp: number };
+    }
 }
 
 export default fastifyPlugin(
@@ -34,7 +47,7 @@ export default fastifyPlugin(
                 try {
                     await request.jwtVerify();
                 } catch (err) {
-                    reply.send(err);
+                    reply.unauthorized();
                 }
             }
         );

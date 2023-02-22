@@ -1,5 +1,11 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { createUser, findUserByEmail, findUserById } from "./auth.service";
+import {
+    createAccessToken,
+    createRefreshToken,
+    createUser,
+    findUserByEmail,
+    findUserById,
+} from "./auth.service";
 import { CreateUserInput, LoginInput } from "./auth.schema";
 import { compareSync } from "bcrypt";
 
@@ -36,25 +42,16 @@ export async function loginHandler(
         return reply.unauthorized("email and/or password incorrect");
     }
 
-    const payload = {
-        sub: user.id,
-        iat: Date(),
-    };
-
     reply
         .code(200)
-        .setCookie(
-            "refreshToken",
-            request.jwt.sign(payload, { expiresIn: "1d" }),
-            {
-                path: "/api/auth/refresh",
-                secure: true,
-                httpOnly: true,
-                sameSite: true,
-            }
-        )
+        .setCookie("refreshToken", createRefreshToken(user, request.jwt), {
+            path: "/api/auth/refresh",
+            secure: true,
+            httpOnly: true,
+            sameSite: true,
+        })
         .send({
-            accessToken: request.jwt.sign(payload, { expiresIn: "10m" }),
+            accessToken: createAccessToken(user, request.jwt),
         });
 }
 
@@ -75,25 +72,16 @@ export async function refreshHandler(
             return reply.unauthorized();
         }
 
-        const payload = {
-            sub: user.id,
-            iat: Date(),
-        };
-
         reply
             .code(200)
-            .setCookie(
-                "refreshToken",
-                request.jwt.sign(payload, { expiresIn: "1d" }),
-                {
-                    path: "/api/auth/refresh",
-                    secure: true,
-                    httpOnly: true,
-                    sameSite: true,
-                }
-            )
+            .setCookie("refreshToken", createRefreshToken(user, request.jwt), {
+                path: "/api/auth/refresh",
+                secure: true,
+                httpOnly: true,
+                sameSite: true,
+            })
             .send({
-                accessToken: request.jwt.sign(payload, { expiresIn: "10m" }),
+                accessToken: createAccessToken(user, request.jwt),
             });
     } catch (err) {
         reply.unauthorized();
@@ -113,4 +101,16 @@ export async function logoutHandler(
             sameSite: true,
         })
         .send();
+}
+
+export async function userHandler(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    const user = await findUserById(request.user.sub);
+    if (!user) {
+        return reply.unauthorized();
+    }
+
+    reply.code(200).send(user);
 }
