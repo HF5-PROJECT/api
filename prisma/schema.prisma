@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -12,22 +13,58 @@ datasource db {
 }
 
 model User {
-    id        Int      @id @default(autoincrement())
-    name      String   @db.VarChar(50)
-    email     String   @unique @db.VarChar(255)
-    password  String   @db.Text
-    address   String?  @db.VarChar(255)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    id        Int          @id @default(autoincrement())
+    name      String       @db.VarChar(50)
+    email     String       @unique @db.VarChar(255)
+    password  String       @db.Text
+    address   String?      @db.VarChar(255)
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @default(now()) @updatedAt
+    roles     RoleOnUser[]
+}
+
+model RoleOnUser {
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId Int
+    role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    roleId Int
+
+    @@id([userId, roleId])
+    @@index([roleId])
+    @@index([userId])
+}
+
+model Role {
+    id          Int                @id @default(autoincrement())
+    name        String             @db.VarChar(255)
+    users       RoleOnUser[]
+    permissions PermissionOnRole[]
+}
+
+model PermissionOnRole {
+    permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+    permissionId Int
+    role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    roleId       Int
+
+    @@id([permissionId, roleId])
+    @@index([roleId])
+    @@index([permissionId])
+}
+
+model Permission {
+    id    Int                @id @default(autoincrement())
+    name  String             @db.VarChar(255)
+    roles PermissionOnRole[]
 }
 
 model Hotel {
-    id          Int         @id @default(autoincrement())
-    name        String      @db.VarChar(255)
-    description String?     @db.Text
-    address     String      @db.VarChar(255)
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @default(now()) @updatedAt
+    id          Int        @id @default(autoincrement())
+    name        String     @db.VarChar(255)
+    description String?    @db.Text
+    address     String     @db.VarChar(255)
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @default(now()) @updatedAt
     floors      Floor[]
     RoomTypes   RoomType[]
 }
@@ -39,7 +76,7 @@ model RoomType {
     size        String?  @db.VarChar(255)
     price       Float    @db.Double
     hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-    hotelId    Int
+    hotelId     Int
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now()) @updatedAt
 
