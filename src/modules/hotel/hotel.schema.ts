@@ -55,7 +55,7 @@ const deleteHotelResponseSchema = z.object({
 });
 
 const showHotelFloorSchema = z.object({
-    id: z.number()
+    id: z.string()
 })
 
 const showHotelFloorResponseSchema = z.array(floorSchema);

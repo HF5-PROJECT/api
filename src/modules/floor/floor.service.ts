@@ -72,7 +72,7 @@ export async function findFloorById(id: number) {
 }
 
 export async function findFloorByHotelId(id: number) {
-    await prisma.floor.findMany({
+    return await prisma.floor.findMany({
         where: {
             hotelId: id
         }
