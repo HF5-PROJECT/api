@@ -3,13 +3,16 @@ import {
     CreateFloorInput,
     UpdateFloorInput
 } from "./floor.schema";
+import { findHotelById } from "../hotel/hotel.service";
 import { idNotFound } from "./floor.errors";
 
 export async function createFloor(input: CreateFloorInput) {
+    const hotel = await findHotelById(input.hotelId);
+
     const floor = await prisma.floor.create({
         data: {
             number: input.number,
-            hotelId: input.hotelId,
+            hotelId: hotel.id,
         },
     });
 
@@ -21,29 +24,26 @@ export async function browseFloor() {
 }
 
 export async function showFloor(id: number) {
-    const floor = await findFloorById(id);
-    if (!floor) {
-        return idNotFound(id);
-    }
-
-    return floor;
+    return await findFloorById(id);
 }
 
 export async function updateFloor(input: UpdateFloorInput) {
+    const hotel = await findHotelById(input.hotelId);
+
     try {
-        const new_floor = await prisma.floor.update({
+        const floor = await prisma.floor.update({
             where: {
                 id: input.id
             },
             data: {
                 number: input.number,
-                hotelId: input.hotelId,
+                hotelId: hotel.id,
             }
         })
 
-        return new_floor;
+        return floor;
     } catch (e) {
-        return idNotFound(input.id);
+        throw idNotFound(input.id);
     }
 }
 
@@ -55,18 +55,24 @@ export async function deleteFloor(id: number) {
             }
         });
     } catch (e) {
-        return idNotFound(id);
+        throw idNotFound(id);
     }
 }
 
 export async function findFloorById(id: number) {
-    return await prisma.floor.findFirst({
+    const floor = await prisma.floor.findFirst({
         where: { id: id },
     });
+
+    if (!floor) {
+        throw idNotFound(id);
+    }
+
+    return floor;
 }
 
 export async function findFloorByHotelId(id: number) {
-    return await prisma.floor.findMany({
+    await prisma.floor.findMany({
         where: {
             hotelId: id
         }

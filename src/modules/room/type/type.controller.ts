@@ -29,8 +29,8 @@ export async function createRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
         const roomType = await createRoomType(request.body);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES + roomType.hotelId);
 
         reply.code(201).send(roomType);
     } catch (e) {
@@ -77,8 +77,8 @@ export async function updateRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.body.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
         const roomType = await updateRoomType(request.body);
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.body.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES + roomType.hotelId);
 
         reply.code(200).send(roomType);
     } catch (e) {
@@ -93,8 +93,8 @@ export async function deleteRoomTypeHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.params.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES);
         const roomType = await deleteRoomType(Number(request.params.id));
+        await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.params.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES + roomType.hotelId);
 
         reply.code(204).send(roomType);
     } catch (e) {

@@ -14,6 +14,7 @@ import {
 } from "./floor.schema";
 import { errorMessage } from "./floor.errors";
 import { Floor } from "@prisma/client";
+import { CACHE_KEY_HOTEL_FLOORS } from "../hotel/hotel.controller";
 
 // In Seconds
 const CACHE_TTL = 1800;
@@ -28,8 +29,8 @@ export async function createFloorHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_FLOORS);
         const floor = await createFloor(request.body);
+        await request.redis.invalidateCaches(CACHE_KEY_FLOORS, CACHE_KEY_HOTEL_FLOORS + floor.hotelId);
 
         reply.code(201).send(floor);
     } catch (e) {
@@ -76,8 +77,8 @@ export async function updateFloorHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_FLOOR+request.body.id, CACHE_KEY_FLOORS);
         const floor = await updateFloor(request.body);
+        await request.redis.invalidateCaches(CACHE_KEY_FLOOR+request.body.id, CACHE_KEY_FLOORS, CACHE_KEY_HOTEL_FLOORS + floor.hotelId);
 
         reply.code(200).send(floor);
     } catch (e) {
@@ -92,8 +93,8 @@ export async function deleteFloorHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_FLOOR+request.params.id, CACHE_KEY_FLOORS);
         const floor = await deleteFloor(Number(request.params.id));
+        await request.redis.invalidateCaches(CACHE_KEY_FLOOR+request.params.id, CACHE_KEY_FLOORS, CACHE_KEY_HOTEL_FLOORS + floor.hotelId);
 
         reply.code(204).send(floor);
     } catch (e) {

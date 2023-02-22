@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
-import { FloorSchema } from "../floor/floor.schema";
+import { floorSchema } from "../floor/floor.schema";
 import { roomTypeSchema } from "../room/type/type.schema";
 
 const hotelCore = {
@@ -58,7 +58,7 @@ const showHotelFloorSchema = z.object({
     id: z.number()
 })
 
-const showHotelFloorResponseSchema = z.array(FloorSchema);
+const showHotelFloorResponseSchema = z.array(floorSchema);
 
 const showHotelRoomTypeSchema = z.object({
     id: z.string()

@@ -10,27 +10,31 @@ import { roomTypeSchemas } from "./modules/room/type/type.schema";
 export async function build() {
     const fastify = Fastify({ logger: { level: "fatal" } });
 
-    // Register health route
-    fastify.get("/api/health", async (request, response) => {
-        return { status: "OK" };
-    });
+    try {
+        // Register health route
+        fastify.get("/api/health", async (request, response) => {
+            return { status: "OK" };
+        });
 
-    // Register plugins
-    await fastify.register(fastifyAutoload, {
-        dir: path.join(__dirname, "./plugins"),
-    });
+        // Register plugins
+        await fastify.register(fastifyAutoload, {
+            dir: path.join(__dirname, "./plugins"),
+        });
 
-    // This has to be done manually as fastify autoload does not support adding schemas somehow?!
-    for (const schema of [...authSchemas, ...hotelSchemas, ...floorSchemas, ...roomTypeSchemas]) {
-        fastify.addSchema(schema);
+        // This has to be done manually as fastify autoload does not support adding schemas somehow?!
+        for (const schema of [...authSchemas, ...hotelSchemas, ...floorSchemas, ...roomTypeSchemas]) {
+            fastify.addSchema(schema);
+        }
+
+        // Register routes
+        await fastify.register(fastifyAutoload, {
+            dir: path.join(__dirname, "./modules/"),
+            options: { prefix: "/api" },
+            matchFilter: (path) => path.endsWith(".route.ts"),
+        });
+    } catch (e) {
+        console.error(e);
     }
-
-    // Register routes
-    await fastify.register(fastifyAutoload, {
-        dir: path.join(__dirname, "./modules/"),
-        options: { prefix: "/api" },
-        matchFilter: (path) => path.endsWith(".route.ts"),
-    });
 
     return fastify;
 }

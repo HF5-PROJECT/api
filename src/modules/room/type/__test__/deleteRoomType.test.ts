@@ -10,8 +10,6 @@ describe("DELETE /api/room/type/:id", () => {
     });
 
     beforeEach(async () => {
-        await fastify.redis.flushall();
-        await prisma.floor.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({

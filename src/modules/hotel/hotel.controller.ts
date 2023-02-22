@@ -25,6 +25,7 @@ const CACHE_TTL = 1800;
 const CACHE_KEY_HOTELS = "allHotels";
 const CACHE_KEY_HOTEL = "hotel";
 export const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
+export const CACHE_KEY_HOTEL_FLOORS = "hotelFloors";
 
 export async function createHotelHandler(
     request: FastifyRequest<{
@@ -130,9 +131,7 @@ export async function showHotelFloorHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_HOTELS);
-        await request.redis.invalidateCaches("allFloors");
-        const floors = await request.redis.rememberJSON<Floor[]>(CACHE_KEY_HOTELS, CACHE_TTL, async () => {
+        const floors = await request.redis.rememberJSON<Floor[]>(CACHE_KEY_HOTEL_FLOORS + request.params.id, CACHE_TTL, async () => {
             return await showHotelFloor(Number(request.params.id));
         });
 
