@@ -38,7 +38,7 @@ export async function loginHandler(
 
     const payload = {
         sub: user.id,
-        iat: Date(),
+        iat: Number(Date()),
     };
 
     reply
@@ -77,7 +77,7 @@ export async function refreshHandler(
 
         const payload = {
             sub: user.id,
-            iat: Date(),
+            iat: Number(Date()),
         };
 
         reply
@@ -113,4 +113,16 @@ export async function logoutHandler(
             sameSite: true,
         })
         .send();
+}
+
+export async function userHandler(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    const user = await findUserById(request.user.sub);
+    if (!user) {
+        return reply.unauthorized();
+    }
+
+    reply.code(200).send(user);
 }

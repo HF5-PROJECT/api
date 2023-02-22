@@ -4,6 +4,7 @@ import {
     registerUserHandler,
     refreshHandler,
     logoutHandler,
+    userHandler,
 } from "./auth.controller";
 import { $ref } from "./auth.schema";
 
@@ -61,5 +62,22 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             },
         },
         logoutHandler
+    );
+
+    fastify.get(
+        "/user",
+        {
+            schema: {
+                headers: {
+                    Authorization: true,
+                },
+                tags: ["Auth"],
+                response: {
+                    200: $ref("userResponseSchema"),
+                },
+            },
+            onRequest: [fastify.authenticate],
+        },
+        userHandler
     );
 };
