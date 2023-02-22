@@ -47,7 +47,7 @@ export default fastifyPlugin(
                 try {
                     await request.jwtVerify();
                 } catch (err) {
-                    reply.send(err);
+                    reply.unauthorized();
                 }
             }
         );
