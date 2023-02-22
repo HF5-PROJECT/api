@@ -51,12 +51,12 @@ const deleteFloorResponseSchema = z.object({
     ...floorCore
 });
 
+export const floorSchema = showFloorResponseSchema;
+
 export type CreateFloorInput = z.infer<typeof createFloorSchema>;
 export type UpdateFloorInput = z.infer<typeof updateFloorSchema>;
 export type ShowFloorParams = z.infer<typeof showFloorSchema>;
 export type DeleteFloorParams = z.infer<typeof deleteFloorSchema>;
-
-export const floorSchema = showFloorResponseSchema;
 
 export const { schemas: floorSchemas, $ref } = buildJsonSchemas({
     createFloorSchema,
