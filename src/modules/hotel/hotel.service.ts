@@ -3,6 +3,7 @@ import {
     CreateHotelInput,
     UpdateHotelInput
 } from "./hotel.schema";
+import { findFloorByHotelId } from "../floor/floor.service"
 import { findRoomTypeByHotelId } from "../room/type/type.service";
 import { idNotFound } from "./hotel.errors";
 
@@ -55,6 +56,15 @@ export async function deleteHotel(id: number) {
     } catch (e) {
         throw idNotFound(id);
     }
+}
+
+export async function showHotelFloor(id: number) {
+    const hotel = await findHotelById(id);
+    if (!hotel) {
+        throw idNotFound(id);
+    }
+
+    return findFloorByHotelId(id);
 }
 
 export async function showHotelRoomType(id: number) {

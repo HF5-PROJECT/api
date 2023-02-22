@@ -7,9 +7,8 @@ COPY package.json /usr/src/app/
 RUN npm install
 COPY . /usr/src/app
 RUN npx prisma generate
-RUN npx prisma migrate deploy
 ENV HOST 0.0.0.0
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]
 
 FROM base AS dev
 ENV HOST 0.0.0.0

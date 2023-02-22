@@ -126,7 +126,7 @@ describe("GET /api/hotel/:id/room_type", () => {
         expect(response.json()).toEqual([]);
     });
 
-    it("should return status 200 and return empty, if no hotel were found", async () => {
+    it("should return status 400 and return error, if no hotel were found", async () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/hotel/1003/room_types"
