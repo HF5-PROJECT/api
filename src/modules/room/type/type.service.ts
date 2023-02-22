@@ -27,12 +27,7 @@ export async function browseRoomType() {
 }
 
 export async function showRoomType(id: number) {
-    const roomType = await findRoomTypeById(id);
-    if (!roomType) {
-        throw idNotFound(id);
-    }
-
-    return roomType;
+    return await findRoomTypeById(id);
 }
 
 export async function updateRoomType(input: UpdateRoomTypeInput) {
@@ -71,9 +66,15 @@ export async function deleteRoomType(id: number) {
 }
 
 export async function findRoomTypeById(id: number) {
-    return await prisma.roomType.findFirst({
+    const roomType = await prisma.roomType.findFirst({
         where: { id: id },
     });
+
+    if (!roomType) {
+        throw idNotFound(id);
+    }
+
+    return roomType;
 }
 
 export async function findRoomTypeByHotelId(id: number) {

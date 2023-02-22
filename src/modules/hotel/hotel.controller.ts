@@ -5,6 +5,7 @@ import {
     showHotel,
     updateHotel,
     deleteHotel,
+    showHotelFloor,
     showHotelRoomType,
 } from "./hotel.service";
 import {
@@ -13,9 +14,10 @@ import {
     ShowHotelParams,
     DeleteHotelParams,
     ShowHotelRoomTypeSchema,
+    ShowHotelFloorSchema,
 } from "./hotel.schema";
 import { errorMessage } from "./hotel.errors";
-import { Hotel, RoomType } from "@prisma/client";
+import { Hotel, Floor, RoomType } from "@prisma/client";
 
 // In Seconds
 const CACHE_TTL = 1800;
@@ -23,6 +25,7 @@ const CACHE_TTL = 1800;
 const CACHE_KEY_HOTELS = "allHotels";
 const CACHE_KEY_HOTEL = "hotel";
 export const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
+export const CACHE_KEY_HOTEL_FLOORS = "hotelFloors";
 
 export async function createHotelHandler(
     request: FastifyRequest<{
@@ -116,6 +119,23 @@ export async function showHotelRoomTypeHandler(
         });
 
         reply.code(200).send(roomTypes);
+    } catch (e) {
+        return reply.badRequest(await errorMessage(e));
+    }
+}
+
+export async function showHotelFloorHandler(
+    request: FastifyRequest<{
+        Params: ShowHotelFloorSchema;
+    }>,
+    reply: FastifyReply
+) {
+    try {
+        const floors = await request.redis.rememberJSON<Floor[]>(CACHE_KEY_HOTEL_FLOORS + request.params.id, CACHE_TTL, async () => {
+            return await showHotelFloor(Number(request.params.id));
+        });
+
+        reply.code(200).send(floors);
     } catch (e) {
         return reply.badRequest(await errorMessage(e));
     }
