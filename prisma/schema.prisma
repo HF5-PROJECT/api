@@ -36,7 +36,7 @@ model RoleOnUser {
 
 model Role {
     id          Int                @id @default(autoincrement())
-    name        String             @db.VarChar(255)
+    name        String             @unique @db.VarChar(255)
     users       RoleOnUser[]
     permissions PermissionOnRole[]
 }
@@ -54,13 +54,13 @@ model PermissionOnRole {
 
 model Permission {
     id    Int                @id @default(autoincrement())
-    name  String             @db.VarChar(255)
+    name  String             @unique @db.VarChar(255)
     roles PermissionOnRole[]
 }
 
 model Hotel {
     id          Int        @id @default(autoincrement())
-    name        String     @db.VarChar(255)
+    name        String     @unique @db.VarChar(255)
     description String?    @db.Text
     address     String     @db.VarChar(255)
     createdAt   DateTime   @default(now())
@@ -80,6 +80,7 @@ model RoomType {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now()) @updatedAt
 
+    @@unique([hotelId, name])
     @@index([hotelId])
 }
 
@@ -91,5 +92,6 @@ model Floor {
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
+    @@unique([hotelId, number])
     @@index([hotelId])
 }
