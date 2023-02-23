@@ -18,6 +18,7 @@ import {
 } from "./hotel.schema";
 import { errorMessage } from "./hotel.errors";
 import { Hotel, Floor, RoomType } from "@prisma/client";
+import { userHasPermission } from "../auth/auth.service";
 
 // In Seconds
 const CACHE_TTL = 1800;

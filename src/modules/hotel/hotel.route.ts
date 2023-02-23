@@ -55,12 +55,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Hotel"],
                 body: $ref("updateHotelSchema"),
                 response: {
                     200: $ref("updateHotelResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate],
         },
         updateHotelHandler
     );
@@ -69,11 +73,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Hotel"],
                 response: {
                     204: $ref("deleteHotelResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate],
         },
         deleteHotelHandler
     );

@@ -1,4 +1,4 @@
-import { JWT } from "@fastify/jwt";
+import { FastifyJWT, JWT } from "@fastify/jwt";
 import { User } from "@prisma/client";
 import { hashSync } from "bcrypt";
 import { prisma } from "../../plugins/prisma";
@@ -51,4 +51,8 @@ export function createAccessToken(user: User, jwt: JWT) {
         },
         { expiresIn: "10m" }
     );
+}
+
+export async function userHasPermission(user: FastifyJWT['user'], permissionName: string) {
+    
 }
