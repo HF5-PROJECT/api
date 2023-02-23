@@ -1,6 +1,7 @@
 import { FastifyJWT, JWT } from "@fastify/jwt";
 import { User } from "@prisma/client";
 import { hashSync } from "bcrypt";
+import fastify from "fastify";
 import { prisma } from "../../plugins/prisma";
 import { CreateUserInput } from "./auth.schema";
 
@@ -33,26 +34,59 @@ export async function findUserById(id: number) {
     });
 }
 
-export function createRefreshToken(user: User, jwt: JWT) {
+export async function createRefreshToken(user: User, jwt: JWT) {
     return jwt.sign(
         {
             sub: user.id,
+            permissions: [],
             iat: Number(Date()),
         },
         { expiresIn: "14d" }
     );
 }
 
-export function createAccessToken(user: User, jwt: JWT) {
+export async function createAccessToken(user: User, jwt: JWT) {
+    const permissionIds = await getUserPermissionIds(user);
+
     return jwt.sign(
         {
             sub: user.id,
+            permissions: permissionIds,
             iat: Number(Date()),
         },
         { expiresIn: "10m" }
     );
 }
 
+async function getUserPermissionIds(user: User): Promise<number[]> {
+    const userAndRoles = await prisma.user.findFirst({
+        where: { id: user.id },
+        include: {
+            roles: true,
+        },
+    });
+
+    if (userAndRoles === null) {
+        return [];
+    }
+
+    const permissionIds: number[] = [];
+    userAndRoles.roles.forEach(async (roleOnUser) => {
+        const permissionIdObjects = await prisma.permissionOnRole.findMany({
+            where: { roleId: roleOnUser.roleId },
+            select: {
+                permissionId: true,
+            }
+        });
+
+        permissionIds.concat(permissionIdObjects.map(permissionIdObject => {
+            return permissionIdObject.permissionId;
+        }));
+    });
+
+    return permissionIds;
+}
+
 export async function userHasPermission(user: FastifyJWT['user'], permissionName: string) {
-    
+
 }

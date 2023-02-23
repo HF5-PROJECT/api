@@ -44,14 +44,14 @@ export async function loginHandler(
 
     reply
         .code(200)
-        .setCookie("refreshToken", createRefreshToken(user, request.jwt), {
+        .setCookie("refreshToken", await createRefreshToken(user, request.jwt), {
             path: "/api/auth/refresh",
             secure: true,
             httpOnly: true,
             sameSite: true,
         })
         .send({
-            accessToken: createAccessToken(user, request.jwt),
+            accessToken: await createAccessToken(user, request.jwt),
         });
 }
 
@@ -74,14 +74,14 @@ export async function refreshHandler(
 
         reply
             .code(200)
-            .setCookie("refreshToken", createRefreshToken(user, request.jwt), {
+            .setCookie("refreshToken", await createRefreshToken(user, request.jwt), {
                 path: "/api/auth/refresh",
                 secure: true,
                 httpOnly: true,
                 sameSite: true,
             })
             .send({
-                accessToken: createAccessToken(user, request.jwt),
+                accessToken: await createAccessToken(user, request.jwt),
             });
     } catch (err) {
         reply.unauthorized();
