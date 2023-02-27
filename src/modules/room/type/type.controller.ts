@@ -4,16 +4,18 @@ import {
     browseRoomType,
     showRoomType,
     updateRoomType,
-    deleteRoomType
+    deleteRoomType,
+    showRoomTypeRooms,
 } from "./type.service";
 import {
     CreateRoomTypeInput,
     UpdateRoomTypeInput,
     ShowRoomTypeParams,
-    DeleteRoomTypeParams
+    DeleteRoomTypeParams,
+    ShowRoomTypeRoomParams,
 } from "./type.schema";
 import { errorMessage } from "./type.errors";
-import { RoomType } from "@prisma/client";
+import { Room, RoomType } from "@prisma/client";
 import { CACHE_KEY_HOTEL_ROOM_TYPES } from "../../hotel/hotel.controller";
 
 // In Seconds
@@ -21,6 +23,7 @@ const CACHE_TTL = 1800;
 
 const CACHE_KEY_ROOM_TYPES = "allRoomTypes";
 const CACHE_KEY_ROOM_TYPE = "roomType";
+export const CACHE_KEY_ROOM_TYPE_ROOMS = "roomTypeRooms";
 
 export async function createRoomTypeHandler(
     request: FastifyRequest<{
@@ -97,6 +100,23 @@ export async function deleteRoomTypeHandler(
         await request.redis.invalidateCaches(CACHE_KEY_ROOM_TYPE + request.params.id, CACHE_KEY_ROOM_TYPES, CACHE_KEY_HOTEL_ROOM_TYPES + roomType.hotelId);
 
         reply.code(204).send(roomType);
+    } catch (e) {
+        return reply.badRequest(await errorMessage(e));
+    }
+}
+
+export async function showRoomTypeRoomsHandler(
+    request: FastifyRequest<{
+        Params: ShowRoomTypeRoomParams;
+    }>,
+    reply: FastifyReply
+) {
+    try {
+        const rooms = await request.redis.rememberJSON<Room[]>(CACHE_KEY_ROOM_TYPE_ROOMS + request.params.id, CACHE_TTL, async () => {
+            return await showRoomTypeRooms(Number(request.params.id));
+        });
+
+        reply.code(200).send(rooms);
     } catch (e) {
         return reply.badRequest(await errorMessage(e));
     }

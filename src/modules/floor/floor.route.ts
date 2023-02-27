@@ -4,7 +4,8 @@ import {
     browseFloorHandler,
     showFloorHandler,
     updateFloorHandler,
-    deleteFloorHandler
+    deleteFloorHandler,
+    showFloorRoomsHandler,
 } from "./floor.controller";
 import { $ref } from "./floor.schema";
 
@@ -74,5 +75,18 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             },
         },
         deleteFloorHandler
+    );
+
+    fastify.get(
+        "/:id/rooms",
+        {
+            schema: {
+                tags: ["Floor"],
+                response: {
+                    200: $ref("showFloorRoomResponseSchema"),
+                },
+            },
+        },
+        showFloorRoomsHandler
     );
 };

@@ -5,7 +5,7 @@ import {
     showHotelHandler,
     updateHotelHandler,
     deleteHotelHandler,
-    showHotelFloorHandler,
+    showHotelFloorsHandler,
     showHotelRoomTypeHandler,
 } from "./hotel.controller";
 import { $ref } from "./hotel.schema";
@@ -96,7 +96,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                 },
             },
         },
-        showHotelFloorHandler
+        showHotelFloorsHandler
     );
 
     fastify.get(

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
+import { roomSchema } from "../room/room.schema";
 
 const floorCore = {
     number: z.number({
@@ -51,12 +52,19 @@ const deleteFloorResponseSchema = z.object({
     ...floorCore
 });
 
+const showFloorRoomSchema = z.object({
+    id: z.string()
+});
+
+const showFloorRoomResponseSchema = z.array(roomSchema);
+
 export const floorSchema = showFloorResponseSchema;
 
 export type CreateFloorInput = z.infer<typeof createFloorSchema>;
 export type UpdateFloorInput = z.infer<typeof updateFloorSchema>;
 export type ShowFloorParams = z.infer<typeof showFloorSchema>;
 export type DeleteFloorParams = z.infer<typeof deleteFloorSchema>;
+export type ShowFloorRoomParams = z.infer<typeof showFloorRoomSchema>;
 
 export const { schemas: floorSchemas, $ref } = buildJsonSchemas({
     createFloorSchema,
@@ -67,7 +75,9 @@ export const { schemas: floorSchemas, $ref } = buildJsonSchemas({
     updateFloorSchema,
     updateFloorResponseSchema,
     deleteFloorSchema,
-    deleteFloorResponseSchema
+    deleteFloorResponseSchema,
+    showFloorRoomSchema,
+    showFloorRoomResponseSchema
 }, {
     $id: "floorSchema"
 });

@@ -5,6 +5,7 @@ import {
 } from "./floor.schema";
 import { findHotelById } from "../hotel/hotel.service";
 import { idNotFound } from "./floor.errors";
+import { findRoomByFloorId } from "../room/room.service";
 
 export async function createFloor(input: CreateFloorInput) {
     const hotel = await findHotelById(input.hotelId);
@@ -59,6 +60,12 @@ export async function deleteFloor(id: number) {
     }
 }
 
+export async function showFloorRooms(id: number) {
+    const floor = await findFloorById(id);
+
+    return findRoomByFloorId(floor.id);
+}
+
 export async function findFloorById(id: number) {
     const floor = await prisma.floor.findFirst({
         where: { id: id },
@@ -71,10 +78,10 @@ export async function findFloorById(id: number) {
     return floor;
 }
 
-export async function findFloorByHotelId(id: number) {
+export async function findFloorByHotelId(hotelId: number) {
     return await prisma.floor.findMany({
         where: {
-            hotelId: id
+            hotelId: hotelId
         }
     });
 }
