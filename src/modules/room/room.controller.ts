@@ -37,9 +37,9 @@ export async function createRoomHandler(
             CACHE_KEY_ROOM_TYPE_ROOMS + room.roomTypeId
         );
 
-        reply.code(201).send(room);
+        return reply.code(201).send(room);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -56,9 +56,9 @@ export async function browseRoomHandler(
             }
         );
 
-        reply.code(200).send(rooms);
+        return reply.code(200).send(rooms);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -77,9 +77,9 @@ export async function getRoomHandler(
             }
         );
 
-        reply.code(200).send(room);
+        return reply.code(200).send(room);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -97,9 +97,9 @@ export async function updateRoomHandler(
             CACHE_KEY_ROOM_TYPE_ROOMS + room.roomTypeId
         );
 
-        reply.code(200).send(room);
+        return reply.code(200).send(room);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -117,8 +117,8 @@ export async function deleteRoomHandler(
             CACHE_KEY_ROOM_TYPE_ROOMS + room.roomTypeId
         );
 
-        reply.code(204).send(room);
+        return reply.code(204).send(room);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }

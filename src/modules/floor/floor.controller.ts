@@ -38,9 +38,9 @@ export async function createFloorHandler(
             CACHE_KEY_HOTEL_FLOORS + floor.hotelId
         );
 
-        reply.code(201).send(floor);
+        return reply.code(201).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -57,9 +57,9 @@ export async function browseFloorHandler(
             }
         );
 
-        reply.code(200).send(floors);
+        return reply.code(200).send(floors);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -78,9 +78,9 @@ export async function getFloorHandler(
             }
         );
 
-        reply.code(200).send(floor);
+        return reply.code(200).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -98,9 +98,9 @@ export async function updateFloorHandler(
             CACHE_KEY_HOTEL_FLOORS + floor.hotelId
         );
 
-        reply.code(200).send(floor);
+        return reply.code(200).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -118,9 +118,9 @@ export async function deleteFloorHandler(
             CACHE_KEY_HOTEL_FLOORS + floor.hotelId
         );
 
-        reply.code(204).send(floor);
+        return reply.code(204).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -139,8 +139,8 @@ export async function getRoomsByFloorsHandler(
             }
         );
 
-        reply.code(200).send(rooms);
+        return reply.code(200).send(rooms);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }

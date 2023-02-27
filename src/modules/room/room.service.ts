@@ -8,15 +8,13 @@ export async function createRoom(input: CreateRoomInput) {
     const floor = await getFloorById(input.floorId);
     const roomType = await getRoomTypeById(input.roomTypeId);
 
-    const room = await prisma.room.create({
+    return await prisma.room.create({
         data: {
             number: input.number,
             floorId: floor.id,
             roomTypeId: roomType.id,
         },
     });
-
-    return room;
 }
 
 export async function getAllRooms() {
@@ -28,7 +26,7 @@ export async function updateRoom(input: UpdateRoomInput) {
     const roomType = await getRoomTypeById(input.roomTypeId);
 
     try {
-        const room = await prisma.room.update({
+        return await prisma.room.update({
             where: {
                 id: input.id,
             },
@@ -38,8 +36,6 @@ export async function updateRoom(input: UpdateRoomInput) {
                 roomTypeId: roomType.id,
             },
         });
-
-        return room;
     } catch (e) {
         throw idNotFound(input.id);
     }

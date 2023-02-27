@@ -37,9 +37,9 @@ export async function createHotelHandler(
         await request.redis.invalidateCaches(CACHE_KEY_HOTELS);
         const hotel = await createHotel(request.body);
 
-        reply.code(201).send(hotel);
+        return reply.code(201).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -56,9 +56,9 @@ export async function browseHotelHandler(
             }
         );
 
-        reply.code(200).send(hotels);
+        return reply.code(200).send(hotels);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -77,9 +77,9 @@ export async function getHotelHandler(
             }
         );
 
-        reply.code(200).send(hotel);
+        return reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -96,9 +96,9 @@ export async function updateHotelHandler(
         );
         const hotel = await updateHotel(request.body);
 
-        reply.code(200).send(hotel);
+        return reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -115,9 +115,9 @@ export async function deleteHotelHandler(
         );
         const hotel = await deleteHotel(Number(request.params.id));
 
-        reply.code(204).send(hotel);
+        return reply.code(204).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -136,9 +136,9 @@ export async function getRoomTypesByHotelHandler(
             }
         );
 
-        reply.code(200).send(roomTypes);
+        return reply.code(200).send(roomTypes);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -157,8 +157,8 @@ export async function getFloorsByHotelsHandler(
             }
         );
 
-        reply.code(200).send(floors);
+        return reply.code(200).send(floors);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }

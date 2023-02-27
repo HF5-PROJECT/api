@@ -18,7 +18,7 @@ export async function createHotel(input: CreateHotelInput) {
 
 export async function updateHotel(input: UpdateHotelInput) {
     try {
-        const hotel = await prisma.hotel.update({
+        return await prisma.hotel.update({
             where: {
                 id: input.id,
             },
@@ -28,8 +28,6 @@ export async function updateHotel(input: UpdateHotelInput) {
                 address: input.address,
             },
         });
-
-        return hotel;
     } catch (e) {
         throw idNotFound(input.id);
     }

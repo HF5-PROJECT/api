@@ -10,21 +10,19 @@ export async function getAllFloors() {
 export async function createFloor(input: CreateFloorInput) {
     const hotel = await getHotelById(input.hotelId);
 
-    const floor = await prisma.floor.create({
+    return await prisma.floor.create({
         data: {
             number: input.number,
             hotelId: hotel.id,
         },
     });
-
-    return floor;
 }
 
 export async function updateFloor(input: UpdateFloorInput) {
     const hotel = await getHotelById(input.hotelId);
 
     try {
-        const floor = await prisma.floor.update({
+        return await prisma.floor.update({
             where: {
                 id: input.id,
             },
@@ -33,8 +31,6 @@ export async function updateFloor(input: UpdateFloorInput) {
                 hotelId: hotel.id,
             },
         });
-
-        return floor;
     } catch (e) {
         throw idNotFound(input.id);
     }

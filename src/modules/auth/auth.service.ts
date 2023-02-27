@@ -9,7 +9,7 @@ export async function createUser(input: CreateUserInput) {
         throw Error("Email is already in use");
     }
 
-    const user = await prisma.user.create({
+    return await prisma.user.create({
         data: {
             email: input.email,
             password: hashSync(input.password, 10),
@@ -17,8 +17,6 @@ export async function createUser(input: CreateUserInput) {
             address: input.address,
         },
     });
-
-    return user;
 }
 
 export async function getUserByEmail(email: string) {

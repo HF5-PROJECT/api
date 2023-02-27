@@ -8,6 +8,7 @@ import {
 } from "./auth.service";
 import { CreateUserInput, LoginInput } from "./auth.schema";
 import { compareSync } from "bcrypt";
+import { errorMessage } from "../../utils/string";
 
 export async function registerUserHandler(
     request: FastifyRequest<{
@@ -18,15 +19,9 @@ export async function registerUserHandler(
     try {
         const user = await createUser(request.body);
 
-        reply.code(201).send(user);
+        return reply.code(201).send(user);
     } catch (e) {
-        let message = String(e);
-
-        if (e instanceof Error) {
-            message = e.message;
-        }
-
-        return reply.badRequest(message);
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -42,7 +37,7 @@ export async function loginHandler(
         return reply.unauthorized("email and/or password incorrect");
     }
 
-    reply
+    return reply
         .code(200)
         .setCookie("refreshToken", createRefreshToken(user, request.jwt), {
             path: "/api/auth/refresh",
@@ -72,7 +67,7 @@ export async function refreshHandler(
             return reply.unauthorized();
         }
 
-        reply
+        return reply
             .code(200)
             .setCookie("refreshToken", createRefreshToken(user, request.jwt), {
                 path: "/api/auth/refresh",
@@ -84,7 +79,7 @@ export async function refreshHandler(
                 accessToken: createAccessToken(user, request.jwt),
             });
     } catch (err) {
-        reply.unauthorized();
+        return reply.unauthorized();
     }
 }
 
@@ -92,7 +87,7 @@ export async function logoutHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {
-    reply
+    return reply
         .code(200)
         .clearCookie("refreshToken", {
             path: "/api/auth/refresh",
@@ -112,5 +107,5 @@ export async function userHandler(
         return reply.unauthorized();
     }
 
-    reply.code(200).send(user);
+    return reply.code(200).send(user);
 }

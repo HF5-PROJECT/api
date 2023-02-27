@@ -38,9 +38,9 @@ export async function createRoomTypeHandler(
             CACHE_KEY_HOTEL_ROOM_TYPES + roomType.hotelId
         );
 
-        reply.code(201).send(roomType);
+        return reply.code(201).send(roomType);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -57,9 +57,9 @@ export async function browseRoomTypeHandler(
             }
         );
 
-        reply.code(200).send(roomTypes);
+        return reply.code(200).send(roomTypes);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -78,9 +78,9 @@ export async function getRoomTypeHandler(
             }
         );
 
-        reply.code(200).send(roomType);
+        return reply.code(200).send(roomType);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -98,9 +98,9 @@ export async function updateRoomTypeHandler(
             CACHE_KEY_HOTEL_ROOM_TYPES + roomType.hotelId
         );
 
-        reply.code(200).send(roomType);
+        return reply.code(200).send(roomType);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -118,9 +118,9 @@ export async function deleteRoomTypeHandler(
             CACHE_KEY_HOTEL_ROOM_TYPES + roomType.hotelId
         );
 
-        reply.code(204).send(roomType);
+        return reply.code(204).send(roomType);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -139,8 +139,8 @@ export async function getRoomsByRoomTypesHandler(
             }
         );
 
-        reply.code(200).send(rooms);
+        return reply.code(200).send(rooms);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
