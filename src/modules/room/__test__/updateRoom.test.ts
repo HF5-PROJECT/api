@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-describe("POST /api/room", () => {
+describe("PUT /api/room", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -27,7 +27,7 @@ describe("POST /api/room", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.roomType.create({
@@ -35,9 +35,9 @@ describe("POST /api/room", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.room.create({

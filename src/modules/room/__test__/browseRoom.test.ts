@@ -27,7 +27,7 @@ describe("GET /api/room", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.roomType.create({
@@ -35,9 +35,9 @@ describe("GET /api/room", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.room.create({
@@ -70,36 +70,40 @@ describe("GET /api/room", () => {
         await fastify.close();
     });
 
-    it("should return status 200 and get all floors", async () => {
+    it("should return status 200 and get all rooms", async () => {
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/room"
+            url: "/api/room",
         });
 
         expect(response.statusCode).toBe(200);
-        expect(response.json()).toEqual([{
-            id: 1000,
-            number: 1,
-            floorId: 1000,
-            roomTypeId: 1000,
-        }, {
-            id: 1001,
-            number: 2,
-            floorId: 1000,
-            roomTypeId: 1000,
-        }, {
-            id: 1002,
-            number: 3,
-            floorId: 1000,
-            roomTypeId: 1000,
-        }]);
+        expect(response.json()).toEqual([
+            {
+                id: 1000,
+                number: 1,
+                floorId: 1000,
+                roomTypeId: 1000,
+            },
+            {
+                id: 1001,
+                number: 2,
+                floorId: 1000,
+                roomTypeId: 1000,
+            },
+            {
+                id: 1002,
+                number: 3,
+                floorId: 1000,
+                roomTypeId: 1000,
+            },
+        ]);
     });
 
     it("should return status 200 and return empty, if none were found", async () => {
         await prisma.room.deleteMany();
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/room"
+            url: "/api/room",
         });
 
         expect(response.statusCode).toBe(200);

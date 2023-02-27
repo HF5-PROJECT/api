@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-describe("POST /api/floor", () => {
+describe("PUT /api/floor", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -24,7 +24,7 @@ describe("POST /api/floor", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
     });
@@ -40,7 +40,7 @@ describe("POST /api/floor", () => {
             payload: {
                 id: 1000,
                 number: 2,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -48,7 +48,7 @@ describe("POST /api/floor", () => {
         expect(response.json()).toEqual({
             id: 1000,
             number: 2,
-            hotelId: 1000
+            hotelId: 1000,
         });
     });
 
@@ -59,7 +59,7 @@ describe("POST /api/floor", () => {
             payload: {
                 id: 1001,
                 number: 2,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -77,7 +77,7 @@ describe("POST /api/floor", () => {
             url: "/api/floor/1000",
             payload: {
                 id: 1000,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -96,7 +96,7 @@ describe("POST /api/floor", () => {
             payload: {
                 id: 1000,
                 number: "",
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -114,7 +114,7 @@ describe("POST /api/floor", () => {
             url: "/api/floor/1000",
             payload: {
                 id: 1000,
-                number: 1
+                number: 1,
             },
         });
 
@@ -133,7 +133,7 @@ describe("POST /api/floor", () => {
             payload: {
                 id: 1000,
                 number: 1,
-                hotelId: ""
+                hotelId: "",
             },
         });
 

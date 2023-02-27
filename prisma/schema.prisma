@@ -42,7 +42,7 @@ model RoomType {
     hotelId     Int
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now()) @updatedAt
-    rooms        Room[]
+    rooms       Room[]
 
     @@index([hotelId])
 }
@@ -54,7 +54,7 @@ model Floor {
     hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
-    rooms      Room[]
+    rooms     Room[]
 
     @@index([hotelId])
 }
