@@ -5,6 +5,7 @@ import {
 } from "./type.schema";
 import { findHotelById } from "../../hotel/hotel.service";
 import { idNotFound } from "./type.errors";
+import { findRoomByRoomTypeId } from "../room.service";
 
 export async function createRoomType(input: CreateRoomTypeInput) {
     const hotel = await findHotelById(input.hotelId);
@@ -65,6 +66,12 @@ export async function deleteRoomType(id: number) {
     }
 }
 
+export async function showRoomTypeRooms(id: number) {
+    const roomType = await findRoomTypeById(id);
+
+    return findRoomByRoomTypeId(roomType.id);
+}
+
 export async function findRoomTypeById(id: number) {
     const roomType = await prisma.roomType.findFirst({
         where: { id: id },
@@ -77,8 +84,8 @@ export async function findRoomTypeById(id: number) {
     return roomType;
 }
 
-export async function findRoomTypeByHotelId(id: number) {
+export async function findRoomTypeByHotelId(hotelId: number) {
     return await prisma.roomType.findMany({
-        where: { hotelId: id },
+        where: { hotelId: hotelId },
     });
 }

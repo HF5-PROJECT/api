@@ -5,8 +5,8 @@ import {
     showHotel,
     updateHotel,
     deleteHotel,
-    showHotelFloor,
-    showHotelRoomType,
+    showHotelFloors,
+    showHotelRoomTypes,
 } from "./hotel.service";
 import {
     CreateHotelInput,
@@ -115,7 +115,7 @@ export async function showHotelRoomTypeHandler(
 ) {
     try {
         const roomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_HOTEL_ROOM_TYPES + request.params.id, CACHE_TTL, async () => {
-            return await showHotelRoomType(Number(request.params.id));
+            return await showHotelRoomTypes(Number(request.params.id));
         });
 
         reply.code(200).send(roomTypes);
@@ -124,7 +124,7 @@ export async function showHotelRoomTypeHandler(
     }
 }
 
-export async function showHotelFloorHandler(
+export async function showHotelFloorsHandler(
     request: FastifyRequest<{
         Params: ShowHotelFloorSchema;
     }>,
@@ -132,7 +132,7 @@ export async function showHotelFloorHandler(
 ) {
     try {
         const floors = await request.redis.rememberJSON<Floor[]>(CACHE_KEY_HOTEL_FLOORS + request.params.id, CACHE_TTL, async () => {
-            return await showHotelFloor(Number(request.params.id));
+            return await showHotelFloors(Number(request.params.id));
         });
 
         reply.code(200).send(floors);

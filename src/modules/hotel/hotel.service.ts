@@ -58,22 +58,16 @@ export async function deleteHotel(id: number) {
     }
 }
 
-export async function showHotelFloor(id: number) {
+export async function showHotelFloors(id: number) {
     const hotel = await findHotelById(id);
-    if (!hotel) {
-        throw idNotFound(id);
-    }
 
-    return findFloorByHotelId(id);
+    return findFloorByHotelId(hotel.id);
 }
 
-export async function showHotelRoomType(id: number) {
+export async function showHotelRoomTypes(id: number) {
     const hotel = await findHotelById(id);
-    if (!hotel) {
-        throw idNotFound(id);
-    }
 
-    return findRoomTypeByHotelId(id);
+    return findRoomTypeByHotelId(hotel.id);
 }
 
 export async function findHotelById(id: number) {

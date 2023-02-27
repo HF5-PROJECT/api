@@ -4,7 +4,8 @@ import {
     browseRoomTypeHandler,
     showRoomTypeHandler,
     updateRoomTypeHandler,
-    deleteRoomTypeHandler
+    deleteRoomTypeHandler,
+    showRoomTypeRoomsHandler,
 } from "./type.controller";
 import { $ref } from "./type.schema";
 
@@ -74,5 +75,18 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             },
         },
         deleteRoomTypeHandler
+    );
+
+    fastify.get(
+        "/:id/rooms",
+        {
+            schema: {
+                tags: ["RoomType"],
+                response: {
+                    200: $ref("showRoomTypeRoomResponseSchema"),
+                },
+            },
+        },
+        showRoomTypeRoomsHandler
     );
 };
