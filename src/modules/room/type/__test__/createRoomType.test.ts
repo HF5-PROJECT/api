@@ -172,7 +172,7 @@ describe("POST /api/room/type", () => {
             method: "POST",
             url: "/api/room/type",
             payload: {
-                name: "",
+                name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
                 size: "big",
                 price: 2454.4,
