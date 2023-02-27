@@ -4,6 +4,7 @@ CREATE TABLE `RoomType` (
     `name` VARCHAR(255) NOT NULL,
     `description` TEXT NULL,
     `size` VARCHAR(255) NULL,
+    `supportedPeople` INTEGER NOT NULL,
     `price` DOUBLE NOT NULL,
     `hotelId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
