@@ -64,7 +64,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("updateHotelResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel Update")],
         },
         updateHotelHandler
     );
@@ -81,7 +81,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     204: $ref("deleteHotelResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel Delete")],
         },
         deleteHotelHandler
     );

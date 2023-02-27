@@ -77,7 +77,7 @@ describe("GET /api/floor/:id/rooms", () => {
         await prisma.room.create({
             data: {
                 id: 1003,
-                number: 1,
+                number: 4,
                 floorId: 1000,
                 roomTypeId: 1001,
             },

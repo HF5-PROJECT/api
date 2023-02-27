@@ -35,6 +35,7 @@ describe("POST /api/auth/refresh", () => {
                 refreshToken: fastify.jwt.sign(
                     {
                         sub: user.id,
+                        permissions: [],
                         iat: Number(Date()),
                     },
                     { expiresIn: "1d" }
@@ -65,6 +66,7 @@ describe("POST /api/auth/refresh", () => {
                 refreshToken: fastify.jwt.sign(
                     {
                         sub: 123,
+                        permissions: [],
                         iat: Number(Date()),
                     },
                     { expiresIn: "1d" }

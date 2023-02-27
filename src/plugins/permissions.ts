@@ -23,7 +23,6 @@ export default fastifyPlugin(
             "hasPermission",
             (permissionName: string) => {
                 return async (request: FastifyRequest<{ Params: any, Body: any }>, reply: FastifyReply) => {
-                    console.log(request.user);
                     try {
                         await userHasPermission(request.user, permissionName)
                     } catch (err) {

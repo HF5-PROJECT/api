@@ -58,6 +58,7 @@ export async function createAccessToken(user: User, jwt: JWT) {
     );
 }
 
+// TODO: REWRITE OR COMMENT IDK
 async function getUserPermissionIds(user: User): Promise<number[]> {
     const userAndRoles = await prisma.user.findFirst({
         where: { id: user.id },
@@ -70,7 +71,7 @@ async function getUserPermissionIds(user: User): Promise<number[]> {
         return [];
     }
 
-    const permissionIds: number[] = [];
+    let permissionIds: number[] = [];
     userAndRoles.roles.forEach(async (roleOnUser) => {
         const permissionIdObjects = await prisma.permissionOnRole.findMany({
             where: { roleId: roleOnUser.roleId },
@@ -79,14 +80,42 @@ async function getUserPermissionIds(user: User): Promise<number[]> {
             }
         });
 
-        permissionIds.concat(permissionIdObjects.map(permissionIdObject => {
+        const permissionIdFlattened = permissionIdObjects.map(permissionIdObject => {
             return permissionIdObject.permissionId;
-        }));
+        });
+
+        permissionIds = [...new Set([...permissionIds, ...permissionIdFlattened])];
     });
 
     return permissionIds;
 }
 
-export async function userHasPermission(user: FastifyJWT['user'], permissionName: string) {
+export async function userHasPermission(userToken: FastifyJWT['user'], permissionName: string) {
+    const permissionsNameToId = await getPermissionNamesMappedToIds();
 
+    const permissionId = permissionsNameToId.get(permissionName);
+
+    if (!permissionId) {
+        throw new Error('Permission does not exist')
+    }
+
+    if (!userToken.permissions.includes(permissionId)) {
+        throw new Error('User does not have the required permissions')
+    }
+
+    // TODO: CACHE
+    async function getPermissionNamesMappedToIds(): Promise<Map<string, number>> {
+        const permissions = await prisma.permission.findMany({
+            select: {
+                id: true,
+                name: true,
+            }
+        });
+
+        const permissionsNameToId = new Map<string, number>();
+        permissions.forEach((permission) => {
+            permissionsNameToId.set(permission.name, permission.id);
+        });
+        return permissionsNameToId;
+    }
 }

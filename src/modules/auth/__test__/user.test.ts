@@ -36,6 +36,7 @@ describe("GET /api/auth/user", () => {
                     fastify.jwt.sign(
                         {
                             sub: user.id,
+                            permissions: [],
                             iat: Number(Date()),
                         },
                         { expiresIn: "10m" }
@@ -61,6 +62,7 @@ describe("GET /api/auth/user", () => {
                     fastify.jwt.sign(
                         {
                             sub: 542,
+                            permissions: [],
                             iat: Number(Date()),
                         },
                         { expiresIn: "10m" }
