@@ -1,26 +1,29 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
     createFloor,
-    browseFloor,
-    showFloor,
     updateFloor,
-    deleteFloor
+    deleteFloor,
+    getAllFloors,
+    getFloorById,
 } from "./floor.service";
 import {
     CreateFloorInput,
     UpdateFloorInput,
-    ShowFloorParams,
-    DeleteFloorParams
+    GetFloorParams,
+    DeleteFloorParams,
+    GetRoomsByFloorParams,
 } from "./floor.schema";
-import { errorMessage } from "./floor.errors";
-import { Floor } from "@prisma/client";
+import { errorMessage } from "../../utils/string";
+import { Floor, Room } from "@prisma/client";
 import { CACHE_KEY_HOTEL_FLOORS } from "../hotel/hotel.controller";
+import { getRoomsByFloorId } from "../room/room.service";
 
 // In Seconds
 const CACHE_TTL = 1800;
 
 const CACHE_KEY_FLOORS = "allFloors";
 const CACHE_KEY_FLOOR = "floor";
+export const CACHE_KEY_FLOOR_ROOMS = "floorRooms";
 
 export async function createFloorHandler(
     request: FastifyRequest<{
@@ -30,43 +33,54 @@ export async function createFloorHandler(
 ) {
     try {
         const floor = await createFloor(request.body);
-        await request.redis.invalidateCaches(CACHE_KEY_FLOORS, CACHE_KEY_HOTEL_FLOORS + floor.hotelId);
+        await request.redis.invalidateCaches(
+            CACHE_KEY_FLOORS,
+            CACHE_KEY_HOTEL_FLOORS + floor.hotelId
+        );
 
-        reply.code(201).send(floor);
+        return reply.code(201).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
-export async function browseFloorHandler(
+export async function getAllFloorsHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {
     try {
-        const floors = await request.redis.rememberJSON<Floor[]>(CACHE_KEY_FLOORS, CACHE_TTL, async () => {
-            return await browseFloor();
-        });
+        const floors = await request.redis.rememberJSON<Floor[]>(
+            CACHE_KEY_FLOORS,
+            CACHE_TTL,
+            async () => {
+                return await getAllFloors();
+            }
+        );
 
-        reply.code(200).send(floors);
+        return reply.code(200).send(floors);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
-export async function showFloorHandler(
+export async function getFloorHandler(
     request: FastifyRequest<{
-        Params: ShowFloorParams;
+        Params: GetFloorParams;
     }>,
     reply: FastifyReply
 ) {
     try {
-        const floor = await request.redis.rememberJSON<Floor>(CACHE_KEY_FLOOR+request.params.id, CACHE_TTL, async () => {
-            return await showFloor(Number(request.params.id));
-        });
+        const floor = await request.redis.rememberJSON<Floor>(
+            CACHE_KEY_FLOOR + request.params.id,
+            CACHE_TTL,
+            async () => {
+                return await getFloorById(Number(request.params.id));
+            }
+        );
 
-        reply.code(200).send(floor);
+        return reply.code(200).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -78,11 +92,15 @@ export async function updateFloorHandler(
 ) {
     try {
         const floor = await updateFloor(request.body);
-        await request.redis.invalidateCaches(CACHE_KEY_FLOOR+request.body.id, CACHE_KEY_FLOORS, CACHE_KEY_HOTEL_FLOORS + floor.hotelId);
+        await request.redis.invalidateCaches(
+            CACHE_KEY_FLOOR + request.body.id,
+            CACHE_KEY_FLOORS,
+            CACHE_KEY_HOTEL_FLOORS + floor.hotelId
+        );
 
-        reply.code(200).send(floor);
+        return reply.code(200).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -94,10 +112,35 @@ export async function deleteFloorHandler(
 ) {
     try {
         const floor = await deleteFloor(Number(request.params.id));
-        await request.redis.invalidateCaches(CACHE_KEY_FLOOR+request.params.id, CACHE_KEY_FLOORS, CACHE_KEY_HOTEL_FLOORS + floor.hotelId);
+        await request.redis.invalidateCaches(
+            CACHE_KEY_FLOOR + request.params.id,
+            CACHE_KEY_FLOORS,
+            CACHE_KEY_HOTEL_FLOORS + floor.hotelId
+        );
 
-        reply.code(204).send(floor);
+        return reply.code(204).send(floor);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
+    }
+}
+
+export async function getRoomsByFloorsHandler(
+    request: FastifyRequest<{
+        Params: GetRoomsByFloorParams;
+    }>,
+    reply: FastifyReply
+) {
+    try {
+        const rooms = await request.redis.rememberJSON<Room[]>(
+            CACHE_KEY_FLOOR_ROOMS + request.params.id,
+            CACHE_TTL,
+            async () => {
+                return await getRoomsByFloorId(Number(request.params.id));
+            }
+        );
+
+        return reply.code(200).send(rooms);
+    } catch (e) {
+        return reply.badRequest(errorMessage(e));
     }
 }

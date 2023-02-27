@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../../index";
 import { prisma } from "../../../../plugins/prisma";
 
-describe("POST /api/room/type", () => {
+describe("PUT /api/room/type", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -25,9 +25,10 @@ describe("POST /api/room/type", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
     });
@@ -44,9 +45,10 @@ describe("POST /api/room/type", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed, having fun",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -55,9 +57,10 @@ describe("POST /api/room/type", () => {
             id: 1000,
             name: "Double room",
             description: "Room for 2 clowns laying in one bed, having fun",
-            size: 'big',
+            size: "big",
+            supportedPeople: 2,
             price: 2454.4,
-            hotelId: 1000
+            hotelId: 1000,
         });
     });
 
@@ -69,9 +72,10 @@ describe("POST /api/room/type", () => {
                 id: 1001,
                 name: "Single room",
                 description: "Room for 1 clowns laying in one bed",
-                size: 'small',
+                size: "small",
+                supportedPeople: 1,
                 price: 1454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -90,9 +94,10 @@ describe("POST /api/room/type", () => {
             payload: {
                 id: 1000,
                 name: "Double room",
-                size: 'very big',
+                size: "very big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -101,9 +106,10 @@ describe("POST /api/room/type", () => {
             id: 1000,
             name: "Double room",
             description: "Room for 2 clowns laying in one bed",
-            size: 'very big',
+            size: "very big",
+            supportedPeople: 2,
             price: 2454.4,
-            hotelId: 1000
+            hotelId: 1000,
         });
     });
 
@@ -114,9 +120,9 @@ describe("POST /api/room/type", () => {
             payload: {
                 id: 1000,
                 description: "Room for 2 clowns laying in one bed, having fun",
-                size: 'big',
+                size: "big",
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -136,9 +142,10 @@ describe("POST /api/room/type", () => {
                 id: 1000,
                 name: "",
                 description: "Room for 2 clowns laying in one bed, having fun",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -158,9 +165,10 @@ describe("POST /api/room/type", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1010
+                hotelId: 1010,
             },
         });
 
@@ -168,6 +176,28 @@ describe("POST /api/room/type", () => {
         expect(response.json()).toEqual({
             error: "Bad Request",
             message: "Could not find hotel with id: 1010",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, when supportedPeople has not been provided", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/room/type/1000",
+            payload: {
+                id: 1000,
+                name: "Double room",
+                description: "Room for 2 clowns laying in one bed",
+                size: "big",
+                price: 2454.4,
+                hotelId: 1010,
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'supportedPeople'",
             statusCode: 400,
         });
     });

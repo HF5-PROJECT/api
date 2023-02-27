@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
     createFloorHandler,
-    browseFloorHandler,
-    showFloorHandler,
+    getAllFloorsHandler,
+    getFloorHandler,
     updateFloorHandler,
-    deleteFloorHandler
+    deleteFloorHandler,
+    getRoomsByFloorsHandler,
 } from "./floor.controller";
 import { $ref } from "./floor.schema";
 
@@ -29,11 +30,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Floor"],
                 response: {
-                    200: $ref("browseFloorResponseSchema"),
+                    200: $ref("getAllFloorsResponseSchema"),
                 },
             },
         },
-        browseFloorHandler
+        getAllFloorsHandler
     );
 
     fastify.get(
@@ -42,11 +43,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Floor"],
                 response: {
-                    200: $ref("showFloorResponseSchema"),
+                    200: $ref("getFloorResponseSchema"),
                 },
             },
         },
-        showFloorHandler
+        getFloorHandler
     );
 
     fastify.put(
@@ -74,5 +75,18 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             },
         },
         deleteFloorHandler
+    );
+
+    fastify.get(
+        "/:id/rooms",
+        {
+            schema: {
+                tags: ["Floor"],
+                response: {
+                    200: $ref("getRoomsByFloorResponseSchema"),
+                },
+            },
+        },
+        getRoomsByFloorsHandler
     );
 };

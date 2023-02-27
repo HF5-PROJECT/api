@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-describe("PUT /api/floor", () => {
+describe("PUT /api/room", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -10,6 +10,9 @@ describe("PUT /api/floor", () => {
     });
 
     beforeEach(async () => {
+        await fastify.redis.flushall();
+        await prisma.room.deleteMany();
+        await prisma.roomType.deleteMany();
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -27,20 +30,40 @@ describe("PUT /api/floor", () => {
                 hotelId: 1000,
             },
         });
+        await prisma.roomType.create({
+            data: {
+                id: 1000,
+                name: "Double room",
+                description: "Room for 2 clowns laying in one bed",
+                size: "big",
+                supportedPeople: 2,
+                price: 2454.4,
+                hotelId: 1000,
+            },
+        });
+        await prisma.room.create({
+            data: {
+                id: 1000,
+                number: 1,
+                floorId: 1000,
+                roomTypeId: 1000,
+            },
+        });
     });
 
     afterAll(async () => {
         await fastify.close();
     });
 
-    it("should return status 200 and update a floor", async () => {
+    it("should return status 200 and update a room", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/floor/1000",
+            url: "/api/room/1000",
             payload: {
                 id: 1000,
                 number: 2,
-                hotelId: 1000,
+                floorId: 1000,
+                roomTypeId: 1000,
             },
         });
 
@@ -48,25 +71,27 @@ describe("PUT /api/floor", () => {
         expect(response.json()).toEqual({
             id: 1000,
             number: 2,
-            hotelId: 1000,
+            floorId: 1000,
+            roomTypeId: 1000,
         });
     });
 
     it("should return status 400, if none was found by id", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/floor/1001",
+            url: "/api/room/1001",
             payload: {
                 id: 1001,
                 number: 2,
-                hotelId: 1000,
+                floorId: 1000,
+                roomTypeId: 1000,
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "Could not find floor with id: 1001",
+            message: "Could not find room with id: 1001",
             statusCode: 400,
         });
     });
@@ -74,10 +99,11 @@ describe("PUT /api/floor", () => {
     it("should return status 400, when no number has been provided", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/floor/1000",
+            url: "/api/room/1000",
             payload: {
                 id: 1000,
-                hotelId: 1000,
+                floorId: 1000,
+                roomTypeId: 1000,
             },
         });
 
@@ -92,11 +118,12 @@ describe("PUT /api/floor", () => {
     it("should return status 400, when number is empty", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/floor/1000",
+            url: "/api/room/1000",
             payload: {
                 id: 1000,
                 number: "",
-                hotelId: 1000,
+                floorId: 1000,
+                roomTypeId: 1000,
             },
         });
 
@@ -108,39 +135,80 @@ describe("PUT /api/floor", () => {
         });
     });
 
-    it("should return status 400, if no hotel id is sent", async () => {
+    it("should return status 400, if no floor id is sent", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/floor/1000",
+            url: "/api/room/1000",
             payload: {
                 id: 1000,
                 number: 1,
+                roomTypeId: 1000,
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "body must have required property 'hotelId'",
+            message: "body must have required property 'floorId'",
             statusCode: 400,
         });
     });
 
-    it("should return status 400, if hotel id is empty", async () => {
+    it("should return status 400, if floor id is empty", async () => {
         const response = await fastify.inject({
             method: "PUT",
-            url: "/api/floor/1000",
+            url: "/api/room/1000",
             payload: {
                 id: 1000,
                 number: 1,
-                hotelId: "",
+                floorId: "",
+                roomTypeId: 1000,
             },
         });
 
         expect(response.statusCode).toBe(400);
         expect(response.json()).toEqual({
             error: "Bad Request",
-            message: "body/hotelId must be number",
+            message: "body/floorId must be number",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, if no room id is sent", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/room/1000",
+            payload: {
+                id: 1000,
+                number: 1,
+                floorId: 1000,
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body must have required property 'roomTypeId'",
+            statusCode: 400,
+        });
+    });
+
+    it("should return status 400, if room id is empty", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/room/1000",
+            payload: {
+                id: 1000,
+                number: 1,
+                floorId: 1000,
+                roomTypeId: "",
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "body/roomTypeId must be number",
             statusCode: 400,
         });
     });

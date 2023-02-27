@@ -22,26 +22,28 @@ model User {
 }
 
 model Hotel {
-    id          Int         @id @default(autoincrement())
-    name        String      @db.VarChar(255)
-    description String?     @db.Text
-    address     String      @db.VarChar(255)
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @default(now()) @updatedAt
+    id          Int        @id @default(autoincrement())
+    name        String     @db.VarChar(255)
+    description String?    @db.Text
+    address     String     @db.VarChar(255)
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @default(now()) @updatedAt
     floors      Floor[]
     RoomTypes   RoomType[]
 }
 
 model RoomType {
-    id          Int      @id @default(autoincrement())
-    name        String   @db.VarChar(255)
-    description String?  @db.Text
-    size        String?  @db.VarChar(255)
-    price       Float    @db.Double
-    hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-    hotelId    Int
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @default(now()) @updatedAt
+    id              Int      @id @default(autoincrement())
+    name            String   @db.VarChar(255)
+    description     String?  @db.Text
+    size            String?  @db.VarChar(255)
+    supportedPeople Int      @db.Int
+    price           Float    @db.Double
+    hotel           Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+    hotelId         Int
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @default(now()) @updatedAt
+    rooms           Room[]
 
     @@index([hotelId])
 }
@@ -53,6 +55,21 @@ model Floor {
     hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
+    rooms     Room[]
 
     @@index([hotelId])
+}
+
+model Room {
+    id         Int      @id @default(autoincrement())
+    number     Int      @db.Int
+    floorId    Int      @db.Int
+    floor      Floor    @relation(fields: [floorId], references: [id], onDelete: Cascade)
+    roomTypeId Int      @db.Int
+    roomType   RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @default(now()) @updatedAt
+
+    @@index([floorId])
+    @@index([roomTypeId])
 }

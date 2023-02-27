@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
     createRoomTypeHandler,
-    browseRoomTypeHandler,
-    showRoomTypeHandler,
+    getAllRoomsTypeHandler,
+    getRoomTypeHandler,
     updateRoomTypeHandler,
-    deleteRoomTypeHandler
+    deleteRoomTypeHandler,
+    getRoomsByRoomTypesHandler,
 } from "./type.controller";
 import { $ref } from "./type.schema";
 
@@ -29,11 +30,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["RoomType"],
                 response: {
-                    200: $ref("browseRoomTypeResponseSchema"),
+                    200: $ref("getAllRoomsTypeResponseSchema"),
                 },
             },
         },
-        browseRoomTypeHandler
+        getAllRoomsTypeHandler
     );
 
     fastify.get(
@@ -42,11 +43,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["RoomType"],
                 response: {
-                    200: $ref("showRoomTypeResponseSchema"),
+                    200: $ref("getRoomTypeResponseSchema"),
                 },
             },
         },
-        showRoomTypeHandler
+        getRoomTypeHandler
     );
 
     fastify.put(
@@ -74,5 +75,18 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             },
         },
         deleteRoomTypeHandler
+    );
+
+    fastify.get(
+        "/:id/rooms",
+        {
+            schema: {
+                tags: ["RoomType"],
+                response: {
+                    200: $ref("getRoomsByRoomTypeResponseSchema"),
+                },
+            },
+        },
+        getRoomsByRoomTypesHandler
     );
 };

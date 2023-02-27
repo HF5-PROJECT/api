@@ -1,30 +1,34 @@
 import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
+import { roomSchema } from "../room.schema";
 
 const roomTypeCore = {
-    name: z.string({
-        required_error: "Room type name is required",
-        invalid_type_error: "Name must be a string",
-    }).min(1),
+    name: z
+        .string({
+            required_error: "Room type name is required",
+            invalid_type_error: "Name must be a string",
+        })
+        .min(1),
     description: z.string().nullable().optional(),
     size: z.string().nullable().optional(),
+    supportedPeople: z.number(),
     price: z.number(),
     hotelId: z.number(),
 };
 
-const showRoomTypeSchema = z.object({
-    id: z.string()
+const getRoomTypeSchema = z.object({
+    id: z.string(),
 });
 
-const showRoomTypeResponseSchema = z.object({
+const getRoomTypeResponseSchema = z.object({
     id: z.number(),
-    ...roomTypeCore
+    ...roomTypeCore,
 });
 
-const browseRoomTypeResponseSchema = z.array(showRoomTypeResponseSchema);
+const getAllRoomsTypeResponseSchema = z.array(getRoomTypeResponseSchema);
 
 const createRoomTypeSchema = z.object({
-    ...roomTypeCore
+    ...roomTypeCore,
 });
 
 const createRoomTypeResponseSchema = z.object({
@@ -34,40 +38,52 @@ const createRoomTypeResponseSchema = z.object({
 
 const updateRoomTypeSchema = z.object({
     id: z.number(),
-    ...roomTypeCore
+    ...roomTypeCore,
 });
 
 const updateRoomTypeResponseSchema = z.object({
     id: z.number(),
-    ...roomTypeCore
+    ...roomTypeCore,
 });
 
 const deleteRoomTypeSchema = z.object({
-    id: z.string()
+    id: z.string(),
 });
 
 const deleteRoomTypeResponseSchema = z.object({
     id: z.number(),
-    ...roomTypeCore
+    ...roomTypeCore,
 });
 
-export const roomTypeSchema = showRoomTypeResponseSchema;
+const getRoomsByRoomTypeSchema = z.object({
+    id: z.string(),
+});
+
+const getRoomsByRoomTypeResponseSchema = z.array(roomSchema);
+
+export const roomTypeSchema = getRoomTypeResponseSchema;
 
 export type CreateRoomTypeInput = z.infer<typeof createRoomTypeSchema>;
 export type UpdateRoomTypeInput = z.infer<typeof updateRoomTypeSchema>;
-export type ShowRoomTypeParams = z.infer<typeof showRoomTypeSchema>;
+export type GetRoomTypeParams = z.infer<typeof getRoomTypeSchema>;
 export type DeleteRoomTypeParams = z.infer<typeof deleteRoomTypeSchema>;
+export type GetRoomsByRoomTypeParams = z.infer<typeof getRoomsByRoomTypeSchema>;
 
-export const { schemas: roomTypeSchemas, $ref } = buildJsonSchemas({
-    createRoomTypeSchema,
-    createRoomTypeResponseSchema,
-    browseRoomTypeResponseSchema,
-    showRoomTypeSchema,
-    showRoomTypeResponseSchema,
-    updateRoomTypeSchema,
-    updateRoomTypeResponseSchema,
-    deleteRoomTypeSchema,
-    deleteRoomTypeResponseSchema
-}, {
-    $id: "roomTypeSchema"
-});
+export const { schemas: roomTypeSchemas, $ref } = buildJsonSchemas(
+    {
+        createRoomTypeSchema,
+        createRoomTypeResponseSchema,
+        getAllRoomsTypeResponseSchema,
+        getRoomTypeSchema,
+        getRoomTypeResponseSchema,
+        updateRoomTypeSchema,
+        updateRoomTypeResponseSchema,
+        deleteRoomTypeSchema,
+        deleteRoomTypeResponseSchema,
+        getRoomsByRoomTypeSchema,
+        getRoomsByRoomTypeResponseSchema,
+    },
+    {
+        $id: "roomTypeSchema",
+    }
+);

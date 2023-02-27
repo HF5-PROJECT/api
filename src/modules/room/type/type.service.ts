@@ -1,53 +1,44 @@
 import { prisma } from "../../../plugins/prisma";
-import {
-    CreateRoomTypeInput,
-    UpdateRoomTypeInput
-} from "./type.schema";
-import { findHotelById } from "../../hotel/hotel.service";
+import { CreateRoomTypeInput, UpdateRoomTypeInput } from "./type.schema";
+import { getHotelById } from "../../hotel/hotel.service";
 import { idNotFound } from "./type.errors";
 
-export async function createRoomType(input: CreateRoomTypeInput) {
-    const hotel = await findHotelById(input.hotelId);
+export async function getAllRoomTypes() {
+    return await prisma.roomType.findMany();
+}
 
-    const roomType = await prisma.roomType.create({
+export async function createRoomType(input: CreateRoomTypeInput) {
+    const hotel = await getHotelById(input.hotelId);
+
+    return await prisma.roomType.create({
         data: {
             name: input.name,
             description: input.description,
             size: input.size,
+            supportedPeople: input.supportedPeople,
             price: input.price,
             hotelId: hotel.id,
         },
     });
-
-    return roomType;
-}
-
-export async function browseRoomType() {
-    return await prisma.roomType.findMany();
-}
-
-export async function showRoomType(id: number) {
-    return await findRoomTypeById(id);
 }
 
 export async function updateRoomType(input: UpdateRoomTypeInput) {
-    const hotel = await findHotelById(input.hotelId);
+    const hotel = await getHotelById(input.hotelId);
 
     try {
-        const roomType = await prisma.roomType.update({
+        return await prisma.roomType.update({
             where: {
-                id: input.id
+                id: input.id,
             },
             data: {
                 name: input.name,
                 description: input.description,
                 size: input.size,
+                supportedPeople: input.supportedPeople,
                 price: input.price,
                 hotelId: hotel.id,
-            }
-        })
-
-        return roomType;
+            },
+        });
     } catch (e) {
         throw idNotFound(input.id);
     }
@@ -57,15 +48,15 @@ export async function deleteRoomType(id: number) {
     try {
         return await prisma.roomType.delete({
             where: {
-                id: id
-            }
+                id: id,
+            },
         });
     } catch (e) {
         throw idNotFound(id);
     }
 }
 
-export async function findRoomTypeById(id: number) {
+export async function getRoomTypeById(id: number) {
     const roomType = await prisma.roomType.findFirst({
         where: { id: id },
     });
@@ -77,8 +68,10 @@ export async function findRoomTypeById(id: number) {
     return roomType;
 }
 
-export async function findRoomTypeByHotelId(id: number) {
+export async function getRoomTypesByHotelId(hotelId: number) {
+    const hotel = await getHotelById(hotelId);
+
     return await prisma.roomType.findMany({
-        where: { hotelId: id },
+        where: { hotelId: hotel.id },
     });
 }

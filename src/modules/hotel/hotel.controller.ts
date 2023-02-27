@@ -1,23 +1,23 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
     createHotel,
-    browseHotel,
-    showHotel,
     updateHotel,
     deleteHotel,
-    showHotelFloor,
-    showHotelRoomType,
+    getAllHotels,
+    getHotelById,
 } from "./hotel.service";
 import {
     CreateHotelInput,
     UpdateHotelInput,
-    ShowHotelParams,
+    GetHotelParams,
     DeleteHotelParams,
-    ShowHotelRoomTypeSchema,
-    ShowHotelFloorSchema,
+    GetRoomTypesByHotelSchema,
+    GetFloorsByHotelSchema,
 } from "./hotel.schema";
-import { errorMessage } from "./hotel.errors";
+import { errorMessage } from "../../utils/string";
 import { Hotel, Floor, RoomType } from "@prisma/client";
+import { getRoomTypesByHotelId } from "../room/type/type.service";
+import { getFloorsByHotelId } from "../floor/floor.service";
 
 // In Seconds
 const CACHE_TTL = 1800;
@@ -37,41 +37,49 @@ export async function createHotelHandler(
         await request.redis.invalidateCaches(CACHE_KEY_HOTELS);
         const hotel = await createHotel(request.body);
 
-        reply.code(201).send(hotel);
+        return reply.code(201).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
-export async function browseHotelHandler(
+export async function getAllHotelsHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {
     try {
-        const hotels = await request.redis.rememberJSON<Hotel[]>(CACHE_KEY_HOTELS, CACHE_TTL, async () => {
-            return await browseHotel();
-        });
+        const hotels = await request.redis.rememberJSON<Hotel[]>(
+            CACHE_KEY_HOTELS,
+            CACHE_TTL,
+            async () => {
+                return await getAllHotels();
+            }
+        );
 
-        reply.code(200).send(hotels);
+        return reply.code(200).send(hotels);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
-export async function showHotelHandler(
+export async function getHotelHandler(
     request: FastifyRequest<{
-        Params: ShowHotelParams;
+        Params: GetHotelParams;
     }>,
     reply: FastifyReply
 ) {
     try {
-        const hotel = await request.redis.rememberJSON<Hotel>(CACHE_KEY_HOTEL + request.params.id, CACHE_TTL, async () => {
-            return await showHotel(Number(request.params.id));
-        });
+        const hotel = await request.redis.rememberJSON<Hotel>(
+            CACHE_KEY_HOTEL + request.params.id,
+            CACHE_TTL,
+            async () => {
+                return await getHotelById(Number(request.params.id));
+            }
+        );
 
-        reply.code(200).send(hotel);
+        return reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -82,12 +90,15 @@ export async function updateHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_HOTEL + request.body.id, CACHE_KEY_HOTELS);
+        await request.redis.invalidateCaches(
+            CACHE_KEY_HOTEL + request.body.id,
+            CACHE_KEY_HOTELS
+        );
         const hotel = await updateHotel(request.body);
 
-        reply.code(200).send(hotel);
+        return reply.code(200).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
@@ -98,45 +109,56 @@ export async function deleteHotelHandler(
     reply: FastifyReply
 ) {
     try {
-        await request.redis.invalidateCaches(CACHE_KEY_HOTEL + request.params.id, CACHE_KEY_HOTELS);
+        await request.redis.invalidateCaches(
+            CACHE_KEY_HOTEL + request.params.id,
+            CACHE_KEY_HOTELS
+        );
         const hotel = await deleteHotel(Number(request.params.id));
 
-        reply.code(204).send(hotel);
+        return reply.code(204).send(hotel);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
-export async function showHotelRoomTypeHandler(
+export async function getRoomTypesByHotelHandler(
     request: FastifyRequest<{
-        Params: ShowHotelRoomTypeSchema;
+        Params: GetRoomTypesByHotelSchema;
     }>,
     reply: FastifyReply
 ) {
     try {
-        const roomTypes = await request.redis.rememberJSON<RoomType[]>(CACHE_KEY_HOTEL_ROOM_TYPES + request.params.id, CACHE_TTL, async () => {
-            return await showHotelRoomType(Number(request.params.id));
-        });
+        const roomTypes = await request.redis.rememberJSON<RoomType[]>(
+            CACHE_KEY_HOTEL_ROOM_TYPES + request.params.id,
+            CACHE_TTL,
+            async () => {
+                return await getRoomTypesByHotelId(Number(request.params.id));
+            }
+        );
 
-        reply.code(200).send(roomTypes);
+        return reply.code(200).send(roomTypes);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }
 
-export async function showHotelFloorHandler(
+export async function getFloorsByHotelsHandler(
     request: FastifyRequest<{
-        Params: ShowHotelFloorSchema;
+        Params: GetFloorsByHotelSchema;
     }>,
     reply: FastifyReply
 ) {
     try {
-        const floors = await request.redis.rememberJSON<Floor[]>(CACHE_KEY_HOTEL_FLOORS + request.params.id, CACHE_TTL, async () => {
-            return await showHotelFloor(Number(request.params.id));
-        });
+        const floors = await request.redis.rememberJSON<Floor[]>(
+            CACHE_KEY_HOTEL_FLOORS + request.params.id,
+            CACHE_TTL,
+            async () => {
+                return await getFloorsByHotelId(Number(request.params.id));
+            }
+        );
 
-        reply.code(200).send(floors);
+        return reply.code(200).send(floors);
     } catch (e) {
-        return reply.badRequest(await errorMessage(e));
+        return reply.badRequest(errorMessage(e));
     }
 }

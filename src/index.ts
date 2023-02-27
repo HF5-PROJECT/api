@@ -6,6 +6,7 @@ import { authSchemas } from "./modules/auth/auth.schema";
 import { hotelSchemas } from "./modules/hotel/hotel.schema";
 import { floorSchemas } from "./modules/floor/floor.schema";
 import { roomTypeSchemas } from "./modules/room/type/type.schema";
+import { roomSchemas } from "./modules/room/room.schema";
 
 export async function build() {
     const fastify = Fastify({
@@ -31,6 +32,7 @@ export async function build() {
             ...hotelSchemas,
             ...floorSchemas,
             ...roomTypeSchemas,
+            ...roomSchemas,
         ]) {
             fastify.addSchema(schema);
         }
