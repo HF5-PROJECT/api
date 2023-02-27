@@ -28,7 +28,7 @@ describe("DELETE /api/hotel/:id", () => {
     it("should return status 204 and delete a hotel", async () => {
         const response = await fastify.inject({
             method: "DELETE",
-            url: "/api/hotel/1000"
+            url: "/api/hotel/1000",
         });
 
         expect(response.statusCode).toBe(204);
@@ -49,15 +49,16 @@ describe("DELETE /api/hotel/:id", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
         const response = await fastify.inject({
             method: "DELETE",
-            url: "/api/hotel/1000"
+            url: "/api/hotel/1000",
         });
 
         expect(response.statusCode).toBe(204);
@@ -74,11 +75,10 @@ describe("DELETE /api/hotel/:id", () => {
         expect(countRoomTypes).toBe(0);
     });
 
-
     it("should return status 400 and throw error, if none was found by id", async () => {
         const response = await fastify.inject({
             method: "DELETE",
-            url: "/api/hotel/1001"
+            url: "/api/hotel/1001",
         });
 
         expect(response.statusCode).toBe(400);

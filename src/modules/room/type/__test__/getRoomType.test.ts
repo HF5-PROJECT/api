@@ -26,9 +26,10 @@ describe("GET /api/room/type/:id", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
     });
@@ -42,8 +43,8 @@ describe("GET /api/room/type/:id", () => {
             method: "GET",
             url: "/api/room/type/1000",
             payload: {
-                id: 1000
-            }
+                id: 1000,
+            },
         });
 
         expect(response.statusCode).toBe(200);
@@ -51,9 +52,10 @@ describe("GET /api/room/type/:id", () => {
             id: 1000,
             name: "Double room",
             description: "Room for 2 clowns laying in one bed",
-            size: 'big',
+            size: "big",
+            supportedPeople: 2,
             price: 2454.4,
-            hotelId: 1000
+            hotelId: 1000,
         });
     });
 
@@ -63,8 +65,8 @@ describe("GET /api/room/type/:id", () => {
             method: "GET",
             url: "/api/room/type/1001",
             payload: {
-                id: 1001
-            }
+                id: 1001,
+            },
         });
 
         expect(response.statusCode).toBe(400);

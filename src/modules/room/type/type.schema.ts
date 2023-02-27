@@ -11,6 +11,7 @@ const roomTypeCore = {
         .min(1),
     description: z.string().nullable().optional(),
     size: z.string().nullable().optional(),
+    supportedPeople: z.number(),
     price: z.number(),
     hotelId: z.number(),
 };

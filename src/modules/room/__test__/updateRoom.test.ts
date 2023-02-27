@@ -36,6 +36,7 @@ describe("PUT /api/room", () => {
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
                 size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
                 hotelId: 1000,
             },

@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
+import { build } from "../../../../index";
+import { prisma } from "../../../../plugins/prisma";
 
-describe("GET /api/room", () => {
+describe("GET /api/room/type/:id/rooms", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
@@ -36,7 +36,19 @@ describe("GET /api/room", () => {
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
                 size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
+                hotelId: 1000,
+            },
+        });
+        await prisma.roomType.create({
+            data: {
+                id: 1001,
+                name: "Single room",
+                description: "Room for 1 clown laying in one bed",
+                size: "small",
+                supportedPeople: 1,
+                price: 1454.4,
                 hotelId: 1000,
             },
         });
@@ -64,16 +76,24 @@ describe("GET /api/room", () => {
                 roomTypeId: 1000,
             },
         });
+        await prisma.room.create({
+            data: {
+                id: 1003,
+                number: 1,
+                floorId: 1000,
+                roomTypeId: 1001,
+            },
+        });
     });
 
     afterAll(async () => {
         await fastify.close();
     });
 
-    it("should return status 200 and get all rooms", async () => {
+    it("should return status 200 and get all rooms by room type", async () => {
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/room",
+            url: "/api/room/type/1000/rooms",
         });
 
         expect(response.statusCode).toBe(200);
@@ -103,10 +123,24 @@ describe("GET /api/room", () => {
         await prisma.room.deleteMany();
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/room",
+            url: "/api/room/type/1000/rooms",
         });
 
         expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual([]);
+    });
+
+    it("should return status 400 and return error, if no floor were found", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/room/type/1003/rooms",
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "Could not find room type with id: 1003",
+            statusCode: 400,
+        });
     });
 });

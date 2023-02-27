@@ -33,16 +33,17 @@ model Hotel {
 }
 
 model RoomType {
-    id          Int      @id @default(autoincrement())
-    name        String   @db.VarChar(255)
-    description String?  @db.Text
-    size        String?  @db.VarChar(255)
-    price       Float    @db.Double
-    hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-    hotelId     Int
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @default(now()) @updatedAt
-    rooms       Room[]
+    id              Int      @id @default(autoincrement())
+    name            String   @db.VarChar(255)
+    description     String?  @db.Text
+    size            String?  @db.VarChar(255)
+    supportedPeople Int      @db.Int
+    price           Float    @db.Double
+    hotel           Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+    hotelId         Int
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @default(now()) @updatedAt
+    rooms           Room[]
 
     @@index([hotelId])
 }
