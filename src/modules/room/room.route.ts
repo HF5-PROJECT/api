@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
     createRoomHandler,
-    browseRoomHandler,
+    getAllRoomsHandler,
     getRoomHandler,
     updateRoomHandler,
     deleteRoomHandler,
@@ -29,11 +29,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Room"],
                 response: {
-                    200: $ref("browseRoomResponseSchema"),
+                    200: $ref("getAllRoomsResponseSchema"),
                 },
             },
         },
-        browseRoomHandler
+        getAllRoomsHandler
     );
 
     fastify.get(

@@ -22,7 +22,7 @@ const getFloorResponseSchema = z.object({
     ...floorCore,
 });
 
-const browseFloorResponseSchema = z.array(getFloorResponseSchema);
+const getAllFloorsResponseSchema = z.array(getFloorResponseSchema);
 
 const createFloorSchema = z.object({
     ...floorCore,
@@ -70,7 +70,7 @@ export const { schemas: floorSchemas, $ref } = buildJsonSchemas(
     {
         createFloorSchema,
         createFloorResponseSchema,
-        browseFloorResponseSchema,
+        getAllFloorsResponseSchema,
         getFloorSchema,
         getFloorResponseSchema,
         updateFloorSchema,

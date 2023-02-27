@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
     createFloorHandler,
-    browseFloorHandler,
+    getAllFloorsHandler,
     getFloorHandler,
     updateFloorHandler,
     deleteFloorHandler,
@@ -30,11 +30,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Floor"],
                 response: {
-                    200: $ref("browseFloorResponseSchema"),
+                    200: $ref("getAllFloorsResponseSchema"),
                 },
             },
         },
-        browseFloorHandler
+        getAllFloorsHandler
     );
 
     fastify.get(

@@ -28,7 +28,7 @@ const getHotelResponseSchema = z.object({
     ...hotelCore,
 });
 
-const browseHotelResponseSchema = z.array(getHotelResponseSchema);
+const getAllHotelsResponseSchema = z.array(getHotelResponseSchema);
 
 const createHotelSchema = z.object({
     ...hotelCore,
@@ -83,7 +83,7 @@ export const { schemas: hotelSchemas, $ref } = buildJsonSchemas(
     {
         createHotelSchema,
         createHotelResponseSchema,
-        browseHotelResponseSchema,
+        getAllHotelsResponseSchema,
         getHotelSchema,
         getHotelResponseSchema,
         updateHotelSchema,

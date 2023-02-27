@@ -24,7 +24,7 @@ const getRoomTypeResponseSchema = z.object({
     ...roomTypeCore,
 });
 
-const browseRoomTypeResponseSchema = z.array(getRoomTypeResponseSchema);
+const getAllRoomsTypeResponseSchema = z.array(getRoomTypeResponseSchema);
 
 const createRoomTypeSchema = z.object({
     ...roomTypeCore,
@@ -72,7 +72,7 @@ export const { schemas: roomTypeSchemas, $ref } = buildJsonSchemas(
     {
         createRoomTypeSchema,
         createRoomTypeResponseSchema,
-        browseRoomTypeResponseSchema,
+        getAllRoomsTypeResponseSchema,
         getRoomTypeSchema,
         getRoomTypeResponseSchema,
         updateRoomTypeSchema,

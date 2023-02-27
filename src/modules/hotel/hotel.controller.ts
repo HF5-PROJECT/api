@@ -43,7 +43,7 @@ export async function createHotelHandler(
     }
 }
 
-export async function browseHotelHandler(
+export async function getAllHotelsHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {

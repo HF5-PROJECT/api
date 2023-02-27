@@ -44,7 +44,7 @@ export async function createRoomTypeHandler(
     }
 }
 
-export async function browseRoomTypeHandler(
+export async function getAllRoomsTypeHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {

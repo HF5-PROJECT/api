@@ -44,7 +44,7 @@ export async function createFloorHandler(
     }
 }
 
-export async function browseFloorHandler(
+export async function getAllFloorsHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {

@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
     createHotelHandler,
-    browseHotelHandler,
+    getAllHotelsHandler,
     getHotelHandler,
     updateHotelHandler,
     deleteHotelHandler,
@@ -31,11 +31,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Hotel"],
                 response: {
-                    200: $ref("browseHotelResponseSchema"),
+                    200: $ref("getAllHotelsResponseSchema"),
                 },
             },
         },
-        browseHotelHandler
+        getAllHotelsHandler
     );
 
     fastify.get(
