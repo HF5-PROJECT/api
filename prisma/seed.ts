@@ -1,4 +1,5 @@
-import { Floor, Hotel, Permission, PrismaClient, Role, RoomType, User } from '@prisma/client'
+import { Floor, Hotel, Permission, PrismaClient, Role, Room, RoomType, User } from '@prisma/client'
+import { number } from 'zod';
 const prisma = new PrismaClient()
 async function main() {
     /**
@@ -124,7 +125,7 @@ async function main() {
     /**
      * Room Type upserts
      */
-    const copenhagenRoomTypes = [
+    const copenhagenRoomTypes = await Promise.all([
         addRoomTypes(
             copenhagenHotel,
             'Double room',
@@ -160,8 +161,8 @@ async function main() {
             '12 m2',
             350.50
         ),
-    ];
-    const odenseRoomTypes = [
+    ]);
+    const odenseRoomTypes = await Promise.all([
         addRoomTypes(
             odenseHotel,
             'Single room',
@@ -197,9 +198,9 @@ async function main() {
             '17 m2',
             400.50
         ),
-    ];
+    ]);
 
-    const aarhusRoomTypes = [
+    const aarhusRoomTypes = await Promise.all([
         addRoomTypes(
             aarhusHotel,
             'Double room',
@@ -235,8 +236,15 @@ async function main() {
             '12 m2',
             350.50
         ),
-    ];
-    roomTypes.push(await Promise.all(copenhagenRoomTypes), await Promise.all(odenseRoomTypes), await Promise.all(aarhusRoomTypes));
+    ]);
+    roomTypes.push(copenhagenRoomTypes, odenseRoomTypes, aarhusRoomTypes);
+
+    /**
+     * Rooms upserts
+     */
+    await addRooms(copenhagenHotel, copenhagenFloors, copenhagenRoomTypes, 6000);
+    await addRooms(odenseHotel, odenseFloors, odenseRoomTypes, 1500);
+    await addRooms(aarhusHotel, aarhusFloors, aarhusRoomTypes, 2500);
 }
 
 async function addPermission(name: string): Promise<Permission> {
@@ -318,7 +326,7 @@ async function addHotel(name: string, description: string, address: string): Pro
     });
 }
 
-async function addFloors(hotel: Hotel, totalFloors: Number): Promise<Floor[]> {
+async function addFloors(hotel: Hotel, totalFloors: number): Promise<Floor[]> {
     let floorArray: Promise<Floor>[] = [];
 
     for (let floorNumber = 0; floorNumber < totalFloors; floorNumber++) {
@@ -336,7 +344,7 @@ async function addFloors(hotel: Hotel, totalFloors: Number): Promise<Floor[]> {
             },
         }));
     }
-    return Promise.all(floorArray);
+    return await Promise.all(floorArray);
 }
 
 async function addRoomTypes(hotel: Hotel, name: string, description: string, size: string, price: number): Promise<RoomType> {
@@ -360,6 +368,29 @@ async function addRoomTypes(hotel: Hotel, name: string, description: string, siz
             price: price,
         },
     });
+}
+
+async function addRooms(hotel: Hotel, floorsInHotel: Floor[], roomTypesInHotel: RoomType[], totalRooms: number): Promise<void> {
+    let roomArray: {floorId: number, roomTypeId: number, number: number}[] = [];
+
+
+    const totalFloors = floorsInHotel.length;
+    const totalRoomsPerFloor = Math.round(totalRooms / totalFloors);
+    floorsInHotel.forEach((floor) => {
+        for (let roomNumber = 1; roomNumber < totalRoomsPerFloor; roomNumber++) {
+            const randomRoomType = roomTypesInHotel[Math.floor(Math.random() * roomTypesInHotel.length)]
+            roomArray.push({
+                floorId: floor.id,
+                roomTypeId: randomRoomType.id,
+                number: roomNumber,
+            });
+        }
+    })
+
+    await prisma.room.createMany({
+        data: roomArray,
+        skipDuplicates: true,
+    })
 }
 
 main()
