@@ -12,7 +12,7 @@ import {
     getRoomParams,
     DeleteRoomParams,
 } from "./room.schema";
-import { errorMessage } from "./room.errors";
+import { errorMessage } from "../../utils/string";
 import { Room } from "@prisma/client";
 import { CACHE_KEY_FLOOR_ROOMS } from "../floor/floor.controller";
 import { CACHE_KEY_ROOM_TYPE_ROOMS } from "./type/type.controller";

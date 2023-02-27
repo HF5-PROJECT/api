@@ -14,7 +14,7 @@ import {
     GetRoomTypesByHotelSchema,
     GetFloorsByHotelSchema,
 } from "./hotel.schema";
-import { errorMessage } from "./hotel.errors";
+import { errorMessage } from "../../utils/string";
 import { Hotel, Floor, RoomType } from "@prisma/client";
 import { getRoomTypesByHotelId } from "../room/type/type.service";
 import { getFloorsByHotelId } from "../floor/floor.service";

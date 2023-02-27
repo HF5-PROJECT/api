@@ -13,7 +13,7 @@ import {
     DeleteRoomTypeParams,
     GetRoomsByRoomTypeParams,
 } from "./type.schema";
-import { errorMessage } from "./type.errors";
+import { errorMessage } from "../../../utils/string";
 import { Room, RoomType } from "@prisma/client";
 import { CACHE_KEY_HOTEL_ROOM_TYPES } from "../../hotel/hotel.controller";
 import { getRoomsByRoomTypeId } from "../room.service";

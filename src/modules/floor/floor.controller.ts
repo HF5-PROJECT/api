@@ -13,7 +13,7 @@ import {
     DeleteFloorParams,
     GetRoomsByFloorParams,
 } from "./floor.schema";
-import { errorMessage } from "./floor.errors";
+import { errorMessage } from "../../utils/string";
 import { Floor, Room } from "@prisma/client";
 import { CACHE_KEY_HOTEL_FLOORS } from "../hotel/hotel.controller";
 import { getRoomsByFloorId } from "../room/room.service";
