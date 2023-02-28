@@ -13,12 +13,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Room"],
                 body: $ref("createRoomSchema"),
                 response: {
                     201: $ref("createRoomResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Room Create")],
         },
         createRoomHandler
     );
@@ -27,11 +31,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Room"],
                 response: {
                     200: $ref("getAllRoomsResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Room Browse")],
         },
         getAllRoomsHandler
     );
@@ -40,11 +48,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Room"],
                 response: {
                     200: $ref("getRoomResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Room Show")],
         },
         getRoomHandler
     );
@@ -53,12 +65,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Room"],
                 body: $ref("updateRoomSchema"),
                 response: {
                     200: $ref("updateRoomResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Room Update")],
         },
         updateRoomHandler
     );
@@ -72,6 +88,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     204: $ref("deleteRoomResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Room Delete")],
         },
         deleteRoomHandler
     );

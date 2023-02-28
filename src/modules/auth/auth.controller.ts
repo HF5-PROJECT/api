@@ -102,10 +102,14 @@ export async function userHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {
-    const user = await getUserById(request.user.sub);
-    if (!user) {
+    try {
+        const user = await getUserById(request.user.sub);
+        if (!user) {
+            return reply.unauthorized();
+        }
+
+        return reply.code(200).send(user);
+    } catch(e) {
         return reply.unauthorized();
     }
-
-    return reply.code(200).send(user);
 }

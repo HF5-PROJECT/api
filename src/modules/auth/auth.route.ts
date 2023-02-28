@@ -76,7 +76,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("userResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel Create")],
+            onRequest: [fastify.authenticate],
         },
         userHandler
     );

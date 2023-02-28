@@ -15,12 +15,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Hotel"],
                 body: $ref("createHotelSchema"),
                 response: {
                     201: $ref("createHotelResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel Create")],
         },
         createHotelHandler
     );
@@ -95,6 +99,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getFloorsByHotelResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel-Floors Browse")],
         },
         getFloorsByHotelsHandler
     );

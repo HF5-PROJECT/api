@@ -18,39 +18,45 @@ async function main() {
     const hotelCreatePermission = await addPermission('Hotel Create')
     const hotelUpdatePermission = await addPermission('Hotel Update');
     const hotelDeletePermission = await addPermission('Hotel Delete');
+    const hotelFloorsBrowsePermission = await addPermission('Hotel-Floors Browse');
+
     const floorBrowsePermission = await addPermission('Floor Browse');
     const floorShowPermission = await addPermission('Floor Show');
     const floorCreatePermission = await addPermission('Floor Create');
     const floorUpdatePermission = await addPermission('Floor Update');
     const floorDeletePermission = await addPermission('Floor Delete');
-    const roomTypeCreatePermission = await addPermission('Room Type Create');
-    const roomTypeUpdatePermission = await addPermission('Room Type Update');
-    const roomTypeDeletePermission = await addPermission('Room Type Delete');
+    const floorRoomsBrowsePermission = await addPermission('Floor-Rooms Browse');
+
+    const roomTypeCreatePermission = await addPermission('RoomType Create');
+    const roomTypeUpdatePermission = await addPermission('RoomType Update');
+    const roomTypeDeletePermission = await addPermission('RoomType Delete');
+    const roomTypeRoomsBrowsePermission = await addPermission('RoomType-Rooms Browse');
+
+    const roomBrowsePermission = await addPermission('Room Browse');
+    const roomShowPermission = await addPermission('Room Show');
+    const roomCreatePermission = await addPermission('Room Create');
+    const roomUpdatePermission = await addPermission('Room Update');
+    const roomDeletePermission = await addPermission('Room Delete');
+
     const swaggerPermission = await addPermission('Swagger');
-    permissions.push(
-        hotelCreatePermission,
-        hotelUpdatePermission,
-        hotelDeletePermission,
-        floorBrowsePermission,
-        floorShowPermission,
-        floorCreatePermission,
-        floorUpdatePermission,
-        floorDeletePermission,
-        roomTypeCreatePermission,
-        roomTypeUpdatePermission,
-        roomTypeDeletePermission,
-        swaggerPermission,
-    );
+
+    const receptionistPermissions: Permission[] = [hotelFloorsBrowsePermission, floorBrowsePermission, floorShowPermission, floorRoomsBrowsePermission, roomBrowsePermission, roomShowPermission, roomTypeRoomsBrowsePermission];
+    const supporterPermissions: Permission[] = [...receptionistPermissions];
+    const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission];
+    const seniorManagerPermissions: Permission[] = [...branchManagerPermissions, floorCreatePermission, roomCreatePermission, roomTypeCreatePermission];
+    const administatorPermissions: Permission[] = [...seniorManagerPermissions, hotelCreatePermission, hotelDeletePermission, floorDeletePermission, roomTypeDeletePermission, roomDeletePermission];
+    const developerAdministatorPermissions: Permission[] = [...administatorPermissions, swaggerPermission];
+    permissions.push(...developerAdministatorPermissions);
 
     /**
      * Roles upserts
      */
-    const receptionistRole = await addRole('Receptionist', [floorBrowsePermission, floorShowPermission]);
-    const supporterRole = await addRole('Supporter', [floorBrowsePermission, floorShowPermission]);
-    const branchManagerRole = await addRole('Branch Manager', [hotelUpdatePermission, floorBrowsePermission, floorShowPermission, floorUpdatePermission, roomTypeUpdatePermission]);
-    const seniorManagerRole = await addRole('Senior Manager', [hotelCreatePermission, hotelUpdatePermission, floorBrowsePermission, floorShowPermission, floorCreatePermission, floorUpdatePermission, floorDeletePermission, roomTypeCreatePermission, roomTypeUpdatePermission, roomTypeDeletePermission]);
-    const administatorRole = await addRole('Administator', [hotelCreatePermission, hotelUpdatePermission, hotelDeletePermission, floorBrowsePermission, floorShowPermission, floorCreatePermission, floorUpdatePermission, floorDeletePermission, roomTypeCreatePermission, roomTypeUpdatePermission, roomTypeDeletePermission]);
-    const developerAdministatorRole = await addRole('Developer Administator', permissions);
+    const receptionistRole = await addRole('Receptionist', receptionistPermissions);
+    const supporterRole = await addRole('Supporter', supporterPermissions);
+    const branchManagerRole = await addRole('Branch Manager', branchManagerPermissions);
+    const seniorManagerRole = await addRole('Senior Manager', seniorManagerPermissions);
+    const administatorRole = await addRole('Administator', administatorPermissions);
+    const developerAdministatorRole = await addRole('Developer Administator', developerAdministatorPermissions);
     roles.push(receptionistRole, supporterRole, branchManagerRole, seniorManagerRole, administatorRole, developerAdministatorRole);
 
     /**

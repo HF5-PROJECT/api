@@ -14,12 +14,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["RoomType"],
                 body: $ref("createRoomTypeSchema"),
                 response: {
                     201: $ref("createRoomTypeResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("RoomType Create")],
         },
         createRoomTypeHandler
     );
@@ -54,12 +58,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["RoomType"],
                 body: $ref("updateRoomTypeSchema"),
                 response: {
                     200: $ref("updateRoomTypeResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("RoomType Update")],
         },
         updateRoomTypeHandler
     );
@@ -68,11 +76,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["RoomType"],
                 response: {
                     204: $ref("deleteRoomTypeResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("RoomType Delete")],
         },
         deleteRoomTypeHandler
     );
@@ -81,11 +93,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id/rooms",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["RoomType"],
                 response: {
                     200: $ref("getRoomsByRoomTypeResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("RoomType-Rooms Browse")],
         },
         getRoomsByRoomTypesHandler
     );
