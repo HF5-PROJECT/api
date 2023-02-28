@@ -1,8 +1,8 @@
 import { FastifyJWT, JWT } from "@fastify/jwt";
 import { User } from "@prisma/client";
 import { hashSync } from "bcrypt";
-import fastify from "fastify";
 import { prisma } from "../../plugins/prisma";
+import { redis } from "../../plugins/redis";
 import { CreateUserInput } from "./auth.schema";
 
 export async function createUser(input: CreateUserInput) {
@@ -89,20 +89,7 @@ async function getUserPermissionIds(user: User): Promise<number[]> {
 }
 
 export async function userHasPermission(userToken: FastifyJWT['user'], permissionName: string) {
-    const permissionsNameToId = await getPermissionNamesMappedToIds();
-
-    const permissionId = permissionsNameToId.get(permissionName);
-
-    if (!permissionId) {
-        throw new Error('Permission does not exist')
-    }
-
-    if (!userToken.permissions.includes(permissionId)) {
-        throw new Error('User does not have the required permissions')
-    }
-
-    // TODO: CACHE
-    async function getPermissionNamesMappedToIds(): Promise<Map<string, number>> {
+    const permissionsNameToId = new Map<string, number>(await redis.rememberJSON('dfhidfsibsdbihbfjn', 1800, async () => {
         const permissions = await prisma.permission.findMany({
             select: {
                 id: true,
@@ -114,6 +101,18 @@ export async function userHasPermission(userToken: FastifyJWT['user'], permissio
         permissions.forEach((permission) => {
             permissionsNameToId.set(permission.name, permission.id);
         });
-        return permissionsNameToId;
+        return Array.from(permissionsNameToId.entries());
+    }));
+
+    const permissionId = permissionsNameToId.get(permissionName);
+
+    if (!permissionId) {
+        throw new Error('Permission does not exist')
     }
+
+    if (!userToken.permissions.includes(permissionId)) {
+        throw new Error('User does not have the required permissions')
+    }
+
+
 }

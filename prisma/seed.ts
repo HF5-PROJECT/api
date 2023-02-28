@@ -131,35 +131,40 @@ async function main() {
             'Double room',
             'Our double rooms are for two people with their own toilet and bathroom. The double bed has a luxurious mattress from Getama and is equipped with a TV.',
             '9 m2',
-            250.50
+            250.50,
+            2,
         ),
         addRoomTypes(
             copenhagenHotel,
             'Single room',
             'The single room has a bed with a luxurious Getama mattress and its own toilet and shower. All single rooms are equipped with a TV. The room is perfect for you who wish to stay alone and yet make use of all the facilities. ',
             '9 m2',
-            250.50
+            250.50,
+            1,
         ),
         addRoomTypes(
             copenhagenHotel,
             'Twin room for 1 or 2 persons',
             'Twin Room is perfect for two friends who travel together but doesn’t want to share the same bed. The beds have luxurious mattresses from Getama, as well as a private toilet and bathroom. The room can only be booked as a private room or a room for one person.',
             '12 m2',
-            350.50
+            350.50,
+            2,
         ),
         addRoomTypes(
             copenhagenHotel,
             '4-bed dorms',
             'The dorms are equipped with luxurious mattresses from Getama, as well as a private toilet and shower. Furthermore, you have access to a locker where you can store your private belongings. Book the required number of beds or book it as a private room if you are a group travelling together.',
             '9 m2',
-            250.50
+            250.50,
+            4,
         ),
         addRoomTypes(
             copenhagenHotel,
             '6-bed dorms',
             'The dorms are equipped with luxurious mattresses from Getama, as well as a private toilet and shower. Furthermore, you have access to a locker where you can store your private belongings. Book the required number of beds or book it as a private room if you are a group travelling together.',
             '12 m2',
-            350.50
+            350.50,
+            6,
         ),
     ]);
     const odenseRoomTypes = await Promise.all([
@@ -168,35 +173,40 @@ async function main() {
             'Single room',
             'Our single rooms contain a bed with a luxurious Getama mattress, private toilet/bathroom and space to store your clothes and belongings. In addition, all single rooms are equipped with a TV. The room is perfect for guests wishing to stay alone and yet make use of the shared facilities',
             '9 m2',
-            250.50
+            250.50,
+            1,
         ),
         addRoomTypes(
             odenseHotel,
             'Single room with a terrace',
             'Our single rooms contain a bed with a luxurious Getama mattress, private toilet/bathroom and space to store your clothes and belongings. In addition, all single rooms are equipped with a TV. The room is perfect for guests wishing to stay alone and yet make use of the shared facilities',
             '12 m2',
-            300.50
+            300.50,
+            1,
         ),
         addRoomTypes(
             odenseHotel,
             'Double room',
             'You get a nice room for 2 people, a double bed with a luxurious Getama mattress, private toilet/bathroom and space to store your clothes and belongings. In addition, all double rooms are equipped with a TV. Book this double room if you would like a private room that sleeps two.',
             '9 m2',
-            250.50
+            250.50,
+            2,
         ),
         addRoomTypes(
             odenseHotel,
             'Double room with a terrace',
             'You get a nice room for 2 people, a double bed with a luxurious Getama mattress, private toilet/bathroom and space to store your clothes and belongings. In addition, all double rooms are equipped with a TV. Book this double room if you would like a private room that sleeps two.',
             '12 m2',
-            300.50
+            300.50,
+            2,
         ),
         addRoomTypes(
             odenseHotel,
             'TWIN ROOM for 1 or 2 Persons',
             'Perfect for 2 friends who wants to stay together, but not in the same bed! Our twin rooms have single beds, a private toilet/bathroom and can only be booked privately. Choose this room if you want a private room with your friend, but don’t want to share your bed. Traveling on your own? Don’t worry; this room can also be booked as a private single room.',
             '17 m2',
-            400.50
+            400.50,
+            2,
         ),
     ]);
 
@@ -206,35 +216,40 @@ async function main() {
             'Double room',
             'Our double rooms are for two people with their own toilet and bathroom. The double bed has a luxurious mattress from Getama and is equipped with a TV.',
             '9 m2',
-            250.50
+            250.50,
+            2,
         ),
         addRoomTypes(
             aarhusHotel,
             'Single room',
             'The single room has a bed with a luxurious Getama mattress and its own toilet and shower. All single rooms are equipped with a TV. The room is perfect for you who wish to stay alone and yet make use of all the facilities. ',
             '9 m2',
-            250.50
+            250.50,
+            1,
         ),
         addRoomTypes(
             aarhusHotel,
             'Twin room for 1 or 2 persons',
             'Twin Room is perfect for two friends who travel together but doesn’t want to share the same bed. The beds have luxurious mattresses from Getama, as well as a private toilet and bathroom. The room can only be booked as a private room or a room for one person.',
             '12 m2',
-            350.50
+            350.50,
+            2,
         ),
         addRoomTypes(
             aarhusHotel,
             '4-bed dorms',
             'The dorms are equipped with luxurious mattresses from Getama, as well as a private toilet and shower. Furthermore, you have access to a locker where you can store your private belongings. Book the required number of beds or book it as a private room if you are a group travelling together.',
             '9 m2',
-            250.50
+            250.50,
+            4,
         ),
         addRoomTypes(
             aarhusHotel,
             '6-bed dorms',
             'The dorms are equipped with luxurious mattresses from Getama, as well as a private toilet and shower. Furthermore, you have access to a locker where you can store your private belongings. Book the required number of beds or book it as a private room if you are a group travelling together.',
             '12 m2',
-            350.50
+            350.50,
+            6,
         ),
     ]);
     roomTypes.push(copenhagenRoomTypes, odenseRoomTypes, aarhusRoomTypes);
@@ -347,7 +362,7 @@ async function addFloors(hotel: Hotel, totalFloors: number): Promise<Floor[]> {
     return await Promise.all(floorArray);
 }
 
-async function addRoomTypes(hotel: Hotel, name: string, description: string, size: string, price: number): Promise<RoomType> {
+async function addRoomTypes(hotel: Hotel, name: string, description: string, size: string, price: number, supportedPeople: number): Promise<RoomType> {
     return await prisma.roomType.upsert({
         where: {
             hotelId_name: {
@@ -359,6 +374,7 @@ async function addRoomTypes(hotel: Hotel, name: string, description: string, siz
             description: description,
             size: size,
             price: price,
+            supportedPeople: supportedPeople,
         },
         create: {
             hotelId: hotel.id,
@@ -366,13 +382,13 @@ async function addRoomTypes(hotel: Hotel, name: string, description: string, siz
             description: description,
             size: size,
             price: price,
+            supportedPeople: supportedPeople,
         },
     });
 }
 
 async function addRooms(hotel: Hotel, floorsInHotel: Floor[], roomTypesInHotel: RoomType[], totalRooms: number): Promise<void> {
     let roomArray: {floorId: number, roomTypeId: number, number: number}[] = [];
-
 
     const totalFloors = floorsInHotel.length;
     const totalRoomsPerFloor = Math.round(totalRooms / totalFloors);

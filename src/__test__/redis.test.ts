@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../index";
 
-describe("remember()", () => {
+describe("test redis", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
