@@ -25,9 +25,10 @@ describe("DELETE /api/room/type/:id", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
     });
@@ -39,7 +40,7 @@ describe("DELETE /api/room/type/:id", () => {
     it("should return status 204 and delete a room type", async () => {
         const response = await fastify.inject({
             method: "DELETE",
-            url: "/api/room/type/1000"
+            url: "/api/room/type/1000",
         });
 
         expect(response.statusCode).toBe(204);
@@ -47,9 +48,10 @@ describe("DELETE /api/room/type/:id", () => {
             id: response.json().id,
             name: "Double room",
             description: "Room for 2 clowns laying in one bed",
-            size: 'big',
+            size: "big",
+            supportedPeople: 2,
             price: 2454.4,
-            hotelId: 1000
+            hotelId: 1000,
         });
 
         const count = await prisma.roomType.count();
@@ -59,7 +61,7 @@ describe("DELETE /api/room/type/:id", () => {
     it("should return status 400 and throw error, if none was found by id", async () => {
         const response = await fastify.inject({
             method: "DELETE",
-            url: "/api/room/type/1001"
+            url: "/api/room/type/1001",
         });
 
         expect(response.statusCode).toBe(400);

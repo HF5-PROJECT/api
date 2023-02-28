@@ -1,12 +1,12 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
     createHotelHandler,
-    browseHotelHandler,
-    showHotelHandler,
+    getAllHotelsHandler,
+    getHotelHandler,
     updateHotelHandler,
     deleteHotelHandler,
-    showHotelFloorsHandler,
-    showHotelRoomTypeHandler,
+    getFloorsByHotelsHandler,
+    getRoomTypesByHotelHandler,
 } from "./hotel.controller";
 import { $ref } from "./hotel.schema";
 
@@ -31,11 +31,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Hotel"],
                 response: {
-                    200: $ref("browseHotelResponseSchema"),
+                    200: $ref("getAllHotelsResponseSchema"),
                 },
             },
         },
-        browseHotelHandler
+        getAllHotelsHandler
     );
 
     fastify.get(
@@ -44,11 +44,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Hotel"],
                 response: {
-                    200: $ref("showHotelResponseSchema"),
+                    200: $ref("getHotelResponseSchema"),
                 },
             },
         },
-        showHotelHandler
+        getHotelHandler
     );
 
     fastify.put(
@@ -92,11 +92,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Hotel"],
                 response: {
-                    200: $ref("showHotelFloorResponseSchema"),
+                    200: $ref("getFloorsByHotelResponseSchema"),
                 },
             },
         },
-        showHotelFloorsHandler
+        getFloorsByHotelsHandler
     );
 
     fastify.get(
@@ -105,10 +105,10 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Hotel"],
                 response: {
-                    200: $ref("showHotelRoomTypeResponseSchema"),
+                    200: $ref("getRoomTypesByHotelResponseSchema"),
                 },
             },
         },
-        showHotelRoomTypeHandler
+        getRoomTypesByHotelHandler
     );
 };

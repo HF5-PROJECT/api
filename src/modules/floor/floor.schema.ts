@@ -13,19 +13,19 @@ const floorCore = {
     }),
 };
 
-const showFloorSchema = z.object({
-    id: z.string()
+const getFloorSchema = z.object({
+    id: z.string(),
 });
 
-const showFloorResponseSchema = z.object({
+const getFloorResponseSchema = z.object({
     id: z.number(),
-    ...floorCore
+    ...floorCore,
 });
 
-const browseFloorResponseSchema = z.array(showFloorResponseSchema);
+const getAllFloorsResponseSchema = z.array(getFloorResponseSchema);
 
 const createFloorSchema = z.object({
-    ...floorCore
+    ...floorCore,
 });
 
 const createFloorResponseSchema = z.object({
@@ -35,49 +35,52 @@ const createFloorResponseSchema = z.object({
 
 const updateFloorSchema = z.object({
     id: z.number(),
-    ...floorCore
+    ...floorCore,
 });
 
 const updateFloorResponseSchema = z.object({
     id: z.number(),
-    ...floorCore
+    ...floorCore,
 });
 
 const deleteFloorSchema = z.object({
-    id: z.string()
+    id: z.string(),
 });
 
 const deleteFloorResponseSchema = z.object({
     id: z.number(),
-    ...floorCore
+    ...floorCore,
 });
 
-const showFloorRoomSchema = z.object({
-    id: z.string()
+const getRoomsByFloorSchema = z.object({
+    id: z.string(),
 });
 
-const showFloorRoomResponseSchema = z.array(roomSchema);
+const getRoomsByFloorResponseSchema = z.array(roomSchema);
 
-export const floorSchema = showFloorResponseSchema;
+export const floorSchema = getFloorResponseSchema;
 
 export type CreateFloorInput = z.infer<typeof createFloorSchema>;
 export type UpdateFloorInput = z.infer<typeof updateFloorSchema>;
-export type ShowFloorParams = z.infer<typeof showFloorSchema>;
+export type GetFloorParams = z.infer<typeof getFloorSchema>;
 export type DeleteFloorParams = z.infer<typeof deleteFloorSchema>;
-export type ShowFloorRoomParams = z.infer<typeof showFloorRoomSchema>;
+export type GetRoomsByFloorParams = z.infer<typeof getRoomsByFloorSchema>;
 
-export const { schemas: floorSchemas, $ref } = buildJsonSchemas({
-    createFloorSchema,
-    createFloorResponseSchema,
-    browseFloorResponseSchema,
-    showFloorSchema,
-    showFloorResponseSchema,
-    updateFloorSchema,
-    updateFloorResponseSchema,
-    deleteFloorSchema,
-    deleteFloorResponseSchema,
-    showFloorRoomSchema,
-    showFloorRoomResponseSchema
-}, {
-    $id: "floorSchema"
-});
+export const { schemas: floorSchemas, $ref } = buildJsonSchemas(
+    {
+        createFloorSchema,
+        createFloorResponseSchema,
+        getAllFloorsResponseSchema,
+        getFloorSchema,
+        getFloorResponseSchema,
+        updateFloorSchema,
+        updateFloorResponseSchema,
+        deleteFloorSchema,
+        deleteFloorResponseSchema,
+        getRoomsByFloorSchema,
+        getRoomsByFloorResponseSchema,
+    },
+    {
+        $id: "floorSchema",
+    }
+);

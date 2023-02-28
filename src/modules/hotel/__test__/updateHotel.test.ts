@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
-describe("POST /api/hotel", () => {
+describe("PUT /api/hotel", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {

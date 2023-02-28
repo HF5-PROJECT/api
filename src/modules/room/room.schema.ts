@@ -16,19 +16,19 @@ const roomCore = {
     }),
 };
 
-const showRoomSchema = z.object({
-    id: z.string()
+const getRoomSchema = z.object({
+    id: z.string(),
 });
 
-const showRoomResponseSchema = z.object({
+const getRoomResponseSchema = z.object({
     id: z.number(),
-    ...roomCore
+    ...roomCore,
 });
 
-const browseRoomResponseSchema = z.array(showRoomResponseSchema);
+const getAllRoomsResponseSchema = z.array(getRoomResponseSchema);
 
 const createRoomSchema = z.object({
-    ...roomCore
+    ...roomCore,
 });
 
 const createRoomResponseSchema = z.object({
@@ -38,40 +38,43 @@ const createRoomResponseSchema = z.object({
 
 const updateRoomSchema = z.object({
     id: z.number(),
-    ...roomCore
+    ...roomCore,
 });
 
 const updateRoomResponseSchema = z.object({
     id: z.number(),
-    ...roomCore
+    ...roomCore,
 });
 
 const deleteRoomSchema = z.object({
-    id: z.string()
+    id: z.string(),
 });
 
 const deleteRoomResponseSchema = z.object({
     id: z.number(),
-    ...roomCore
+    ...roomCore,
 });
 
-export const roomSchema = showRoomResponseSchema;
+export const roomSchema = getRoomResponseSchema;
 
 export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 export type UpdateRoomInput = z.infer<typeof updateRoomSchema>;
-export type ShowRoomParams = z.infer<typeof showRoomSchema>;
+export type getRoomParams = z.infer<typeof getRoomSchema>;
 export type DeleteRoomParams = z.infer<typeof deleteRoomSchema>;
 
-export const { schemas: roomSchemas, $ref } = buildJsonSchemas({
-    createRoomSchema,
-    createRoomResponseSchema,
-    browseRoomResponseSchema,
-    showRoomSchema,
-    showRoomResponseSchema,
-    updateRoomSchema,
-    updateRoomResponseSchema,
-    deleteRoomSchema,
-    deleteRoomResponseSchema
-}, {
-    $id: "roomSchema"
-});
+export const { schemas: roomSchemas, $ref } = buildJsonSchemas(
+    {
+        createRoomSchema,
+        createRoomResponseSchema,
+        getAllRoomsResponseSchema,
+        getRoomSchema,
+        getRoomResponseSchema,
+        updateRoomSchema,
+        updateRoomResponseSchema,
+        deleteRoomSchema,
+        deleteRoomResponseSchema,
+    },
+    {
+        $id: "roomSchema",
+    }
+);

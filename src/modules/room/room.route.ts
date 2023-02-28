@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import {
     createRoomHandler,
-    browseRoomHandler,
-    showRoomHandler,
+    getAllRoomsHandler,
+    getRoomHandler,
     updateRoomHandler,
-    deleteRoomHandler
+    deleteRoomHandler,
 } from "./room.controller";
 import { $ref } from "./room.schema";
 
@@ -29,11 +29,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Room"],
                 response: {
-                    200: $ref("browseRoomResponseSchema"),
+                    200: $ref("getAllRoomsResponseSchema"),
                 },
             },
         },
-        browseRoomHandler
+        getAllRoomsHandler
     );
 
     fastify.get(
@@ -42,11 +42,11 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             schema: {
                 tags: ["Room"],
                 response: {
-                    200: $ref("showRoomResponseSchema"),
+                    200: $ref("getRoomResponseSchema"),
                 },
             },
         },
-        showRoomHandler
+        getRoomHandler
     );
 
     fastify.put(

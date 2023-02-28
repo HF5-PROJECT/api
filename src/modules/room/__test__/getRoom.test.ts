@@ -27,7 +27,7 @@ describe("GET /api/room/:id", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.roomType.create({
@@ -35,9 +35,10 @@ describe("GET /api/room/:id", () => {
                 id: 1000,
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
-                size: 'big',
+                size: "big",
+                supportedPeople: 2,
                 price: 2454.4,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.room.create({
@@ -59,8 +60,8 @@ describe("GET /api/room/:id", () => {
             method: "GET",
             url: "/api/room/1000",
             payload: {
-                id: 1000
-            }
+                id: 1000,
+            },
         });
 
         expect(response.statusCode).toBe(200);
@@ -77,8 +78,8 @@ describe("GET /api/room/:id", () => {
             method: "GET",
             url: "/api/room/1001",
             payload: {
-                id: 1001
-            }
+                id: 1001,
+            },
         });
 
         expect(response.statusCode).toBe(400);
