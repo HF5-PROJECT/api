@@ -14,12 +14,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Floor"],
                 body: $ref("createFloorSchema"),
                 response: {
                     201: $ref("createFloorResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor Create")],
         },
         createFloorHandler
     );
@@ -28,11 +32,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Floor"],
                 response: {
                     200: $ref("getAllFloorsResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor GetAll")],
         },
         getAllFloorsHandler
     );
@@ -41,11 +49,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Floor"],
                 response: {
                     200: $ref("getFloorResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor Get")],
         },
         getFloorHandler
     );
@@ -54,12 +66,16 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Floor"],
                 body: $ref("updateFloorSchema"),
                 response: {
                     200: $ref("updateFloorResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor Update")],
         },
         updateFloorHandler
     );
@@ -68,11 +84,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Floor"],
                 response: {
                     204: $ref("deleteFloorResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor Delete")],
         },
         deleteFloorHandler
     );
@@ -81,11 +101,15 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         "/:id/rooms",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Floor"],
                 response: {
                     200: $ref("getRoomsByFloorResponseSchema"),
                 },
             },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor-Rooms GetAll")],
         },
         getRoomsByFloorsHandler
     );

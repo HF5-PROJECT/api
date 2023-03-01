@@ -1,6 +1,7 @@
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import fastify, { FastifyInstance, FastifyPluginOptions } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import fastifyRedis, { FastifyRedis } from "@fastify/redis";
+import Redis from "ioredis";
 
 declare module "fastify" {
     interface FastifyRequest {
@@ -26,14 +27,17 @@ declare module "ioredis" {
     }
 }
 
+
+export let redis: Redis
+
 export default fastifyPlugin(
     async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
-        await fastify.register(fastifyRedis, {
+        redis = new Redis({
             host: fastify.config.REDIS_HOST,
             password: fastify.config.REDIS_PASSWORD,
-        });
+        })
 
-        fastify.redis.remember = async (key, ttl, callback) => {
+        redis.remember = async (key, ttl, callback) => {
             let value = await fastify.redis.get(key);
 
             if (value !== null) {
@@ -47,13 +51,13 @@ export default fastifyPlugin(
             return value;
         };
         
-        fastify.redis.rememberJSON = async (key, ttl, callback) => {
+        redis.rememberJSON = async (key, ttl, callback) => {
             return JSON.parse(await fastify.redis.remember(key, ttl, async () => {
                 return JSON.stringify(await callback());
             }));
         };
 
-        fastify.redis.invalidateCaches = async (...keys) => {
+        redis.invalidateCaches = async (...keys) => {
             await Promise.all(
                 keys.map(async (key) => {
                     await fastify.redis.del(key);
@@ -61,9 +65,15 @@ export default fastifyPlugin(
             );
         }
 
+        await fastify.register(fastifyRedis, { client: redis });
+
         fastify.addHook("preHandler", (req, reply, next) => {
             req.redis = fastify.redis;
             return next();
+        });
+
+        fastify.addHook("onClose", async (fastify) => {
+            redis.disconnect();
         });
     },
     { dependencies: ["config"] }

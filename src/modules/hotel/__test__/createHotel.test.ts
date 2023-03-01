@@ -1,15 +1,20 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
+import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("POST /api/hotel", () => {
     let fastify: FastifyInstance;
+    let accessToken: string;
+    let accessTokenNoPermission: string
 
     beforeAll(async () => {
         fastify = await build();
     });
 
     beforeEach(async () => {
+        await fastify.redis.flushall();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Hotel Create'));
         await prisma.hotel.deleteMany();
     });
 
@@ -21,6 +26,9 @@ describe("POST /api/hotel", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/hotel",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Santa Marina Hotel",
                 description: "Santa Marina Hotel is located close to the beach",
@@ -42,6 +50,9 @@ describe("POST /api/hotel", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/hotel",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Santa Marina Hotel",
                 address:
@@ -62,6 +73,9 @@ describe("POST /api/hotel", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/hotel",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Santa Marina Hotel"
             },
@@ -79,6 +93,9 @@ describe("POST /api/hotel", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/hotel",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Santa Marina Hotel",
                 address: ""
@@ -97,6 +114,9 @@ describe("POST /api/hotel", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/hotel",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 address:
                     "8130 Sv. Marina, Sozopol, Bulgarien",
@@ -115,6 +135,9 @@ describe("POST /api/hotel", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/hotel",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "",
                 address:
@@ -127,6 +150,49 @@ describe("POST /api/hotel", () => {
             error: "Bad Request",
             message: "body/name must NOT have fewer than 1 characters",
             statusCode: 400,
+        });
+    });
+
+    it("should return status 401 when no user is provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/hotel",
+            payload: {
+                name: "Santa Marina Hotel",
+                description: "Santa Marina Hotel is located close to the beach",
+                address:
+                    "8130 Sv. Marina, Sozopol, Bulgarien"
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
+    });
+
+    it("should return status 401 when user does not have permission", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/hotel",
+            headers: {
+                authorization: accessTokenNoPermission,
+            },
+            payload: {
+                name: "Santa Marina Hotel",
+                description: "Santa Marina Hotel is located close to the beach",
+                address:
+                    "8130 Sv. Marina, Sozopol, Bulgarien"
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
         });
     });
 });
