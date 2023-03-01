@@ -263,9 +263,11 @@ async function main() {
     /**
      * Rooms upserts
      */
-    await addRooms(copenhagenHotel, copenhagenFloors, copenhagenRoomTypes, 6000);
-    await addRooms(odenseHotel, odenseFloors, odenseRoomTypes, 1500);
-    await addRooms(aarhusHotel, aarhusFloors, aarhusRoomTypes, 2500);
+    Promise.all([
+        addRooms(copenhagenHotel, copenhagenFloors, copenhagenRoomTypes, 6000),
+        addRooms(odenseHotel, odenseFloors, odenseRoomTypes, 1500),
+        addRooms(aarhusHotel, aarhusFloors, aarhusRoomTypes, 2500)
+    ]);
 }
 
 async function addPermission(name: string): Promise<Permission> {
