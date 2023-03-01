@@ -37,6 +37,7 @@ async function main() {
     const roomCreatePermission = await addPermission('Room Create');
     const roomUpdatePermission = await addPermission('Room Update');
     const roomDeletePermission = await addPermission('Room Delete');
+    const rofsgjrnPermission = await addPermission('Room Delete');
 
     const swaggerPermission = await addPermission('Swagger');
 

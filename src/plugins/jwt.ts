@@ -44,10 +44,6 @@ export default fastifyPlugin(
         fastify.decorate(
             "authenticate",
             async (request: FastifyRequest<{ Params: any, Body: any }>, reply: FastifyReply) => {
-                if (fastify.config.NODE_ENV === "test") {
-                    return;
-                }
-
                 try {
                     await request.jwtVerify();
                 } catch (err) {

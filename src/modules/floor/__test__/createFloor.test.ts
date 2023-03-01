@@ -1,15 +1,21 @@
+import { User, Permission } from "@prisma/client";
 import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
+import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("POST /api/floor", () => {
     let fastify: FastifyInstance;
+    let accessToken: string;
+    let accessTokenNoPermission: string
 
     beforeAll(async () => {
         fastify = await build();
     });
 
     beforeEach(async () => {
+        await fastify.redis.flushall();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor Create'));
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -30,6 +36,9 @@ describe("POST /api/floor", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/floor",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 number: 1,
                 hotelId: 1000
@@ -48,6 +57,9 @@ describe("POST /api/floor", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/floor",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 hotelId: 1000
             },
@@ -65,6 +77,9 @@ describe("POST /api/floor", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/floor",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 number: "",
                 hotelId: 1000
@@ -83,6 +98,9 @@ describe("POST /api/floor", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/floor",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 number: 1,
             },
@@ -100,6 +118,9 @@ describe("POST /api/floor", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/floor",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 number: 1,
                 hotelId: ""
@@ -111,6 +132,45 @@ describe("POST /api/floor", () => {
             error: "Bad Request",
             message: "body/hotelId must be number",
             statusCode: 400,
+        });
+    });
+
+    it("should return status 401 when no user is provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/floor",
+            payload: {
+                number: 1,
+                hotelId: 1000
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
+    });
+
+    it("should return status 401 when user does not have permission", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/floor",
+            headers: {
+                authorization: accessTokenNoPermission,
+            },
+            payload: {
+                number: 1,
+                hotelId: 1000
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
         });
     });
 });

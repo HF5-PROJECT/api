@@ -1,15 +1,20 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../../../../index";
 import { prisma } from "../../../../plugins/prisma";
+import { addTestUserAndPermission } from "../../../../utils/testHelper";
 
 describe("POST /api/room/type", () => {
     let fastify: FastifyInstance;
+    let accessToken: string;
+    let accessTokenNoPermission: string
 
     beforeAll(async () => {
         fastify = await build();
     });
 
     beforeEach(async () => {
+        await fastify.redis.flushall();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'RoomType Create'));
         await prisma.roomType.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -30,6 +35,9 @@ describe("POST /api/room/type", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/room/type",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
@@ -56,6 +64,9 @@ describe("POST /api/room/type", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/room/type",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Double room",
                 size: "big",
@@ -81,6 +92,9 @@ describe("POST /api/room/type", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/room/type",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
@@ -106,6 +120,9 @@ describe("POST /api/room/type", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/room/type",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 description: "Room for 2 clowns laying in one bed",
                 size: "big",
@@ -127,6 +144,9 @@ describe("POST /api/room/type", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/room/type",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "",
                 description: "Room for 2 clowns laying in one bed",
@@ -149,6 +169,9 @@ describe("POST /api/room/type", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/room/type",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
@@ -171,6 +194,9 @@ describe("POST /api/room/type", () => {
         const response = await fastify.inject({
             method: "POST",
             url: "/api/room/type",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 name: "Double room",
                 description: "Room for 2 clowns laying in one bed",
@@ -185,6 +211,52 @@ describe("POST /api/room/type", () => {
             error: "Bad Request",
             message: "body must have required property 'supportedPeople'",
             statusCode: 400,
+        });
+    });
+
+    it("should return status 401 when no user is provided", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/room/type",
+            payload: {
+                name: "Double room",
+                description: "Room for 2 clowns laying in one bed",
+                size: "big",
+                supportedPeople: 2,
+                price: 2454.4,
+                hotelId: 1000,
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
+    });
+
+    it("should return status 401 when user does not have permission", async () => {
+        const response = await fastify.inject({
+            method: "POST",
+            url: "/api/room/type",
+            headers: {
+                authorization: accessTokenNoPermission,
+            },
+            payload: {
+                name: "Double room",
+                description: "Room for 2 clowns laying in one bed",
+                size: "big",
+                supportedPeople: 2,
+                price: 2454.4,
+                hotelId: 1000,
+            },
+        });
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
         });
     });
 });

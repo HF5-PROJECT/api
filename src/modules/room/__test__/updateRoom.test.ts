@@ -1,9 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
+import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("PUT /api/room", () => {
     let fastify: FastifyInstance;
+    let accessToken: string;
+    let accessTokenNoPermission: string
 
     beforeAll(async () => {
         fastify = await build();
@@ -11,6 +14,7 @@ describe("PUT /api/room", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Room Update'));
         await prisma.room.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.floor.deleteMany();
@@ -59,6 +63,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 number: 2,
@@ -80,6 +87,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1001",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1001,
                 number: 2,
@@ -100,6 +110,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 floorId: 1000,
@@ -119,6 +132,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 number: "",
@@ -139,6 +155,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 number: 1,
@@ -158,6 +177,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 number: 1,
@@ -178,6 +200,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 number: 1,
@@ -197,6 +222,9 @@ describe("PUT /api/room", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/room/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 number: 1,
@@ -210,6 +238,49 @@ describe("PUT /api/room", () => {
             error: "Bad Request",
             message: "body/roomTypeId must be number",
             statusCode: 400,
+        });
+    });
+
+    it("should return status 401 when no user is provided", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/room/1000",
+            payload: {
+                id: 1000,
+                number: 2,
+                floorId: 1000,
+                roomTypeId: 1000,
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
+    });
+
+    it("should return status 401 when user does not have permission", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/room/1000",
+            headers: {
+                authorization: accessTokenNoPermission,
+            },
+            payload: {
+                id: 1000,
+                number: 2,
+                floorId: 1000,
+                roomTypeId: 1000,
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
         });
     });
 });

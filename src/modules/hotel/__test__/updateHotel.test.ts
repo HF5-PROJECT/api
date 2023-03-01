@@ -1,15 +1,20 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
+import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("PUT /api/hotel", () => {
     let fastify: FastifyInstance;
+    let accessToken: string;
+    let accessTokenNoPermission: string
 
     beforeAll(async () => {
         fastify = await build();
     });
 
     beforeEach(async () => {
+        await fastify.redis.flushall();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Hotel Update'));
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
             data: {
@@ -29,6 +34,9 @@ describe("PUT /api/hotel", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/hotel/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 name: "Luis de Morocco",
@@ -50,6 +58,9 @@ describe("PUT /api/hotel", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/hotel/1001",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1001,
                 name: "Luis de Morocco",
@@ -70,6 +81,9 @@ describe("PUT /api/hotel", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/hotel/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 name: "Luis de Morocco",
@@ -90,6 +104,9 @@ describe("PUT /api/hotel", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/hotel/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 name: "Luis de Morocco",
@@ -109,6 +126,9 @@ describe("PUT /api/hotel", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/hotel/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 name: "Luis de Morocco",
@@ -129,6 +149,9 @@ describe("PUT /api/hotel", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/hotel/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 description: "El hotel en Morocco esta cerca de la playa",
@@ -148,6 +171,9 @@ describe("PUT /api/hotel", () => {
         const response = await fastify.inject({
             method: "PUT",
             url: "/api/hotel/1000",
+            headers: {
+                authorization: accessToken,
+            },
             payload: {
                 id: 1000,
                 name: "",
@@ -161,6 +187,51 @@ describe("PUT /api/hotel", () => {
             error: "Bad Request",
             message: "body/name must NOT have fewer than 1 characters",
             statusCode: 400,
+        });
+    });
+
+    it("should return status 401 when no user is provided", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/hotel/1000",
+            payload: {
+                id: 1000,
+                name: "Luis de Morocco",
+                description: "El hotel en Morocco esta cerca de la playa",
+                address: "420 B., Morocco Calle",
+            },
+        });
+
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
+    });
+
+    it("should return status 401 when user does not have permission", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/hotel/1000",
+            headers: {
+                authorization: accessTokenNoPermission,
+            },
+            payload: {
+                id: 1000,
+                name: "Luis de Morocco",
+                description: "El hotel en Morocco esta cerca de la playa",
+                address: "420 B., Morocco Calle",
+            },
+        });
+
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
         });
     });
 });

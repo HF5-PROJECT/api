@@ -1,9 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
+import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("GET /api/floor", () => {
     let fastify: FastifyInstance;
+    let accessToken: string;
+    let accessTokenNoPermission: string
 
     beforeAll(async () => {
         fastify = await build();
@@ -11,6 +14,7 @@ describe("GET /api/floor", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor Browse'));
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -51,7 +55,10 @@ describe("GET /api/floor", () => {
     it("should return status 200 and get all floors", async () => {
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/floor"
+            url: "/api/floor",
+            headers: {
+                authorization: accessToken,
+            },
         });
 
         expect(response.statusCode).toBe(200);
@@ -74,10 +81,44 @@ describe("GET /api/floor", () => {
         await prisma.floor.deleteMany();
         const response = await fastify.inject({
             method: "GET",
-            url: "/api/floor"
+            url: "/api/floor",
+            headers: {
+                authorization: accessToken,
+            },
         });
 
         expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual([]);
+    });
+
+    it("should return status 401 when no user is provided", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/floor",
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
+    });
+
+    it("should return status 401 when user does not have permission", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/floor",
+            headers: {
+                authorization: accessTokenNoPermission,
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
     });
 });

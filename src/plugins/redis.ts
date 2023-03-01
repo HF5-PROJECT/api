@@ -71,6 +71,10 @@ export default fastifyPlugin(
             req.redis = fastify.redis;
             return next();
         });
+
+        fastify.addHook("onClose", async (fastify) => {
+            redis.disconnect();
+        });
     },
     { dependencies: ["config"] }
 );

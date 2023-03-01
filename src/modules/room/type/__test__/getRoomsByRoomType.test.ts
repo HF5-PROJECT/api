@@ -1,9 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { build } from "../../../../index";
 import { prisma } from "../../../../plugins/prisma";
+import { addTestUserAndPermission } from "../../../../utils/testHelper";
 
 describe("GET /api/room/type/:id/rooms", () => {
     let fastify: FastifyInstance;
+    let accessToken: string;
+    let accessTokenNoPermission: string
 
     beforeAll(async () => {
         fastify = await build();
@@ -11,6 +14,7 @@ describe("GET /api/room/type/:id/rooms", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'RoomType-Rooms Browse'));
         await prisma.room.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.floor.deleteMany();
@@ -94,6 +98,9 @@ describe("GET /api/room/type/:id/rooms", () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/room/type/1000/rooms",
+            headers: {
+                authorization: accessToken,
+            },
         });
 
         expect(response.statusCode).toBe(200);
@@ -124,6 +131,9 @@ describe("GET /api/room/type/:id/rooms", () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/room/type/1000/rooms",
+            headers: {
+                authorization: accessToken,
+            },
         });
 
         expect(response.statusCode).toBe(200);
@@ -134,6 +144,9 @@ describe("GET /api/room/type/:id/rooms", () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/room/type/1003/rooms",
+            headers: {
+                authorization: accessToken,
+            },
         });
 
         expect(response.statusCode).toBe(400);
@@ -141,6 +154,37 @@ describe("GET /api/room/type/:id/rooms", () => {
             error: "Bad Request",
             message: "Could not find room type with id: 1003",
             statusCode: 400,
+        });
+    });
+
+    it("should return status 401 when no user is provided", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/room/type/1000/rooms",
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
+        });
+    });
+
+    it("should return status 401 when user does not have permission", async () => {
+        const response = await fastify.inject({
+            method: "GET",
+            url: "/api/room/type/1000/rooms",
+            headers: {
+                authorization: accessTokenNoPermission,
+            },
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.json()).toEqual({
+            "error": "Unauthorized",
+            "message": "Unauthorized",
+            "statusCode": 401,
         });
     });
 });
