@@ -14,7 +14,7 @@ describe("GET /api/room/:id", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Room Show'));
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Room Get'));
         await prisma.room.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.floor.deleteMany();

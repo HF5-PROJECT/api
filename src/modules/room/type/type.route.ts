@@ -101,7 +101,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getRoomsByRoomTypeResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("RoomType-Rooms Browse")],
+            onRequest: [fastify.authenticate, fastify.hasPermission("RoomType-Rooms GetAll")],
         },
         getRoomsByRoomTypesHandler
     );

@@ -39,7 +39,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getAllRoomsResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("Room Browse")],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Room GetAll")],
         },
         getAllRoomsHandler
     );
@@ -56,7 +56,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getRoomResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("Room Show")],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Room Get")],
         },
         getRoomHandler
     );

@@ -14,7 +14,7 @@ describe("GET /api/floor/:id", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor Show'));
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor Get'));
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
