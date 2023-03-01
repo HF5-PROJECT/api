@@ -18,29 +18,29 @@ async function main() {
     const hotelCreatePermission = await addPermission('Hotel Create');
     const hotelUpdatePermission = await addPermission('Hotel Update');
     const hotelDeletePermission = await addPermission('Hotel Delete');
-    const hotelFloorsBrowsePermission = await addPermission('Hotel-Floors GetAll');
+    const hotelFloorsGetAllPermission = await addPermission('Hotel-Floors GetAll');
 
-    const floorBrowsePermission = await addPermission('Floor GetAll');
-    const floorShowPermission = await addPermission('Floor Get');
+    const floorGetAllPermission = await addPermission('Floor GetAll');
+    const floorGetPermission = await addPermission('Floor Get');
     const floorCreatePermission = await addPermission('Floor Create');
     const floorUpdatePermission = await addPermission('Floor Update');
     const floorDeletePermission = await addPermission('Floor Delete');
-    const floorRoomsBrowsePermission = await addPermission('Floor-Rooms GetAll');
+    const floorRoomsGetAllPermission = await addPermission('Floor-Rooms GetAll');
 
     const roomTypeCreatePermission = await addPermission('RoomType Create');
     const roomTypeUpdatePermission = await addPermission('RoomType Update');
     const roomTypeDeletePermission = await addPermission('RoomType Delete');
-    const roomTypeRoomsBrowsePermission = await addPermission('RoomType-Rooms GetAll');
+    const roomTypeRoomsGetAllPermission = await addPermission('RoomType-Rooms GetAll');
 
-    const roomBrowsePermission = await addPermission('Room GetAll');
-    const roomShowPermission = await addPermission('Room Get');
+    const roomGetAllPermission = await addPermission('Room GetAll');
+    const roomGetPermission = await addPermission('Room Get');
     const roomCreatePermission = await addPermission('Room Create');
     const roomUpdatePermission = await addPermission('Room Update');
     const roomDeletePermission = await addPermission('Room Delete');
 
     const swaggerPermission = await addPermission('Swagger');
 
-    const receptionistPermissions: Permission[] = [hotelFloorsBrowsePermission, floorBrowsePermission, floorShowPermission, floorRoomsBrowsePermission, roomBrowsePermission, roomShowPermission, roomTypeRoomsBrowsePermission];
+    const receptionistPermissions: Permission[] = [hotelFloorsGetAllPermission, floorGetAllPermission, floorGetPermission, floorRoomsGetAllPermission, roomGetAllPermission, roomGetPermission, roomTypeRoomsGetAllPermission];
     const supporterPermissions: Permission[] = [...receptionistPermissions];
     const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission];
     const seniorManagerPermissions: Permission[] = [...branchManagerPermissions, floorCreatePermission, roomCreatePermission, roomTypeCreatePermission];
