@@ -53,7 +53,7 @@ describe("DELETE /api/floor/:id", () => {
             number: 1,
             hotelId: 1000
         });
-        
+
         const count = await prisma.floor.count();
         expect(count).toBe(0);
     });
@@ -75,7 +75,7 @@ describe("DELETE /api/floor/:id", () => {
         });
     });
 
-        it("should return status 401 when no user is provided", async () => {
+    it("should return status 401 when no user is provided", async () => {
         const response = await fastify.inject({
             method: "DELETE",
             url: "/api/floor/1000",

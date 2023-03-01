@@ -99,7 +99,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getFloorsByHotelResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel-Floors Browse")],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel-Floors GetAll")],
         },
         getFloorsByHotelsHandler
     );

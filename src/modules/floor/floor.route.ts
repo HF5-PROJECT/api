@@ -40,7 +40,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getAllFloorsResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("Floor Browse")],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor GetAll")],
         },
         getAllFloorsHandler
     );
@@ -57,7 +57,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getFloorResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("Floor Show")],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor Get")],
         },
         getFloorHandler
     );
@@ -109,7 +109,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     200: $ref("getRoomsByFloorResponseSchema"),
                 },
             },
-            onRequest: [fastify.authenticate, fastify.hasPermission("Floor-Rooms Browse")],
+            onRequest: [fastify.authenticate, fastify.hasPermission("Floor-Rooms GetAll")],
         },
         getRoomsByFloorsHandler
     );

@@ -15,33 +15,32 @@ async function main() {
     /**
      * Permission upserts
      */
-    const hotelCreatePermission = await addPermission('Hotel Create')
+    const hotelCreatePermission = await addPermission('Hotel Create');
     const hotelUpdatePermission = await addPermission('Hotel Update');
     const hotelDeletePermission = await addPermission('Hotel Delete');
-    const hotelFloorsBrowsePermission = await addPermission('Hotel-Floors Browse');
+    const hotelFloorsGetAllPermission = await addPermission('Hotel-Floors GetAll');
 
-    const floorBrowsePermission = await addPermission('Floor Browse');
-    const floorShowPermission = await addPermission('Floor Show');
+    const floorGetAllPermission = await addPermission('Floor GetAll');
+    const floorGetPermission = await addPermission('Floor Get');
     const floorCreatePermission = await addPermission('Floor Create');
     const floorUpdatePermission = await addPermission('Floor Update');
     const floorDeletePermission = await addPermission('Floor Delete');
-    const floorRoomsBrowsePermission = await addPermission('Floor-Rooms Browse');
+    const floorRoomsGetAllPermission = await addPermission('Floor-Rooms GetAll');
 
     const roomTypeCreatePermission = await addPermission('RoomType Create');
     const roomTypeUpdatePermission = await addPermission('RoomType Update');
     const roomTypeDeletePermission = await addPermission('RoomType Delete');
-    const roomTypeRoomsBrowsePermission = await addPermission('RoomType-Rooms Browse');
+    const roomTypeRoomsGetAllPermission = await addPermission('RoomType-Rooms GetAll');
 
-    const roomBrowsePermission = await addPermission('Room Browse');
-    const roomShowPermission = await addPermission('Room Show');
+    const roomGetAllPermission = await addPermission('Room GetAll');
+    const roomGetPermission = await addPermission('Room Get');
     const roomCreatePermission = await addPermission('Room Create');
     const roomUpdatePermission = await addPermission('Room Update');
     const roomDeletePermission = await addPermission('Room Delete');
-    const rofsgjrnPermission = await addPermission('Room Delete');
 
     const swaggerPermission = await addPermission('Swagger');
 
-    const receptionistPermissions: Permission[] = [hotelFloorsBrowsePermission, floorBrowsePermission, floorShowPermission, floorRoomsBrowsePermission, roomBrowsePermission, roomShowPermission, roomTypeRoomsBrowsePermission];
+    const receptionistPermissions: Permission[] = [hotelFloorsGetAllPermission, floorGetAllPermission, floorGetPermission, floorRoomsGetAllPermission, roomGetAllPermission, roomGetPermission, roomTypeRoomsGetAllPermission];
     const supporterPermissions: Permission[] = [...receptionistPermissions];
     const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission];
     const seniorManagerPermissions: Permission[] = [...branchManagerPermissions, floorCreatePermission, roomCreatePermission, roomTypeCreatePermission];
@@ -264,9 +263,11 @@ async function main() {
     /**
      * Rooms upserts
      */
-    await addRooms(copenhagenHotel, copenhagenFloors, copenhagenRoomTypes, 6000);
-    await addRooms(odenseHotel, odenseFloors, odenseRoomTypes, 1500);
-    await addRooms(aarhusHotel, aarhusFloors, aarhusRoomTypes, 2500);
+    Promise.all([
+        addRooms(copenhagenHotel, copenhagenFloors, copenhagenRoomTypes, 6000),
+        addRooms(odenseHotel, odenseFloors, odenseRoomTypes, 1500),
+        addRooms(aarhusHotel, aarhusFloors, aarhusRoomTypes, 2500)
+    ]);
 }
 
 async function addPermission(name: string): Promise<Permission> {
@@ -283,7 +284,7 @@ async function addRole(name: string, permissions: Permission[]): Promise<Role> {
     const parsedPermissions = permissions.map(permission => {
         return {
             permission: {
-                connect: {id: permission.id}
+                connect: { id: permission.id }
             },
         }
     });
@@ -395,7 +396,7 @@ async function addRoomTypes(hotel: Hotel, name: string, description: string, siz
 }
 
 async function addRooms(hotel: Hotel, floorsInHotel: Floor[], roomTypesInHotel: RoomType[], totalRooms: number): Promise<void> {
-    let roomArray: {floorId: number, roomTypeId: number, number: number}[] = [];
+    let roomArray: { floorId: number, roomTypeId: number, number: number }[] = [];
 
     const totalFloors = floorsInHotel.length;
     const totalRoomsPerFloor = Math.round(totalRooms / totalFloors);
