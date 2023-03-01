@@ -21,6 +21,7 @@ model User {
     createdAt DateTime     @default(now())
     updatedAt DateTime     @default(now()) @updatedAt
     roles     RoleOnUser[]
+    Booking   Booking[]
 }
 
 model RoleOnUser {
@@ -100,16 +101,47 @@ model Floor {
 }
 
 model Room {
-    id         Int      @id @default(autoincrement())
-    number     Int      @db.Int
-    floorId    Int      @db.Int
-    floor      Floor    @relation(fields: [floorId], references: [id], onDelete: Cascade)
-    roomTypeId Int      @db.Int
-    roomType   RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @default(now()) @updatedAt
+    id          Int           @id @default(autoincrement())
+    number      Int           @db.Int
+    floorId     Int           @db.Int
+    floor       Floor         @relation(fields: [floorId], references: [id], onDelete: Cascade)
+    roomTypeId  Int           @db.Int
+    roomType    RoomType      @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @default(now()) @updatedAt
+    BookingRoom BookingRoom[]
 
     @@unique([floorId, number])
     @@index([floorId])
     @@index([roomTypeId])
+}
+
+model Booking {
+    id          Int           @id @default(autoincrement())
+    user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      Int
+    start       DateTime
+    end         DateTime
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @default(now()) @updatedAt
+    BookingRoom BookingRoom[]
+
+    @@index([userId])
+    @@index([start])
+    @@index([end])
+    @@index([start, end])
+}
+
+model BookingRoom {
+    id        Int      @id @default(autoincrement())
+    booking   Booking  @relation(fields: [bookingId], references: [id])
+    bookingId Int
+    room      Room     @relation(fields: [roomId], references: [id])
+    roomId    Int
+    price     Float    @db.Double
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@index([bookingId])
+    @@index([roomId])
 }

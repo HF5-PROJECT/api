@@ -1,7 +1,7 @@
 import { prisma } from "../../../plugins/prisma";
 import { CreateRoomTypeInput, UpdateRoomTypeInput } from "./type.schema";
 import { getHotelById } from "../../hotel/hotel.service";
-import { idNotFound } from "./type.errors";
+import { idNotFound, idsNotFound } from "./type.errors";
 
 export async function getAllRoomTypes() {
     return await prisma.roomType.findMany();
@@ -66,6 +66,29 @@ export async function getRoomTypeById(id: number) {
     }
 
     return roomType;
+}
+
+export async function getRoomTypesByIds(ids: number[]) {
+    const roomTypes = await prisma.roomType.findMany({
+        where: {
+            id: {
+                in: ids,
+            },
+        },
+    });
+
+    if (roomTypes.length !== ids.length) {
+        const missingIds = ids.filter((roomTypeId) => {
+            return (
+                roomTypes.find((roomType) => roomType.id === roomTypeId) ===
+                undefined
+            );
+        });
+
+        throw idsNotFound(missingIds);
+    }
+
+    return roomTypes;
 }
 
 export async function getRoomTypesByHotelId(hotelId: number) {
