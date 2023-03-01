@@ -1,20 +1,22 @@
+import { PrismaClient } from "@prisma/client";
 import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("GET /api/room/:id", () => {
     let fastify: FastifyInstance;
+    let prisma: PrismaClient;
     let accessToken: string;
-    let accessTokenNoPermission: string
+    let accessTokenNoPermission: string;
 
     beforeAll(async () => {
-        fastify = await build();
+        fastify = global.fastify;
+        prisma = global.prisma;
     });
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Room Get'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Room Get"));
         await prisma.room.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.floor.deleteMany();
@@ -53,10 +55,6 @@ describe("GET /api/room/:id", () => {
                 roomTypeId: 1000,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200 and get room by id", async () => {
@@ -111,9 +109,9 @@ describe("GET /api/room/:id", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -131,9 +129,9 @@ describe("GET /api/room/:id", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

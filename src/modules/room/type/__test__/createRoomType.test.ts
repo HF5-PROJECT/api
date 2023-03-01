@@ -1,20 +1,22 @@
+import { PrismaClient } from "@prisma/client";
 import { FastifyInstance } from "fastify";
-import { build } from "../../../../index";
-import { prisma } from "../../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../../utils/testHelper";
 
 describe("POST /api/room/type", () => {
     let fastify: FastifyInstance;
+    let prisma: PrismaClient;
     let accessToken: string;
-    let accessTokenNoPermission: string
+    let accessTokenNoPermission: string;
 
     beforeAll(async () => {
-        fastify = await build();
+        fastify = global.fastify;
+        prisma = global.prisma;
     });
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'RoomType Create'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "RoomType Create"));
         await prisma.roomType.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -25,10 +27,6 @@ describe("POST /api/room/type", () => {
                 address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 201 and create a room type", async () => {
@@ -230,9 +228,9 @@ describe("POST /api/room/type", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -254,9 +252,9 @@ describe("POST /api/room/type", () => {
         });
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

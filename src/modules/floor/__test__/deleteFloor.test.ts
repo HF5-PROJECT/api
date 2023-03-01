@@ -1,20 +1,22 @@
+import { PrismaClient } from "@prisma/client";
 import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("DELETE /api/floor/:id", () => {
     let fastify: FastifyInstance;
+    let prisma: PrismaClient;
     let accessToken: string;
-    let accessTokenNoPermission: string
+    let accessTokenNoPermission: string;
 
     beforeAll(async () => {
-        fastify = await build();
+        fastify = global.fastify;
+        prisma = global.prisma;
     });
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor Delete'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Floor Delete"));
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -29,13 +31,9 @@ describe("DELETE /api/floor/:id", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 204 and delete a floor", async () => {
@@ -51,7 +49,7 @@ describe("DELETE /api/floor/:id", () => {
         expect(response.json()).toEqual({
             id: 1000,
             number: 1,
-            hotelId: 1000
+            hotelId: 1000,
         });
 
         const count = await prisma.floor.count();
@@ -81,15 +79,15 @@ describe("DELETE /api/floor/:id", () => {
             url: "/api/floor/1000",
             payload: {
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -102,15 +100,15 @@ describe("DELETE /api/floor/:id", () => {
             },
             payload: {
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

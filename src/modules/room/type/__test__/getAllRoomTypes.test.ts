@@ -1,12 +1,13 @@
+import { PrismaClient } from "@prisma/client";
 import { FastifyInstance } from "fastify";
-import { build } from "../../../../index";
-import { prisma } from "../../../../plugins/prisma";
 
 describe("GET /api/room/type", () => {
     let fastify: FastifyInstance;
+    let prisma: PrismaClient;
 
     beforeAll(async () => {
-        fastify = await build();
+        fastify = global.fastify;
+        prisma = global.prisma;
     });
 
     beforeEach(async () => {
@@ -63,10 +64,6 @@ describe("GET /api/room/type", () => {
                 hotelId: 1001,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200 and get all room types", async () => {

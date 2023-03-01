@@ -1,25 +1,23 @@
+import { PrismaClient } from "@prisma/client";
 import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("POST /api/hotel", () => {
     let fastify: FastifyInstance;
+    let prisma: PrismaClient;
     let accessToken: string;
-    let accessTokenNoPermission: string
+    let accessTokenNoPermission: string;
 
     beforeAll(async () => {
-        fastify = await build();
+        fastify = global.fastify;
+        prisma = global.prisma;
     });
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Hotel Create'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Hotel Create"));
         await prisma.hotel.deleteMany();
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 201 and create a hotel", async () => {
@@ -32,8 +30,7 @@ describe("POST /api/hotel", () => {
             payload: {
                 name: "Santa Marina Hotel",
                 description: "Santa Marina Hotel is located close to the beach",
-                address:
-                    "8130 Sv. Marina, Sozopol, Bulgarien"
+                address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
 
@@ -55,8 +52,7 @@ describe("POST /api/hotel", () => {
             },
             payload: {
                 name: "Santa Marina Hotel",
-                address:
-                    "8130 Sv. Marina, Sozopol, Bulgarien"
+                address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
 
@@ -77,7 +73,7 @@ describe("POST /api/hotel", () => {
                 authorization: accessToken,
             },
             payload: {
-                name: "Santa Marina Hotel"
+                name: "Santa Marina Hotel",
             },
         });
 
@@ -98,7 +94,7 @@ describe("POST /api/hotel", () => {
             },
             payload: {
                 name: "Santa Marina Hotel",
-                address: ""
+                address: "",
             },
         });
 
@@ -118,8 +114,7 @@ describe("POST /api/hotel", () => {
                 authorization: accessToken,
             },
             payload: {
-                address:
-                    "8130 Sv. Marina, Sozopol, Bulgarien",
+                address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
 
@@ -140,8 +135,7 @@ describe("POST /api/hotel", () => {
             },
             payload: {
                 name: "",
-                address:
-                    "8130 Sv. Marina, Sozopol, Bulgarien",
+                address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
 
@@ -160,16 +154,15 @@ describe("POST /api/hotel", () => {
             payload: {
                 name: "Santa Marina Hotel",
                 description: "Santa Marina Hotel is located close to the beach",
-                address:
-                    "8130 Sv. Marina, Sozopol, Bulgarien"
+                address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -183,16 +176,15 @@ describe("POST /api/hotel", () => {
             payload: {
                 name: "Santa Marina Hotel",
                 description: "Santa Marina Hotel is located close to the beach",
-                address:
-                    "8130 Sv. Marina, Sozopol, Bulgarien"
+                address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

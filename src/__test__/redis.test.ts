@@ -1,15 +1,10 @@
 import { FastifyInstance } from "fastify";
-import { build } from "../index";
 
 describe("test redis", () => {
     let fastify: FastifyInstance;
 
     beforeAll(async () => {
-        fastify = await build();
-    });
-
-    afterAll(async () => {
-        await fastify.close();
+        fastify = global.fastify;
     });
 
     it("should return callback value, if not cached", async () => {
@@ -36,50 +31,61 @@ describe("test redis", () => {
         await fastify.redis.del("key");
 
         const value = await fastify.redis.rememberJSON("key", 10, () => {
-            return [{
-                id: "1000",
-                name: "Christian",
-                address: "Christian Ave. 108"
-            }];
+            return [
+                {
+                    id: "1000",
+                    name: "Christian",
+                    address: "Christian Ave. 108",
+                },
+            ];
         });
 
-        expect(value).toEqual([{
-            id: "1000",
-            name: "Christian",
-            address: "Christian Ave. 108"
-        }]);
+        expect(value).toEqual([
+            {
+                id: "1000",
+                name: "Christian",
+                address: "Christian Ave. 108",
+            },
+        ]);
     });
 
     it("should return cached JSON value", async () => {
-        await fastify.redis.set("key", JSON.stringify({
-            id: "1000",
-            name: "Christian",
-            address: "Christian Ave. 108"
-        }));
+        await fastify.redis.set(
+            "key",
+            JSON.stringify({
+                id: "1000",
+                name: "Christian",
+                address: "Christian Ave. 108",
+            })
+        );
 
         const value = await fastify.redis.rememberJSON("key", 10, () => {
             return {
                 id: "1001",
                 name: "Frederik",
-                address: "Frederik Ave. 109"
+                address: "Frederik Ave. 109",
             };
         });
 
         expect(value).toEqual({
             id: "1000",
             name: "Christian",
-            address: "Christian Ave. 108"
+            address: "Christian Ave. 108",
         });
     });
 
     it("should return callback generic value, if not cached", async () => {
         await fastify.redis.del("key");
 
-        const value = await fastify.redis.rememberJSON<{id: number, name: string, address: string}>("key", 10, () => {
+        const value = await fastify.redis.rememberJSON<{
+            id: number;
+            name: string;
+            address: string;
+        }>("key", 10, () => {
             return {
                 id: 1000,
                 name: "Christian",
-                address: "Christian Ave. 108"
+                address: "Christian Ave. 108",
             };
         });
 
@@ -89,17 +95,24 @@ describe("test redis", () => {
     });
 
     it("should return cached value, when setting new generic value", async () => {
-        await fastify.redis.set("key", JSON.stringify({
-            id: 1000,
-            name: "Christian",
-            address: "Christian Ave. 108"
-        }));
+        await fastify.redis.set(
+            "key",
+            JSON.stringify({
+                id: 1000,
+                name: "Christian",
+                address: "Christian Ave. 108",
+            })
+        );
 
-        const value = await fastify.redis.rememberJSON<{id: number, name: string, address: string}>("key", 10, () => {
+        const value = await fastify.redis.rememberJSON<{
+            id: number;
+            name: string;
+            address: string;
+        }>("key", 10, () => {
             return {
                 id: 1001,
                 name: "Frederik",
-                address: "Frederik Ave. 109"
+                address: "Frederik Ave. 109",
             };
         });
 
@@ -109,15 +122,17 @@ describe("test redis", () => {
     });
 
     it("should invalidate all caches set new", async () => {
-        await fastify.redis.del("key");
-        await fastify.redis.del("key2");
+        await fastify.redis.del("key", "key2");
 
         await fastify.redis.set("key", "Cached Value");
-        await fastify.redis.set("key2", JSON.stringify({
-            id: "1000",
-            name: "Christian",
-            address: "Christian Ave. 108"
-        }));
+        await fastify.redis.set(
+            "key2",
+            JSON.stringify({
+                id: "1000",
+                name: "Christian",
+                address: "Christian Ave. 108",
+            })
+        );
 
         await fastify.redis.invalidateCaches("key", "key2");
 
@@ -125,11 +140,15 @@ describe("test redis", () => {
             return "Newest Value";
         });
 
-        const value2 = await fastify.redis.rememberJSON<{id: number, name: string, address: string}>("key2", 10, () => {
+        const value2 = await fastify.redis.rememberJSON<{
+            id: number;
+            name: string;
+            address: string;
+        }>("key2", 10, () => {
             return {
                 id: 1001,
                 name: "Frederik",
-                address: "Frederik Ave. 109"
+                address: "Frederik Ave. 109",
             };
         });
 

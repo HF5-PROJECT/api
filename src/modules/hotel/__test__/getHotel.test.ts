@@ -1,12 +1,13 @@
+import { PrismaClient } from "@prisma/client";
 import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 
 describe("GET /api/hotel/:id", () => {
     let fastify: FastifyInstance;
+    let prisma: PrismaClient;
 
     beforeAll(async () => {
-        fastify = await build();
+        fastify = global.fastify;
+        prisma = global.prisma;
     });
 
     beforeEach(async () => {
@@ -22,17 +23,13 @@ describe("GET /api/hotel/:id", () => {
         });
     });
 
-    afterAll(async () => {
-        await fastify.close();
-    });
-
     it("should return status 200 and get hotel by id", async () => {
         const response = await fastify.inject({
             method: "GET",
             url: "/api/hotel/1000",
             payload: {
-                id: 1000
-            }
+                id: 1000,
+            },
         });
 
         expect(response.statusCode).toBe(200);
@@ -50,8 +47,8 @@ describe("GET /api/hotel/:id", () => {
             method: "GET",
             url: "/api/hotel/1001",
             payload: {
-                id: 1001
-            }
+                id: 1001,
+            },
         });
 
         expect(response.statusCode).toBe(400);
