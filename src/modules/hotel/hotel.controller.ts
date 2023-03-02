@@ -13,11 +13,13 @@ import {
     DeleteHotelParams,
     GetRoomTypesByHotelSchema,
     GetFloorsByHotelSchema,
+    GetHotelSettingsByHotelSchema,
 } from "./hotel.schema";
 import { errorMessage } from "../../utils/string";
-import { Hotel, Floor, RoomType } from "@prisma/client";
+import { Hotel, Floor, RoomType, HotelSetting } from "@prisma/client";
 import { getRoomTypesByHotelId } from "../room/type/type.service";
 import { getFloorsByHotelId } from "../floor/floor.service";
+import { getHotelSettingsByHotelId } from "./setting/setting.service";
 
 // In Seconds
 const CACHE_TTL = 1800;
@@ -159,6 +161,27 @@ export async function getFloorsByHotelsHandler(
         );
 
         return reply.code(200).send(floors);
+    } catch (e) {
+        return reply.badRequest(errorMessage(e));
+    }
+}
+
+export async function getHotelSettingsByHotelsHandler(
+    request: FastifyRequest<{
+        Params: GetHotelSettingsByHotelSchema;
+    }>,
+    reply: FastifyReply
+) {
+    try {
+        const hotelSettings = await request.redis.rememberJSON<HotelSetting[]>(
+            CACHE_KEY_HOTEL_HOTEL_SETTINGS + request.params.id,
+            CACHE_TTL,
+            async () => {
+                return await getHotelSettingsByHotelId(Number(request.params.id));
+            }
+        );
+
+        return reply.code(200).send(hotelSettings);
     } catch (e) {
         return reply.badRequest(errorMessage(e));
     }

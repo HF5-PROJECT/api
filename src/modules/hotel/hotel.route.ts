@@ -7,6 +7,7 @@ import {
     deleteHotelHandler,
     getFloorsByHotelsHandler,
     getRoomTypesByHotelHandler,
+    getHotelSettingsByHotelsHandler,
 } from "./hotel.controller";
 import { $ref } from "./hotel.schema";
 
@@ -90,10 +91,31 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
         deleteHotelHandler
     );
 
+
+    fastify.get(
+        "/:id/settings",
+        {
+            schema: {
+                headers: {
+                    Authorization: true,
+                },
+                tags: ["Hotel"],
+                response: {
+                    200: $ref("getHotelSettingsByHotelResponseSchema"),
+                },
+            },
+            onRequest: [fastify.authenticate, fastify.hasPermission("Hotel-HotelSettings GetAll")],
+        },
+        getHotelSettingsByHotelsHandler
+    );
+
     fastify.get(
         "/:id/floors",
         {
             schema: {
+                headers: {
+                    Authorization: true,
+                },
                 tags: ["Hotel"],
                 response: {
                     200: $ref("getFloorsByHotelResponseSchema"),

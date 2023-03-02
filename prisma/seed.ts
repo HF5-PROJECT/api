@@ -26,6 +26,7 @@ async function main() {
     const hotelSettingCreatePermission = await addPermission('HotelSetting Create');
     const hotelSettingUpdatePermission = await addPermission('HotelSetting Update');
     const hotelSettingDeletePermission = await addPermission('HotelSetting Delete');
+    const hotelHotelSettingGetAllPermission = await addPermission('Hotel-HotelSettings GetAll');
 
     const floorGetAllPermission = await addPermission('Floor GetAll');
     const floorGetPermission = await addPermission('Floor Get');
@@ -48,7 +49,7 @@ async function main() {
     const swaggerPermission = await addPermission('Swagger');
 
     const receptionistPermissions: Permission[] = [hotelFloorsGetAllPermission, floorGetAllPermission, floorGetPermission, floorRoomsGetAllPermission, roomGetAllPermission, roomGetPermission, roomTypeRoomsGetAllPermission];
-    const supporterPermissions: Permission[] = [...receptionistPermissions, hotelSettingGetAllPermission, hotelSettingGetPermission];
+    const supporterPermissions: Permission[] = [...receptionistPermissions, hotelSettingGetAllPermission, hotelSettingGetPermission, hotelHotelSettingGetAllPermission];
     const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission, hotelSettingCreatePermission, hotelSettingUpdatePermission, hotelSettingDeletePermission];
     const seniorManagerPermissions: Permission[] = [...branchManagerPermissions, floorCreatePermission, roomCreatePermission, roomTypeCreatePermission];
     const administatorPermissions: Permission[] = [...seniorManagerPermissions, hotelCreatePermission, hotelDeletePermission, floorDeletePermission, roomTypeDeletePermission, roomDeletePermission];
@@ -130,7 +131,7 @@ async function main() {
     const copenhagenSettings = [addHotelSetting(copenhagenHotel, 'CacheModifier', '2')];
     const odenseSettings = [addHotelSetting(odenseHotel, 'CacheModifier', '1')];
     const aarhusSettings = [addHotelSetting(aarhusHotel, 'CacheModifier', '1')];
-    hotelSettings = await Promise.all([...copenhagenSettings, ...odenseSettings, ...aarhusSettings])
+    hotelSettings.push(...await Promise.all([...copenhagenSettings, ...odenseSettings, ...aarhusSettings]))
 
     /**
      * Floor upserts

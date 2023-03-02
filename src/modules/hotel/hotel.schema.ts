@@ -2,6 +2,7 @@ import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
 import { floorSchema } from "../floor/floor.schema";
 import { roomTypeSchema } from "../room/type/type.schema";
+import { hotelSettingSchema } from "./setting/setting.schema";
 
 const hotelCore = {
     name: z
@@ -58,13 +59,19 @@ const deleteHotelResponseSchema = z.object({
     ...hotelCore,
 });
 
-const GetFloorsByHotelSchema = z.object({
+const getHotelSettingsByHotelSchema = z.object({
+    id: z.string(),
+});
+
+const getHotelSettingsByHotelResponseSchema = z.array(hotelSettingSchema);
+
+const getFloorsByHotelSchema = z.object({
     id: z.string(),
 });
 
 const getFloorsByHotelResponseSchema = z.array(floorSchema);
 
-const GetRoomTypesByHotelSchema = z.object({
+const getRoomTypesByHotelSchema = z.object({
     id: z.string(),
 });
 
@@ -74,10 +81,9 @@ export type CreateHotelInput = z.infer<typeof createHotelSchema>;
 export type UpdateHotelInput = z.infer<typeof updateHotelSchema>;
 export type GetHotelParams = z.infer<typeof getHotelSchema>;
 export type DeleteHotelParams = z.infer<typeof deleteHotelSchema>;
-export type GetFloorsByHotelSchema = z.infer<typeof GetFloorsByHotelSchema>;
-export type GetRoomTypesByHotelSchema = z.infer<
-    typeof GetRoomTypesByHotelSchema
->;
+export type GetHotelSettingsByHotelSchema = z.infer<typeof getHotelSettingsByHotelSchema>;
+export type GetFloorsByHotelSchema = z.infer<typeof getFloorsByHotelSchema>;
+export type GetRoomTypesByHotelSchema = z.infer<typeof getRoomTypesByHotelSchema>;
 
 export const { schemas: hotelSchemas, $ref } = buildJsonSchemas(
     {
@@ -90,9 +96,11 @@ export const { schemas: hotelSchemas, $ref } = buildJsonSchemas(
         updateHotelResponseSchema,
         deleteHotelSchema,
         deleteHotelResponseSchema,
-        GetFloorsByHotelSchema,
+        getHotelSettingsByHotelSchema,
+        getHotelSettingsByHotelResponseSchema,
+        getFloorsByHotelSchema,
         getFloorsByHotelResponseSchema,
-        GetRoomTypesByHotelSchema,
+        getRoomTypesByHotelSchema,
         getRoomTypesByHotelResponseSchema,
     },
     {
