@@ -26,6 +26,7 @@ const CACHE_KEY_HOTELS = "allHotels";
 const CACHE_KEY_HOTEL = "hotel";
 export const CACHE_KEY_HOTEL_ROOM_TYPES = "hotelRoomTypes";
 export const CACHE_KEY_HOTEL_FLOORS = "hotelFloors";
+export const CACHE_KEY_HOTEL_HOTEL_SETTINGS = "hotelSettings";
 
 export async function createHotelHandler(
     request: FastifyRequest<{

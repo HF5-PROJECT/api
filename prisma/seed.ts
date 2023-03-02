@@ -1,4 +1,4 @@
-import { Floor, Hotel, Permission, PrismaClient, Role, Room, RoomType, User } from '@prisma/client'
+import { Floor, Hotel, HotelSettings, Permission, PrismaClient, Role, Room, RoomType, User } from '@prisma/client'
 import { number } from 'zod';
 const prisma = new PrismaClient()
 async function main() {
@@ -9,6 +9,7 @@ async function main() {
     let users: User[] = [];
     let roles: Role[] = [];
     let hotels: Hotel[] = [];
+    let hotelSettings: HotelSettings[] = [];
     let floors: Floor[][] = [];
     let roomTypes: RoomType[][] = [];
 
@@ -19,6 +20,12 @@ async function main() {
     const hotelUpdatePermission = await addPermission('Hotel Update');
     const hotelDeletePermission = await addPermission('Hotel Delete');
     const hotelFloorsGetAllPermission = await addPermission('Hotel-Floors GetAll');
+
+    const hotelSettingGetAllPermission = await addPermission('HotelSetting GetAll');
+    const hotelSettingGetPermission = await addPermission('HotelSetting Get');
+    const hotelSettingCreatePermission = await addPermission('HotelSetting Create');
+    const hotelSettingUpdatePermission = await addPermission('HotelSetting Update');
+    const hotelSettingDeletePermission = await addPermission('HotelSetting Delete');
 
     const floorGetAllPermission = await addPermission('Floor GetAll');
     const floorGetPermission = await addPermission('Floor Get');
@@ -41,8 +48,8 @@ async function main() {
     const swaggerPermission = await addPermission('Swagger');
 
     const receptionistPermissions: Permission[] = [hotelFloorsGetAllPermission, floorGetAllPermission, floorGetPermission, floorRoomsGetAllPermission, roomGetAllPermission, roomGetPermission, roomTypeRoomsGetAllPermission];
-    const supporterPermissions: Permission[] = [...receptionistPermissions];
-    const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission];
+    const supporterPermissions: Permission[] = [...receptionistPermissions, hotelSettingGetAllPermission, hotelSettingGetPermission];
+    const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission, hotelSettingCreatePermission, hotelSettingUpdatePermission, hotelSettingDeletePermission];
     const seniorManagerPermissions: Permission[] = [...branchManagerPermissions, floorCreatePermission, roomCreatePermission, roomTypeCreatePermission];
     const administatorPermissions: Permission[] = [...seniorManagerPermissions, hotelCreatePermission, hotelDeletePermission, floorDeletePermission, roomTypeDeletePermission, roomDeletePermission];
     const developerAdministatorPermissions: Permission[] = [...administatorPermissions, swaggerPermission];
@@ -119,6 +126,11 @@ async function main() {
         'Mangepengevej 210, 2100 Aarhus',
     );
     hotels.push(copenhagenHotel, odenseHotel, aarhusHotel);
+
+    const copenhagenSettings = [addHotelSetting(copenhagenHotel, 'CacheModifier', '2')];
+    const odenseSettings = [addHotelSetting(odenseHotel, 'CacheModifier', '1')];
+    const aarhusSettings = [addHotelSetting(aarhusHotel, 'CacheModifier', '1')];
+    hotelSettings = await Promise.all([...copenhagenSettings, ...odenseSettings, ...aarhusSettings])
 
     /**
      * Floor upserts
@@ -263,7 +275,7 @@ async function main() {
     /**
      * Rooms upserts
      */
-    Promise.all([
+    await Promise.all([
         addRooms(copenhagenHotel, copenhagenFloors, copenhagenRoomTypes, 6000),
         addRooms(odenseHotel, odenseFloors, odenseRoomTypes, 1500),
         addRooms(aarhusHotel, aarhusFloors, aarhusRoomTypes, 2500)
@@ -345,6 +357,25 @@ async function addHotel(name: string, description: string, address: string): Pro
             name: name,
             description: description,
             address: address,
+        },
+    });
+}
+
+async function addHotelSetting(hotel: Hotel, key: string, value: string): Promise<HotelSettings> {
+    return await prisma.hotelSetting.upsert({
+        where: {
+            hotelId_key: {
+                hotelId: hotel.id,
+                key: key,
+            }
+        },
+        update: {
+            value: value,
+        },
+        create: {
+            key: key,
+            value: value,
+            hotelId: hotel.id,
         },
     });
 }
