@@ -49,7 +49,7 @@ describe("PUT /api/hotel/setting", () => {
             payload: {
                 id: 1000,
                 key: 'MaxAllowedInstances',
-                value: '4',
+                value: '10000',
                 hotelId: 1000,
             },
         });
@@ -58,7 +58,7 @@ describe("PUT /api/hotel/setting", () => {
         expect(response.json()).toEqual({
             id: 1000,
             key: 'MaxAllowedInstances',
-            value: '4',
+            value: '10000',
             hotelId: 1000,
         });
     });
@@ -181,7 +181,8 @@ describe("PUT /api/hotel/setting", () => {
             url: "/api/hotel/setting/1000",
             payload: {
                 id: 1000,
-                number: 2,
+                key: 'MaxAllowedInstances',
+                value: '10000',
                 hotelId: 1000,
             },
         });
@@ -203,7 +204,8 @@ describe("PUT /api/hotel/setting", () => {
             },
             payload: {
                 id: 1000,
-                number: 2,
+                key: 'MaxAllowedInstances',
+                value: '10000',
                 hotelId: 1000,
             },
         });

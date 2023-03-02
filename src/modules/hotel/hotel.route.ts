@@ -8,6 +8,7 @@ import {
     getFloorsByHotelsHandler,
     getRoomTypesByHotelHandler,
     getHotelSettingsByHotelsHandler,
+    getHotelInformationsByHotelsHandler,
 } from "./hotel.controller";
 import { $ref } from "./hotel.schema";
 
@@ -107,6 +108,19 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
             onRequest: [fastify.authenticate, fastify.hasPermission("Hotel-HotelSettings GetAll")],
         },
         getHotelSettingsByHotelsHandler
+    );
+
+    fastify.get(
+        "/:id/information",
+        {
+            schema: {
+                tags: ["Hotel"],
+                response: {
+                    200: $ref("getHotelInformationsByHotelResponseSchema"),
+                },
+            },
+        },
+        getHotelInformationsByHotelsHandler
     );
 
     fastify.get(

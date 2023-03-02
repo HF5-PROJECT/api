@@ -3,6 +3,7 @@ import { buildJsonSchemas } from "fastify-zod";
 import { floorSchema } from "../floor/floor.schema";
 import { roomTypeSchema } from "../room/type/type.schema";
 import { hotelSettingSchema } from "./setting/setting.schema";
+import { hotelInformationSchema } from "./information/information.schema";
 
 const hotelCore = {
     name: z
@@ -65,6 +66,12 @@ const getHotelSettingsByHotelSchema = z.object({
 
 const getHotelSettingsByHotelResponseSchema = z.array(hotelSettingSchema);
 
+const getHotelInformationsByHotelSchema = z.object({
+    id: z.string(),
+});
+
+const getHotelInformationsByHotelResponseSchema = z.array(hotelInformationSchema);
+
 const getFloorsByHotelSchema = z.object({
     id: z.string(),
 });
@@ -82,6 +89,7 @@ export type UpdateHotelInput = z.infer<typeof updateHotelSchema>;
 export type GetHotelParams = z.infer<typeof getHotelSchema>;
 export type DeleteHotelParams = z.infer<typeof deleteHotelSchema>;
 export type GetHotelSettingsByHotelSchema = z.infer<typeof getHotelSettingsByHotelSchema>;
+export type GetHotelInformationsByHotelSchema = z.infer<typeof getHotelInformationsByHotelSchema>;
 export type GetFloorsByHotelSchema = z.infer<typeof getFloorsByHotelSchema>;
 export type GetRoomTypesByHotelSchema = z.infer<typeof getRoomTypesByHotelSchema>;
 
@@ -98,6 +106,8 @@ export const { schemas: hotelSchemas, $ref } = buildJsonSchemas(
         deleteHotelResponseSchema,
         getHotelSettingsByHotelSchema,
         getHotelSettingsByHotelResponseSchema,
+        getHotelInformationsByHotelSchema,
+        getHotelInformationsByHotelResponseSchema,
         getFloorsByHotelSchema,
         getFloorsByHotelResponseSchema,
         getRoomTypesByHotelSchema,

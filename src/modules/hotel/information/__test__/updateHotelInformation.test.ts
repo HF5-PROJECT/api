@@ -1,10 +1,9 @@
-import { User, Permission } from "@prisma/client";
 import { FastifyInstance } from "fastify";
 import { build } from "../../../../index";
 import { prisma } from "../../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../../utils/testHelper";
 
-describe("POST /api/hotel/setting", () => {
+describe("PUT /api/hotel/information", () => {
     let fastify: FastifyInstance;
     let accessToken: string;
     let accessTokenNoPermission: string
@@ -15,8 +14,8 @@ describe("POST /api/hotel/setting", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'HotelSetting Create'));
-        await prisma.hotelSetting.deleteMany();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'HotelInformation Update'));
+        await prisma.hotelInformation.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
             data: {
@@ -26,44 +25,77 @@ describe("POST /api/hotel/setting", () => {
                 address: "8130 Sv. Marina, Sozopol, Bulgarien",
             },
         });
+        await prisma.hotelInformation.create({
+            data: {
+                id: 1000,
+                key: 'Opening Hours',
+                value: '06:00 - 24:00',
+                hotelId: 1000,
+            },
+        });
     });
 
     afterAll(async () => {
         await fastify.close();
     });
 
-    it("should return status 201 and create a hotelSetting", async () => {
+    it("should return status 200 and update a hotel information", async () => {
         const response = await fastify.inject({
-            method: "POST",
-            url: "/api/hotel/setting",
+            method: "PUT",
+            url: "/api/hotel/information/1000",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                id: 1000,
+                key: 'Opening Hours',
+                value: 'CLOSED',
                 hotelId: 1000,
             },
         });
 
-        expect(response.statusCode).toBe(201);
+        expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual({
-            id: response.json().id,
-            key: 'CacheModifier',
-            value: '2',
+            id: 1000,
+            key: 'Opening Hours',
+            value: 'CLOSED',
             hotelId: 1000,
+        });
+    });
+
+    it("should return status 400, if none was found by id", async () => {
+        const response = await fastify.inject({
+            method: "PUT",
+            url: "/api/hotel/information/1001",
+            headers: {
+                authorization: accessToken,
+            },
+            payload: {
+                id: 1001,
+                key: 'Opening Hours',
+                value: 'CLOSED',
+                hotelId: 1000,
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toEqual({
+            error: "Bad Request",
+            message: "Could not find hotel information with id: 1001",
+            statusCode: 400,
         });
     });
 
     it("should return status 400, when no value has been provided", async () => {
         const response = await fastify.inject({
-            method: "POST",
-            url: "/api/hotel/setting",
+            method: "PUT",
+            url: "/api/hotel/information/1000",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
+                id: 1000,
+                key: 'Opening Hours',
                 hotelId: 1000,
             },
         });
@@ -78,13 +110,14 @@ describe("POST /api/hotel/setting", () => {
 
     it("should return status 400, when no key has been provided", async () => {
         const response = await fastify.inject({
-            method: "POST",
-            url: "/api/hotel/setting",
+            method: "PUT",
+            url: "/api/hotel/information/1000",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                value: '2',
+                id: 1000,
+                value: 'CLOSED',
                 hotelId: 1000,
             },
         });
@@ -97,16 +130,17 @@ describe("POST /api/hotel/setting", () => {
         });
     });
 
-    it("should return status 400, when no hotel id has been provided", async () => {
+    it("should return status 400, if no hotel id is sent", async () => {
         const response = await fastify.inject({
-            method: "POST",
-            url: "/api/hotel/setting",
+            method: "PUT",
+            url: "/api/hotel/information/1000",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                id: 1000,
+                key: 'Opening Hours',
+                value: 'CLOSED',
             },
         });
 
@@ -118,17 +152,18 @@ describe("POST /api/hotel/setting", () => {
         });
     });
 
-    it("should return status 400, when hotelId is empty", async () => {
+    it("should return status 400, if hotel id is empty", async () => {
         const response = await fastify.inject({
-            method: "POST",
-            url: "/api/hotel/setting",
+            method: "PUT",
+            url: "/api/hotel/information/1000",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
-                hotelId: ""
+                id: 1000,
+                key: 'Opening Hours',
+                value: 'CLOSED',
+                hotelId: '',
             },
         });
 
@@ -142,11 +177,12 @@ describe("POST /api/hotel/setting", () => {
 
     it("should return status 401 when no user is provided", async () => {
         const response = await fastify.inject({
-            method: "POST",
-            url: "/api/hotel/setting",
+            method: "PUT",
+            url: "/api/hotel/information/1000",
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                id: 1000,
+                key: 'Opening Hours',
+                value: 'CLOSED',
                 hotelId: 1000,
             },
         });
@@ -161,14 +197,15 @@ describe("POST /api/hotel/setting", () => {
 
     it("should return status 401 when user does not have permission", async () => {
         const response = await fastify.inject({
-            method: "POST",
-            url: "/api/hotel/setting",
+            method: "PUT",
+            url: "/api/hotel/information/1000",
             headers: {
                 authorization: accessTokenNoPermission,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                id: 1000,
+                key: 'Opening Hours',
+                value: 'CLOSED',
                 hotelId: 1000,
             },
         });
