@@ -1,5 +1,4 @@
-import { Floor, Hotel, Permission, PrismaClient, Role, Room, RoomType, User } from '@prisma/client'
-import { number } from 'zod';
+import { Floor, Hotel, HotelInformation, HotelSetting, Permission, PrismaClient, Role, Room, RoomType, User } from '@prisma/client'
 const prisma = new PrismaClient()
 async function main() {
     /**
@@ -9,6 +8,8 @@ async function main() {
     let users: User[] = [];
     let roles: Role[] = [];
     let hotels: Hotel[] = [];
+    let hotelSettings: HotelSetting[] = [];
+    let hotelInformation: HotelInformation[] = [];
     let floors: Floor[][] = [];
     let roomTypes: RoomType[][] = [];
 
@@ -19,6 +20,17 @@ async function main() {
     const hotelUpdatePermission = await addPermission('Hotel Update');
     const hotelDeletePermission = await addPermission('Hotel Delete');
     const hotelFloorsGetAllPermission = await addPermission('Hotel-Floors GetAll');
+
+    const hotelSettingGetAllPermission = await addPermission('HotelSetting GetAll');
+    const hotelSettingGetPermission = await addPermission('HotelSetting Get');
+    const hotelSettingCreatePermission = await addPermission('HotelSetting Create');
+    const hotelSettingUpdatePermission = await addPermission('HotelSetting Update');
+    const hotelSettingDeletePermission = await addPermission('HotelSetting Delete');
+    const hotelHotelSettingGetAllPermission = await addPermission('Hotel-HotelSettings GetAll');
+
+    const hotelInformationCreatePermission = await addPermission('HotelInformation Create');
+    const hotelInformationUpdatePermission = await addPermission('HotelInformation Update');
+    const hotelInformationDeletePermission = await addPermission('HotelInformation Delete');
 
     const floorGetAllPermission = await addPermission('Floor GetAll');
     const floorGetPermission = await addPermission('Floor Get');
@@ -40,9 +52,9 @@ async function main() {
 
     const swaggerPermission = await addPermission('Swagger');
 
-    const receptionistPermissions: Permission[] = [hotelFloorsGetAllPermission, floorGetAllPermission, floorGetPermission, floorRoomsGetAllPermission, roomGetAllPermission, roomGetPermission, roomTypeRoomsGetAllPermission];
-    const supporterPermissions: Permission[] = [...receptionistPermissions];
-    const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission];
+    const receptionistPermissions: Permission[] = [hotelFloorsGetAllPermission, floorGetAllPermission, floorGetPermission, floorRoomsGetAllPermission, roomGetAllPermission, roomGetPermission, roomTypeRoomsGetAllPermission, hotelInformationCreatePermission, hotelInformationUpdatePermission, hotelInformationDeletePermission];
+    const supporterPermissions: Permission[] = [...receptionistPermissions, hotelSettingGetAllPermission, hotelSettingGetPermission, hotelHotelSettingGetAllPermission];
+    const branchManagerPermissions: Permission[] = [...supporterPermissions, hotelUpdatePermission, floorUpdatePermission, roomTypeUpdatePermission, roomUpdatePermission, hotelSettingCreatePermission, hotelSettingUpdatePermission, hotelSettingDeletePermission];
     const seniorManagerPermissions: Permission[] = [...branchManagerPermissions, floorCreatePermission, roomCreatePermission, roomTypeCreatePermission];
     const administatorPermissions: Permission[] = [...seniorManagerPermissions, hotelCreatePermission, hotelDeletePermission, floorDeletePermission, roomTypeDeletePermission, roomDeletePermission];
     const developerAdministatorPermissions: Permission[] = [...administatorPermissions, swaggerPermission];
@@ -119,6 +131,22 @@ async function main() {
         'Mangepengevej 210, 2100 Aarhus',
     );
     hotels.push(copenhagenHotel, odenseHotel, aarhusHotel);
+
+    /**
+     * Hotel Settings upserts
+     */
+    const copenhagenSettings = [addHotelSetting(copenhagenHotel, 'CacheModifier', '2')];
+    const odenseSettings = [addHotelSetting(odenseHotel, 'CacheModifier', '1')];
+    const aarhusSettings = [addHotelSetting(aarhusHotel, 'CacheModifier', '1.5')];
+    hotelSettings.push(...await Promise.all([...copenhagenSettings, ...odenseSettings, ...aarhusSettings]))
+
+    /**
+     * Hotel Information upserts
+     */
+    const copenhagenInformation = [addHotelInformation(copenhagenHotel, 'Opening Hours', '06:00 - 24:00')];
+    const odenseInformation = [addHotelInformation(odenseHotel, 'Opening Hours', '07:00 - 23:00')];
+    const aarhusInformation = [addHotelInformation(aarhusHotel, 'Opening Hours', '07:00 - 24:00')];
+    hotelInformation.push(...await Promise.all([...copenhagenInformation, ...odenseInformation, ...aarhusInformation]))
 
     /**
      * Floor upserts
@@ -263,7 +291,7 @@ async function main() {
     /**
      * Rooms upserts
      */
-    Promise.all([
+    await Promise.all([
         addRooms(copenhagenHotel, copenhagenFloors, copenhagenRoomTypes, 6000),
         addRooms(odenseHotel, odenseFloors, odenseRoomTypes, 1500),
         addRooms(aarhusHotel, aarhusFloors, aarhusRoomTypes, 2500)
@@ -345,6 +373,44 @@ async function addHotel(name: string, description: string, address: string): Pro
             name: name,
             description: description,
             address: address,
+        },
+    });
+}
+
+async function addHotelSetting(hotel: Hotel, key: string, value: string): Promise<HotelSetting> {
+    return await prisma.hotelSetting.upsert({
+        where: {
+            hotelId_key: {
+                hotelId: hotel.id,
+                key: key,
+            }
+        },
+        update: {
+            value: value,
+        },
+        create: {
+            key: key,
+            value: value,
+            hotelId: hotel.id,
+        },
+    });
+}
+
+async function addHotelInformation(hotel: Hotel, key: string, value: string): Promise<HotelInformation> {
+    return await prisma.hotelInformation.upsert({
+        where: {
+            hotelId_key: {
+                hotelId: hotel.id,
+                key: key,
+            }
+        },
+        update: {
+            value: value,
+        },
+        create: {
+            key: key,
+            value: value,
+            hotelId: hotel.id,
         },
     });
 }
