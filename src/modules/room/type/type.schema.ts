@@ -17,7 +17,7 @@ const roomTypeCore = {
 };
 
 const getRoomTypeSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getRoomTypeResponseSchema = z.object({
@@ -47,7 +47,7 @@ const updateRoomTypeResponseSchema = z.object({
 });
 
 const deleteRoomTypeSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const deleteRoomTypeResponseSchema = z.object({
@@ -56,7 +56,7 @@ const deleteRoomTypeResponseSchema = z.object({
 });
 
 const getRoomsByRoomTypeSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getRoomsByRoomTypeResponseSchema = z.array(roomSchema);

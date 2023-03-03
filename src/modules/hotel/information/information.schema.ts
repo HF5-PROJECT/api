@@ -17,7 +17,7 @@ const hotelInformationCore = {
 };
 
 const getHotelInformationSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getHotelInformationResponseSchema = z.object({
@@ -47,7 +47,7 @@ const updateHotelInformationResponseSchema = z.object({
 });
 
 const deleteHotelInformationSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const deleteHotelInformationResponseSchema = z.object({

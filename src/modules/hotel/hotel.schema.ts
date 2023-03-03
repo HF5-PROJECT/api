@@ -22,7 +22,7 @@ const hotelCore = {
 };
 
 const getHotelSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getHotelResponseSchema = z.object({
@@ -52,7 +52,7 @@ const updateHotelResponseSchema = z.object({
 });
 
 const deleteHotelSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const deleteHotelResponseSchema = z.object({
@@ -61,25 +61,25 @@ const deleteHotelResponseSchema = z.object({
 });
 
 const getHotelSettingsByHotelSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getHotelSettingsByHotelResponseSchema = z.array(hotelSettingSchema);
 
 const getHotelInformationsByHotelSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getHotelInformationsByHotelResponseSchema = z.array(hotelInformationSchema);
 
 const getFloorsByHotelSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getFloorsByHotelResponseSchema = z.array(floorSchema);
 
 const getRoomTypesByHotelSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getRoomTypesByHotelResponseSchema = z.array(roomTypeSchema);
