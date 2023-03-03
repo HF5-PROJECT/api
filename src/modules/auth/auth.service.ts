@@ -2,11 +2,8 @@ import { FastifyJWT, JWT } from "@fastify/jwt";
 import { User } from "@prisma/client";
 import { hashSync } from "bcrypt";
 import { prisma } from "../../plugins/prisma";
-import { redis } from "../../plugins/redis";
 import { CreateUserInput } from "./auth.schema";
-
-export const CACHE_KEY_ROLE_PERMISSIONS_FLATTENED = "rolePermissionsFlattend";
-export const CACHE_KEY_PERMISSIONS_MAP = "permissionsMap";
+import { getPermissionIdsPerRoleFlatArray, getPermissionNamesToIds } from "../permission/permission.service";
 
 export async function createUser(input: CreateUserInput) {
     if (await getUserByEmail(input.email)) {
@@ -75,19 +72,7 @@ async function getUserPermissionIds(user: User): Promise<number[]> {
     let permissionIds: number[] = [];
     userRoles.roles.forEach(async (roleOnUser) => {
         // Get an array of permissionIds that this role has.
-        const rolePermissionId = await redis.rememberJSON<number[]>(CACHE_KEY_ROLE_PERMISSIONS_FLATTENED + roleOnUser.roleId, 1800, async () => {
-            const permissionIdObjects = await prisma.permissionOnRole.findMany({
-                where: { roleId: roleOnUser.roleId },
-                select: {
-                    permissionId: true,
-                }
-            });
-
-            // Convert the array of objects with permissionIds into a flat array of permissionIds
-            return permissionIdObjects.map(permissionIdObject => {
-                return permissionIdObject.permissionId;
-            });
-        });
+        const rolePermissionId = await getPermissionIdsPerRoleFlatArray(roleOnUser.roleId);
 
         // Merge this roles permissionIds with the other roles permissionIds, removing dublicates
         permissionIds = [...new Set([...permissionIds, ...rolePermissionId])];
@@ -98,19 +83,7 @@ async function getUserPermissionIds(user: User): Promise<number[]> {
 
 export async function userHasPermission(userToken: FastifyJWT['user'], permissionName: string) {
     // Get a Map where key is permission.name and value is permission.id
-    const permissionsNameToId = new Map<string, number>(await redis.rememberJSON(CACHE_KEY_PERMISSIONS_MAP, 1800, async () => {
-        // Get all permissions
-        const permissions = await prisma.permission.findMany();
-
-        // Convert array of permissions to Map<permission.name, permission.id>
-        const permissionsNameToId = new Map<string, number>();
-        permissions.forEach((permission) => {
-            permissionsNameToId.set(permission.name, permission.id);
-        });
-
-        // Return Map as an [string, number][] as map can't be converted to JSON
-        return Array.from(permissionsNameToId.entries());
-    }));
+    const permissionsNameToId = await getPermissionNamesToIds();
 
     // PermissionId for this permissionName
     const permissionId = permissionsNameToId.get(permissionName);
