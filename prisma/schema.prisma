@@ -59,15 +59,16 @@ model Permission {
 }
 
 model Hotel {
-    id            Int             @id @default(autoincrement())
-    name          String          @unique @db.VarChar(255)
-    description   String?         @db.Text
-    address       String          @db.VarChar(255)
-    createdAt     DateTime        @default(now())
-    updatedAt     DateTime        @default(now()) @updatedAt
-    floors        Floor[]
-    RoomTypes     RoomType[]
-    HotelSettings HotelSetting[]
+    id               Int                @id @default(autoincrement())
+    name             String             @unique @db.VarChar(255)
+    description      String?            @db.Text
+    address          String             @db.VarChar(255)
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime           @default(now()) @updatedAt
+    floors           Floor[]
+    RoomTypes        RoomType[]
+    HotelSettings    HotelSetting[]
+    HotelInformation HotelInformation[]
 }
 
 model RoomType {
@@ -116,6 +117,19 @@ model Room {
 }
 
 model HotelSetting {
+    id        Int      @id @default(autoincrement())
+    key       String   @db.VarChar(255)
+    value     String   @db.Text
+    hotelId   Int      @db.Int
+    hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@unique([hotelId, key])
+    @@index([hotelId])
+}
+
+model HotelInformation {
     id        Int      @id @default(autoincrement())
     key       String   @db.VarChar(255)
     value     String   @db.Text

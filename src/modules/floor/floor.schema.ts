@@ -14,7 +14,7 @@ const floorCore = {
 };
 
 const getFloorSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getFloorResponseSchema = z.object({
@@ -44,7 +44,7 @@ const updateFloorResponseSchema = z.object({
 });
 
 const deleteFloorSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const deleteFloorResponseSchema = z.object({
@@ -53,7 +53,7 @@ const deleteFloorResponseSchema = z.object({
 });
 
 const getRoomsByFloorSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getRoomsByFloorResponseSchema = z.array(roomSchema);

@@ -17,7 +17,7 @@ const hotelSettingCore = {
 };
 
 const getHotelSettingSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const getHotelSettingResponseSchema = z.object({
@@ -47,7 +47,7 @@ const updateHotelSettingResponseSchema = z.object({
 });
 
 const deleteHotelSettingSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 });
 
 const deleteHotelSettingResponseSchema = z.object({

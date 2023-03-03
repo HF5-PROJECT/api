@@ -4,7 +4,7 @@ import { build } from "../../../../index";
 import { prisma } from "../../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../../utils/testHelper";
 
-describe("POST /api/hotel/setting", () => {
+describe("POST /api/hotel/information", () => {
     let fastify: FastifyInstance;
     let accessToken: string;
     let accessTokenNoPermission: string
@@ -15,8 +15,8 @@ describe("POST /api/hotel/setting", () => {
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'HotelSetting Create'));
-        await prisma.hotelSetting.deleteMany();
+        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'HotelInformation Create'));
+        await prisma.hotelInformation.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
             data: {
@@ -32,16 +32,16 @@ describe("POST /api/hotel/setting", () => {
         await fastify.close();
     });
 
-    it("should return status 201 and create a hotelSetting", async () => {
+    it("should return status 201 and create a hotelInformation", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/setting",
+            url: "/api/hotel/information",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                key: 'Opening Hours',
+                value: '06:00 - 24:00',
                 hotelId: 1000,
             },
         });
@@ -49,8 +49,8 @@ describe("POST /api/hotel/setting", () => {
         expect(response.statusCode).toBe(201);
         expect(response.json()).toEqual({
             id: response.json().id,
-            key: 'CacheModifier',
-            value: '2',
+            key: 'Opening Hours',
+            value: '06:00 - 24:00',
             hotelId: 1000,
         });
     });
@@ -58,12 +58,12 @@ describe("POST /api/hotel/setting", () => {
     it("should return status 400, when no value has been provided", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/setting",
+            url: "/api/hotel/information",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
+                key: 'Opening Hours',
                 hotelId: 1000,
             },
         });
@@ -79,12 +79,12 @@ describe("POST /api/hotel/setting", () => {
     it("should return status 400, when no key has been provided", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/setting",
+            url: "/api/hotel/information",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                value: '2',
+                value: '06:00 - 24:00',
                 hotelId: 1000,
             },
         });
@@ -100,13 +100,13 @@ describe("POST /api/hotel/setting", () => {
     it("should return status 400, when no hotel id has been provided", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/setting",
+            url: "/api/hotel/information",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                key: 'Opening Hours',
+                value: '06:00 - 24:00',
             },
         });
 
@@ -121,13 +121,13 @@ describe("POST /api/hotel/setting", () => {
     it("should return status 400, when hotelId is empty", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/setting",
+            url: "/api/hotel/information",
             headers: {
                 authorization: accessToken,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                key: 'Opening Hours',
+                value: '06:00 - 24:00',
                 hotelId: ""
             },
         });
@@ -143,10 +143,10 @@ describe("POST /api/hotel/setting", () => {
     it("should return status 401 when no user is provided", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/setting",
+            url: "/api/hotel/information",
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                key: 'Opening Hours',
+                value: '06:00 - 24:00',
                 hotelId: 1000,
             },
         });
@@ -162,13 +162,13 @@ describe("POST /api/hotel/setting", () => {
     it("should return status 401 when user does not have permission", async () => {
         const response = await fastify.inject({
             method: "POST",
-            url: "/api/hotel/setting",
+            url: "/api/hotel/information",
             headers: {
                 authorization: accessTokenNoPermission,
             },
             payload: {
-                key: 'CacheModifier',
-                value: '2',
+                key: 'Opening Hours',
+                value: '06:00 - 24:00',
                 hotelId: 1000,
             },
         });
