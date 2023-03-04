@@ -3,6 +3,7 @@ import {
     createAccessToken,
     createRefreshToken,
     createUser,
+    getUserAndPermissionAndRolesByUserId,
     getUserByEmail,
     getUserById,
 } from "./auth.service";
@@ -103,7 +104,7 @@ export async function userHandler(
     reply: FastifyReply
 ) {
     try {
-        const user = await getUserById(request.user.sub);
+        const user = await getUserAndPermissionAndRolesByUserId(request.user.sub);
         if (!user) {
             return reply.unauthorized();
         }

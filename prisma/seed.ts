@@ -76,37 +76,37 @@ async function main() {
      * All passwords are 12345678
      */
     const normalUser = await addUser(
-        'Normal User',
+        'Thomas',
         'normal@overnites.binau.dev',
         []
     );
     const receptionistUser = await addUser(
-        'Receptionist User',
+        'Anders🫡🎖️',
         'receptionist@overnites.binau.dev',
         [receptionistRole]
     );
     const supporterUser = await addUser(
-        'Supporter User',
+        'James Bond',
         'supporter@overnites.binau.dev',
         [supporterRole]
     );
     const branchManagerUser = await addUser(
-        'Branch Manager User',
+        'Medina',
         'branch-manager@overnites.binau.dev',
         [branchManagerRole]
     );
     const seniorManagerUser = await addUser(
-        'Senior Manager User',
+        'Lars',
         'senior-manager@overnites.binau.dev',
         [seniorManagerRole]
     );
     const administatorUser = await addUser(
-        'administator User',
+        'Pytlick',
         'administator@overnites.binau.dev',
         [administatorRole]
     );
     const developerAdministatorUser = await addUser(
-        'Developer Administator User',
+        'Kristian🕴️',
         'developer-administator@overnites.binau.dev',
         [developerAdministatorRole]
     );

@@ -3,7 +3,7 @@ import { User } from "@prisma/client";
 import { hashSync } from "bcrypt";
 import { prisma } from "../../plugins/prisma";
 import { CreateUserInput } from "./auth.schema";
-import { getPermissionIdsPerRoleFlatArray, getPermissionNamesToIds } from "../permission/permission.service";
+import { getPermissionIdsPerRoleFlatArray, getPermissionNamesPerRoleFlatArray, getPermissionNamesToIds } from "../permission/permission.service";
 
 export async function createUser(input: CreateUserInput) {
     if (await getUserByEmail(input.email)) {
@@ -30,6 +30,47 @@ export async function getUserById(id: number) {
     return await prisma.user.findFirst({
         where: { id: id },
     });
+}
+
+export async function getUserAndPermissionAndRolesByUserId(id: number) {
+    const user = await getUserById(id);
+
+    const roleOnUserObjects = await prisma.roleOnUser.findMany({
+        where: { userId: id },
+        distinct: ['roleId'],
+        select: {
+            roleId: true,
+            role: {
+                select: {
+                    name: true,
+                }
+            }
+        }
+    });
+
+    const roleIds = roleOnUserObjects.map((roleOnUserObject) => {
+        return roleOnUserObject.roleId;
+    })
+
+    const roleNames = roleOnUserObjects.map((roleOnUserObject) => {
+        return roleOnUserObject.role.name;
+    })
+
+    let permissionNames = (await Promise.all(
+        roleIds.map((roleId) => {
+            return getPermissionNamesPerRoleFlatArray(roleId);
+        })
+    )).flatMap((e) => {
+        return e;
+    });
+
+    console.log(permissionNames)
+
+    return {
+        ...user,
+        roles: roleNames,
+        permissions: permissionNames,
+    };
 }
 
 export async function createRefreshToken(user: User, jwt: JWT) {
@@ -70,13 +111,14 @@ async function getUserPermissionIds(user: User): Promise<number[]> {
     }
 
     let permissionIds: number[] = [];
-    userRoles.roles.forEach(async (roleOnUser) => {
+    for await (const roleOnUser of userRoles.roles) {
         // Get an array of permissionIds that this role has.
-        const rolePermissionId = await getPermissionIdsPerRoleFlatArray(roleOnUser.roleId);
+        const rolePermissionIds = await getPermissionIdsPerRoleFlatArray(roleOnUser.roleId);
 
         // Merge this roles permissionIds with the other roles permissionIds, removing dublicates
-        permissionIds = [...new Set([...permissionIds, ...rolePermissionId])];
-    });
+        permissionIds = [...new Set([...permissionIds, ...rolePermissionIds])];
+        console.log(permissionIds)
+    }
 
     return permissionIds;
 }

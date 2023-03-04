@@ -2,7 +2,8 @@ import { prisma } from "../../plugins/prisma";
 import { redis } from "../../plugins/redis";
 import { idNotFound } from "./permission.errors";
 
-export const CACHE_KEY_ROLE_PERMISSIONS_FLATTENED = "rolePermissionsFlattend";
+export const CACHE_KEY_ROLE_PERMISSION_IDS_FLATTENED = "rolePermissionIdsFlattend";
+export const CACHE_KEY_ROLE_PERMISSION_NAMES_FLATTENED = "rolePermissionNamesFlattend";
 export const CACHE_KEY_PERMISSIONS_MAP = "permissionsMap";
 
 export async function getAllPermissions() {
@@ -38,7 +39,7 @@ export async function getPermissionNamesToIds(): Promise<Map<string, number>> {
 }
 
 export async function getPermissionIdsPerRoleFlatArray(roleId: number) {
-    return await redis.rememberJSON<number[]>(CACHE_KEY_ROLE_PERMISSIONS_FLATTENED + roleId, 1800, async () => {
+    return await redis.rememberJSON<number[]>(CACHE_KEY_ROLE_PERMISSION_IDS_FLATTENED + roleId, 1800, async () => {
         const permissionIdObjects = await prisma.permissionOnRole.findMany({
             where: { roleId: roleId },
             select: {
@@ -49,6 +50,22 @@ export async function getPermissionIdsPerRoleFlatArray(roleId: number) {
         // Convert the array of objects with permissionIds into a flat array of permissionIds
         return permissionIdObjects.map(permissionIdObject => {
             return permissionIdObject.permissionId;
+        });
+    });
+}
+
+export async function getPermissionNamesPerRoleFlatArray(roleId: number) {
+    return await redis.rememberJSON<string[]>(CACHE_KEY_ROLE_PERMISSION_NAMES_FLATTENED + roleId, 1800, async () => {
+        const permissionIdObjects = await prisma.permissionOnRole.findMany({
+            where: { roleId: roleId },
+            select: {
+                permission: true,
+            }
+        });
+
+        // Convert the array of objects with permissionNames into a flat array of permissionNames
+        return permissionIdObjects.map(permissionIdObject => {
+            return permissionIdObject.permission.name;
         });
     });
 }
