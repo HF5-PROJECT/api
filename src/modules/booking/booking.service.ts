@@ -10,7 +10,7 @@ export async function createBooking(input: CreateBookingInput, userId: number) {
     const user = await getUserById(userId);
 
     if (!user) {
-        throw Error("Could not find room type with id: " + userId);
+        throw Error("Could not find user with id: " + userId);
     }
 
     return await prisma.booking.create({

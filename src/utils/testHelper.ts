@@ -11,7 +11,7 @@ export async function addTestUserAndPermission(
     accessTokenNoPermission: string;
     permission: Permission;
 }> {
-    const prisma = p ?? global.prisma; // Maybe move to /plugins/prisma ???
+    const prisma = p ?? global.prisma;
 
     await prisma.permission.deleteMany();
     await prisma.role.deleteMany();
