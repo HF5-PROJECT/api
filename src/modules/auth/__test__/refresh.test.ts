@@ -1,21 +1,11 @@
 import { hashSync } from "bcrypt";
-import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
 describe("POST /api/auth/refresh", () => {
-    let fastify: FastifyInstance;
-
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    const fastify = global.fastify;
 
     beforeEach(async () => {
         await prisma.user.deleteMany();
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200, set a refreshToken and return a new accessToken", async () => {

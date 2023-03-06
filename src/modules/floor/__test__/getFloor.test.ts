@@ -1,20 +1,16 @@
-import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
 
 describe("GET /api/floor/:id", () => {
-    let fastify: FastifyInstance;
-    let accessToken: string;
-    let accessTokenNoPermission: string
+    const fastify = global.fastify;
 
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    let accessToken: string;
+    let accessTokenNoPermission: string;
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor Get'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Floor Get"));
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -29,13 +25,9 @@ describe("GET /api/floor/:id", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200 and get floor by id", async () => {
@@ -46,15 +38,15 @@ describe("GET /api/floor/:id", () => {
                 authorization: accessToken,
             },
             payload: {
-                id: 1000
-            }
+                id: 1000,
+            },
         });
 
         expect(response.statusCode).toBe(200);
         expect(response.json()).toEqual({
             id: 1000,
             number: 1,
-            hotelId: 1000
+            hotelId: 1000,
         });
     });
 
@@ -66,8 +58,8 @@ describe("GET /api/floor/:id", () => {
                 authorization: accessToken,
             },
             payload: {
-                id: 1001
-            }
+                id: 1001,
+            },
         });
 
         expect(response.statusCode).toBe(400);
@@ -83,15 +75,15 @@ describe("GET /api/floor/:id", () => {
             method: "GET",
             url: "/api/floor/1000",
             payload: {
-                id: 1000
-            }
+                id: 1000,
+            },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -103,15 +95,15 @@ describe("GET /api/floor/:id", () => {
                 authorization: accessTokenNoPermission,
             },
             payload: {
-                id: 1000
-            }
+                id: 1000,
+            },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

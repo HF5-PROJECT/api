@@ -1,20 +1,16 @@
-import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
+import { prisma } from "../../../plugins/prisma";
 
 describe("DELETE /api/room/:id", () => {
-    let fastify: FastifyInstance;
-    let accessToken: string;
-    let accessTokenNoPermission: string
+    const fastify = global.fastify;
 
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    let accessToken: string;
+    let accessTokenNoPermission: string;
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Room Delete'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Room Delete"));
         await prisma.room.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.floor.deleteMany();
@@ -53,10 +49,6 @@ describe("DELETE /api/room/:id", () => {
                 roomTypeId: 1000,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 204 and delete a room", async () => {
@@ -105,9 +97,9 @@ describe("DELETE /api/room/:id", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -122,9 +114,9 @@ describe("DELETE /api/room/:id", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

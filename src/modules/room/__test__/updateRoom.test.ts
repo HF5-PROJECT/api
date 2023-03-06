@@ -1,20 +1,16 @@
-import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
+import { prisma } from "../../../plugins/prisma";
 
 describe("PUT /api/room", () => {
-    let fastify: FastifyInstance;
-    let accessToken: string;
-    let accessTokenNoPermission: string
+    const fastify = global.fastify;
 
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    let accessToken: string;
+    let accessTokenNoPermission: string;
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Room Update'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Room Update"));
         await prisma.room.deleteMany();
         await prisma.roomType.deleteMany();
         await prisma.floor.deleteMany();
@@ -53,10 +49,6 @@ describe("PUT /api/room", () => {
                 roomTypeId: 1000,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200 and update a room", async () => {
@@ -255,9 +247,9 @@ describe("PUT /api/room", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -278,9 +270,9 @@ describe("PUT /api/room", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

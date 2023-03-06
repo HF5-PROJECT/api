@@ -1,21 +1,16 @@
-import { User, Permission } from "@prisma/client";
-import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
+import { prisma } from "../../../plugins/prisma";
 
 describe("POST /api/floor", () => {
-    let fastify: FastifyInstance;
-    let accessToken: string;
-    let accessTokenNoPermission: string
+    const fastify = global.fastify;
 
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    let accessToken: string;
+    let accessTokenNoPermission: string;
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor Create'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Floor Create"));
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -28,10 +23,6 @@ describe("POST /api/floor", () => {
         });
     });
 
-    afterAll(async () => {
-        await fastify.close();
-    });
-
     it("should return status 201 and create a floor", async () => {
         const response = await fastify.inject({
             method: "POST",
@@ -41,7 +32,7 @@ describe("POST /api/floor", () => {
             },
             payload: {
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -49,7 +40,7 @@ describe("POST /api/floor", () => {
         expect(response.json()).toEqual({
             id: response.json().id,
             number: 1,
-            hotelId: 1000
+            hotelId: 1000,
         });
     });
 
@@ -61,7 +52,7 @@ describe("POST /api/floor", () => {
                 authorization: accessToken,
             },
             payload: {
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -82,7 +73,7 @@ describe("POST /api/floor", () => {
             },
             payload: {
                 number: "",
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
@@ -123,7 +114,7 @@ describe("POST /api/floor", () => {
             },
             payload: {
                 number: 1,
-                hotelId: ""
+                hotelId: "",
             },
         });
 
@@ -141,15 +132,15 @@ describe("POST /api/floor", () => {
             url: "/api/floor",
             payload: {
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -162,15 +153,15 @@ describe("POST /api/floor", () => {
             },
             payload: {
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

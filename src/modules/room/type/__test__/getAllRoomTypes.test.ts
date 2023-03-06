@@ -1,13 +1,7 @@
-import { FastifyInstance } from "fastify";
-import { build } from "../../../../index";
 import { prisma } from "../../../../plugins/prisma";
 
 describe("GET /api/room/type", () => {
-    let fastify: FastifyInstance;
-
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    const fastify = global.fastify;
 
     beforeEach(async () => {
         await fastify.redis.flushall();
@@ -63,10 +57,6 @@ describe("GET /api/room/type", () => {
                 hotelId: 1001,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200 and get all room types", async () => {
