@@ -9,7 +9,7 @@
     "scripts": {
         "test": "jest --runInBand",
         "build": "tsc -p tsconfig.build.json",
-        "start": "ts-node src/server.ts",
+        "start": "ts-node --transpile-only src/server.ts",
         "dev": "tsnd --respawn --transpile-only --exit-child src/server.ts",
         "migrate:dev": "export $(grep -v '^#' .env | xargs) && DATABASE_URL=\"$DATABASE_URL\" prisma migrate dev && DATABASE_URL=\"$DATABASE_URL_TEST\" prisma migrate dev --skip-seed",
         "migrate:reset": "export $(grep -v '^#' .env | xargs) && DATABASE_URL=\"$DATABASE_URL\" prisma migrate reset && DATABASE_URL=\"$DATABASE_URL_TEST\" prisma migrate reset --skip-seed"
