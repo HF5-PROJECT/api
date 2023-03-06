@@ -1,17 +1,11 @@
-import { PrismaClient } from "@prisma/client";
-import { FastifyInstance } from "fastify";
 import { addTestUserAndPermission } from "../../../../utils/testHelper";
+import { prisma } from "../../../../plugins/prisma";
 
 describe("POST /api/room/type", () => {
-    let fastify: FastifyInstance;
-    let prisma: PrismaClient;
+    const fastify = global.fastify;
+
     let accessToken: string;
     let accessTokenNoPermission: string;
-
-    beforeAll(async () => {
-        fastify = global.fastify;
-        prisma = global.prisma;
-    });
 
     beforeEach(async () => {
         await fastify.redis.flushall();

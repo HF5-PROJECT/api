@@ -16,7 +16,7 @@ export default async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
                     201: $ref("bookRoomsResponseSchema"),
                 },
             },
-            onResponse: [fastify.authenticate],
+            onRequest: [fastify.authenticate],
         },
         bookRoomsHandler
     );

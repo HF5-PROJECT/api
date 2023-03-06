@@ -77,14 +77,14 @@ export async function getRoomTypesByIds(ids: number[]) {
         },
     });
 
-    if (roomTypes.length !== ids.length) {
-        const missingIds = ids.filter((roomTypeId) => {
-            return (
-                roomTypes.find((roomType) => roomType.id === roomTypeId) ===
-                undefined
-            );
-        });
+    const missingIds = ids.filter((roomTypeId) => {
+        return (
+            roomTypes.find((roomType) => roomType.id === roomTypeId) ===
+            undefined
+        );
+    });
 
+    if (missingIds.length !== 0) {
         throw idsNotFound(missingIds);
     }
 

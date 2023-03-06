@@ -1,8 +1,15 @@
 import { RoomType } from "@prisma/client";
 import { prisma } from "../../../plugins/prisma";
+import { CreateBookingInput } from "./room.schema";
 
 export async function getAllBookingRooms() {
     return await prisma.bookingRoom.findMany();
+}
+
+export async function createBookingRoom(input: CreateBookingInput) {
+    return await prisma.bookingRoom.create({
+        data: input,
+    });
 }
 
 export async function getAvailableRoomsByRoomTypesAndDateInterval(
@@ -27,6 +34,9 @@ export async function getAvailableRoomsByRoomTypesAndDateInterval(
                     },
                 },
             },
+        },
+        include: {
+            roomType: true,
         },
     });
 }

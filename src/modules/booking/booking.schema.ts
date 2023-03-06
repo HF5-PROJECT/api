@@ -2,14 +2,8 @@ import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
 
 const bookingCore = {
-    start: z.date({
-        required_error: "Start is required",
-        invalid_type_error: "Start must be a date",
-    }),
-    end: z.date({
-        required_error: "End is required",
-        invalid_type_error: "End must be a date",
-    }),
+    start: z.date(),
+    end: z.date(),
 };
 
 const createBookingSchema = z.object({
@@ -17,8 +11,9 @@ const createBookingSchema = z.object({
 });
 
 const bookRoomsSchema = z.object({
-    ...bookingCore,
-    roomTypeIds: z.array(z.number()),
+    start: z.date(),
+    end: z.date(),
+    roomTypeIds: z.array(z.number()).min(1),
 });
 
 const bookRoomsResponseSchema = z.object({

@@ -1,16 +1,12 @@
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { hashSync } from "bcrypt";
-import { FastifyInstance } from "fastify";
+import { prisma } from "../../../plugins/prisma";
 
 describe("GET /api/auth/user", () => {
-    let fastify: FastifyInstance;
-    let prisma: PrismaClient;
+    const fastify = global.fastify;
     let user: User;
 
     beforeAll(async () => {
-        fastify = global.fastify;
-        prisma = global.prisma;
-
         await prisma.user.deleteMany();
         user = await prisma.user.create({
             data: {

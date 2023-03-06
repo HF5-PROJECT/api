@@ -5,7 +5,10 @@ import { errorMessage } from "../../utils/string";
 import { getRoomTypesByIds } from "../room/type/type.service";
 import { prisma } from "../../plugins/prisma";
 import { Booking } from "@prisma/client";
-import { getAvailableRoomsByRoomTypesAndDateInterval } from "./room/room.service";
+import {
+    createBookingRoom,
+    getAvailableRoomsByRoomTypesAndDateInterval,
+} from "./room/room.service";
 
 export async function bookRoomsHandler(
     request: FastifyRequest<{
@@ -14,9 +17,18 @@ export async function bookRoomsHandler(
     reply: FastifyReply
 ) {
     try {
-        let booking: Booking | undefined;
+        const todayAtStartOfDay = new Date();
+        todayAtStartOfDay.setHours(0, 0, 0, 0);
 
-        console.log(request.user);
+        if (todayAtStartOfDay >= new Date(request.body.start)) {
+            return reply.badRequest("body/start must be now or in the future");
+        }
+
+        if (request.body.start >= request.body.end) {
+            return reply.badRequest("body/start must be before end");
+        }
+
+        let booking: Booking | undefined;
 
         await prisma.$transaction(async () => {
             booking = await createBooking(
@@ -31,20 +43,38 @@ export async function bookRoomsHandler(
                 request.body.roomTypeIds
             );
 
-            const roomsToBook =
+            const availableRoomsToBook =
                 await getAvailableRoomsByRoomTypesAndDateInterval(
                     roomTypesToBook,
                     request.body.start,
                     request.body.end
                 );
 
-            console.log(booking);
-            console.log(roomTypesToBook);
-            console.log(roomsToBook);
+            availableRoomsToBook.sort((a, b) => {
+                if (a.floorId === b.floorId) {
+                    return a.number < b.number ? -1 : 1;
+                } else {
+                    return a.floorId < b.floorId ? -1 : 1;
+                }
+            });
 
-            throw Error();
+            for (const roomTypeId of request.body.roomTypeIds) {
+                const availableMatchingRooms = availableRoomsToBook.filter(
+                    (availableRoom) => availableRoom.roomTypeId === roomTypeId
+                );
 
-            // Book rooms...
+                if (availableMatchingRooms.length === 0) {
+                    throw Error(
+                        "No available room of room type with id: " + roomTypeId
+                    );
+                }
+
+                await createBookingRoom({
+                    bookingId: booking.id,
+                    price: availableMatchingRooms[0].roomType.price,
+                    roomId: availableMatchingRooms[0].id,
+                });
+            }
         });
 
         return reply.code(201).send(booking);
