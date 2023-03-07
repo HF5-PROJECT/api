@@ -1,20 +1,16 @@
-import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
-import { prisma } from "../../../plugins/prisma";
 import { addTestUserAndPermission } from "../../../utils/testHelper";
+import { prisma } from "../../../plugins/prisma";
 
 describe("GET /api/floor", () => {
-    let fastify: FastifyInstance;
-    let accessToken: string;
-    let accessTokenNoPermission: string
+    const fastify = global.fastify;
 
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    let accessToken: string;
+    let accessTokenNoPermission: string;
 
     beforeEach(async () => {
         await fastify.redis.flushall();
-        ({ accessToken, accessTokenNoPermission } = await addTestUserAndPermission(fastify, 'Floor GetAll'));
+        ({ accessToken, accessTokenNoPermission } =
+            await addTestUserAndPermission(fastify, "Floor GetAll"));
         await prisma.floor.deleteMany();
         await prisma.hotel.deleteMany();
         await prisma.hotel.create({
@@ -29,27 +25,23 @@ describe("GET /api/floor", () => {
             data: {
                 id: 1000,
                 number: 1,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.floor.create({
             data: {
                 id: 1001,
                 number: 2,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
         await prisma.floor.create({
             data: {
                 id: 1002,
                 number: 3,
-                hotelId: 1000
+                hotelId: 1000,
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200 and get all floors", async () => {
@@ -62,19 +54,23 @@ describe("GET /api/floor", () => {
         });
 
         expect(response.statusCode).toBe(200);
-        expect(response.json()).toEqual([{
-            id: 1000,
-            number: 1,
-            hotelId: 1000
-        }, {
-            id: 1001,
-            number: 2,
-            hotelId: 1000
-        }, {
-            id: 1002,
-            number: 3,
-            hotelId: 1000
-        }]);
+        expect(response.json()).toEqual([
+            {
+                id: 1000,
+                number: 1,
+                hotelId: 1000,
+            },
+            {
+                id: 1001,
+                number: 2,
+                hotelId: 1000,
+            },
+            {
+                id: 1002,
+                number: 3,
+                hotelId: 1000,
+            },
+        ]);
     });
 
     it("should return status 200 and return empty, if none were found", async () => {
@@ -99,9 +95,9 @@ describe("GET /api/floor", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 
@@ -116,9 +112,9 @@ describe("GET /api/floor", () => {
 
         expect(response.statusCode).toBe(401);
         expect(response.json()).toEqual({
-            "error": "Unauthorized",
-            "message": "Unauthorized",
-            "statusCode": 401,
+            error: "Unauthorized",
+            message: "Unauthorized",
+            statusCode: 401,
         });
     });
 });

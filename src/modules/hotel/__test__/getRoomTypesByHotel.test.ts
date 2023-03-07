@@ -1,13 +1,7 @@
-import { FastifyInstance } from "fastify";
-import { build } from "../../../index";
 import { prisma } from "../../../plugins/prisma";
 
 describe("GET /api/hotel/:id/room_type", () => {
-    let fastify: FastifyInstance;
-
-    beforeAll(async () => {
-        fastify = await build();
-    });
+    const fastify = global.fastify;
 
     beforeEach(async () => {
         await fastify.redis.flushall();
@@ -72,10 +66,6 @@ describe("GET /api/hotel/:id/room_type", () => {
                 address: "Carsten Niebuhrs Gade 11, 1577 København",
             },
         });
-    });
-
-    afterAll(async () => {
-        await fastify.close();
     });
 
     it("should return status 200 and get all room types by hotel id 1000", async () => {
