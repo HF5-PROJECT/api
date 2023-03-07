@@ -27,12 +27,18 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function getUserById(id: number) {
-    return await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
         where: { id: id },
     });
+
+    if (!user) {
+        throw new Error('No user with id: ' + id);
+    }
+
+    return user;
 }
 
-export async function getUserAndPermissionAndRolesByUserId(id: number) {
+export async function getUserAndPermissionsAndRolesByUserId(id: number) {
     const user = await getUserById(id);
 
     const roleOnUserObjects = await prisma.roleOnUser.findMany({
@@ -63,8 +69,6 @@ export async function getUserAndPermissionAndRolesByUserId(id: number) {
     )).flatMap((e) => {
         return e;
     });
-
-    console.log(permissionNames)
 
     return {
         ...user,
@@ -117,7 +121,6 @@ async function getUserPermissionIds(user: User): Promise<number[]> {
 
         // Merge this roles permissionIds with the other roles permissionIds, removing dublicates
         permissionIds = [...new Set([...permissionIds, ...rolePermissionIds])];
-        console.log(permissionIds)
     }
 
     return permissionIds;

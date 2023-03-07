@@ -49,6 +49,8 @@ describe("GET /api/auth/user", () => {
             name: "Joe Biden the 1st",
             email: "joe@biden.com",
             address: "",
+            permissions: [],
+            roles: [],
         });
     });
 
