@@ -15,4 +15,4 @@ CMD [ "npm", "run", "start" ]
 # should be setup for the dev tag to work
 FROM base AS dev
 ENV HOST 0.0.0.0
-CMD /bin/bash -c 'npm install; npx prisma generate; npm run dev'
+CMD /bin/ash -c 'npm install; npx prisma generate; npm run dev'
