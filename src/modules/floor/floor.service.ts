@@ -1,7 +1,8 @@
 import { prisma } from "../../plugins/prisma";
 import { CreateFloorInput, UpdateFloorInput } from "./floor.schema";
 import { getHotelById } from "../hotel/hotel.service";
-import { idNotFound } from "./floor.errors";
+import { hotelIdWithNumberUniqueConstraint, idNotFound } from "./floor.errors";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function getAllFloors() {
     return await prisma.floor.findMany();
@@ -10,12 +11,22 @@ export async function getAllFloors() {
 export async function createFloor(input: CreateFloorInput) {
     const hotel = await getHotelById(input.hotelId);
 
-    return await prisma.floor.create({
-        data: {
-            number: input.number,
-            hotelId: hotel.id,
-        },
-    });
+    try {
+        return await prisma.floor.create({
+            data: {
+                number: input.number,
+                hotelId: hotel.id,
+            },
+        });
+    } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw hotelIdWithNumberUniqueConstraint()
+            }
+        }
+
+        return e;
+    }
 }
 
 export async function updateFloor(input: UpdateFloorInput) {
@@ -32,6 +43,12 @@ export async function updateFloor(input: UpdateFloorInput) {
             },
         });
     } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw hotelIdWithNumberUniqueConstraint()
+            }
+        }
+
         throw idNotFound(input.id);
     }
 }

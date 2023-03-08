@@ -1,7 +1,8 @@
 import { prisma } from "../../../plugins/prisma";
 import { CreateHotelSettingInput, UpdateHotelSettingInput } from "./setting.schema";
 import { getHotelById } from "../hotel.service";
-import { idNotFound } from "./setting.errors";
+import { hotelIdWithKeyUniqueConstraint, idNotFound } from "./setting.errors";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function getAllHotelSettings() {
     return await prisma.hotelSetting.findMany();
@@ -10,13 +11,23 @@ export async function getAllHotelSettings() {
 export async function createHotelSetting(input: CreateHotelSettingInput) {
     const hotel = await getHotelById(input.hotelId);
 
-    return await prisma.hotelSetting.create({
-        data: {
-            key: input.key,
-            value: input.value,
-            hotelId: hotel.id,
-        },
-    });
+    try {
+        return await prisma.hotelSetting.create({
+            data: {
+                key: input.key,
+                value: input.value,
+                hotelId: hotel.id,
+            },
+        });
+    } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw hotelIdWithKeyUniqueConstraint()
+            }
+        }
+
+        throw e;
+    }
 }
 
 export async function updateHotelSetting(input: UpdateHotelSettingInput) {
@@ -34,6 +45,12 @@ export async function updateHotelSetting(input: UpdateHotelSettingInput) {
             },
         });
     } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw hotelIdWithKeyUniqueConstraint()
+            }
+        }
+
         throw idNotFound(input.id);
     }
 }

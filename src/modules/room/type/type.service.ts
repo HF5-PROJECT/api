@@ -1,7 +1,8 @@
 import { prisma } from "../../../plugins/prisma";
 import { CreateRoomTypeInput, UpdateRoomTypeInput } from "./type.schema";
 import { getHotelById } from "../../hotel/hotel.service";
-import { idNotFound, idsNotFound } from "./type.errors";
+import { hotelIdWithNameUniqueConstraint, idNotFound, idsNotFound } from "./type.errors";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function getAllRoomTypes() {
     return await prisma.roomType.findMany();
@@ -10,16 +11,27 @@ export async function getAllRoomTypes() {
 export async function createRoomType(input: CreateRoomTypeInput) {
     const hotel = await getHotelById(input.hotelId);
 
-    return await prisma.roomType.create({
-        data: {
-            name: input.name,
-            description: input.description,
-            size: input.size,
-            supportedPeople: input.supportedPeople,
-            price: input.price,
-            hotelId: hotel.id,
-        },
-    });
+    try {
+        return await prisma.roomType.create({
+            data: {
+                name: input.name,
+                description: input.description,
+                size: input.size,
+                supportedPeople: input.supportedPeople,
+                price: input.price,
+                hotelId: hotel.id,
+            },
+        });
+
+    } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw hotelIdWithNameUniqueConstraint()
+            }
+        }
+
+        return e;
+    }
 }
 
 export async function updateRoomType(input: UpdateRoomTypeInput) {
@@ -40,6 +52,12 @@ export async function updateRoomType(input: UpdateRoomTypeInput) {
             },
         });
     } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw hotelIdWithNameUniqueConstraint()
+            }
+        }
+
         throw idNotFound(input.id);
     }
 }
