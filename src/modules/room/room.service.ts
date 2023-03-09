@@ -2,19 +2,30 @@ import { prisma } from "../../plugins/prisma";
 import { CreateRoomInput, UpdateRoomInput } from "./room.schema";
 import { getFloorById } from "../floor/floor.service";
 import { getRoomTypeById } from "./type/type.service";
-import { idNotFound } from "./room.errors";
+import { floorIdWithNumberUniqueConstraint, idNotFound } from "./room.errors";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function createRoom(input: CreateRoomInput) {
     const floor = await getFloorById(input.floorId);
     const roomType = await getRoomTypeById(input.roomTypeId);
 
-    return await prisma.room.create({
-        data: {
-            number: input.number,
-            floorId: floor.id,
-            roomTypeId: roomType.id,
-        },
-    });
+    try {
+        return await prisma.room.create({
+            data: {
+                number: input.number,
+                floorId: floor.id,
+                roomTypeId: roomType.id,
+            },
+        });
+    } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw floorIdWithNumberUniqueConstraint()
+            }
+        }
+
+        return e;
+    }
 }
 
 export async function getAllRooms() {
@@ -37,6 +48,12 @@ export async function updateRoom(input: UpdateRoomInput) {
             },
         });
     } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2002') {
+                throw floorIdWithNumberUniqueConstraint()
+            }
+        }
+
         throw idNotFound(input.id);
     }
 }

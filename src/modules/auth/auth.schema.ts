@@ -13,6 +13,11 @@ const userCore = {
     address: z.string().nullable().optional(),
 };
 
+const userPermissionAndRoles = {
+    permissions: z.string().array(),
+    roles: z.string().array(),
+};
+
 const createUserSchema = z.object({
     ...userCore,
     password: z
@@ -49,6 +54,7 @@ const logoutResponseSchema = z.object({});
 
 const userResponseSchema = z.object({
     ...userCore,
+    ...userPermissionAndRoles,
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

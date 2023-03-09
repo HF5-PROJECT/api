@@ -7,3 +7,7 @@ export function idsNotFound(ids: number[]) {
         "Could not find room type(s) with ids: " + JSON.stringify(ids)
     );
 }
+
+export function hotelIdWithNameUniqueConstraint() {
+    return Error("This room type name already exists in this hotel");
+}
